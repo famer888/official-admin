@@ -1,0 +1,176 @@
+import { defineStore } from 'pinia'
+import { store } from '@/store'
+import { ACCESS_TOKEN, CURRENT_USER, IS_SCREENLOCKED } from '@/store/mutation-types'
+import { ResultEnum } from '@/enums/httpEnum'
+import { transformTree } from '@/utils'
+import { getUserInfo as getUserInfoApi, login, logout as out } from '@/api/system/user'
+import { getAllOptions } from '@/api/common'
+import { storage } from '@/utils/Storage'
+import { encrypt } from '@/utils/rsa.js'
+import { typeMap } from '@/constants'
+
+export type UserInfoType = {
+  // TODO: add your own data
+  username: string
+  email: string
+}
+
+export interface IUserState {
+  token: string
+  username: string
+  welcome: string
+  avatar: string
+  permissions: any[]
+  info: UserInfoType
+  merchantList: any[]
+  menus: any[]
+  productList: any[]
+  listMap: any
+  base: any
+}
+
+export const useUserStore = defineStore({
+  id: 'app-user',
+  state: (): IUserState => ({
+    token: storage.get(ACCESS_TOKEN, ''),
+    username: '',
+    welcome: '',
+    avatar: '',
+    permissions: [],
+    info: storage.get(CURRENT_USER, {}),
+    merchantList: [],
+    menus: [],
+    productList: [],
+    listMap: {},
+    base: null,
+  }),
+  getters: {
+    getToken(): string {
+      return this.token
+    },
+    getAvatar(): string {
+      return this.avatar
+    },
+    getNickname(): string {
+      return this.username
+    },
+    getPermissions(): [any][] {
+      return this.permissions
+    },
+    getUserInfo(): UserInfoType {
+      return this.info
+    },
+    getBase(): string {
+      return this.base
+    },
+  },
+  actions: {
+    setToken(token: string) {
+      this.token = token
+    },
+    setAvatar(avatar: string) {
+      this.avatar = avatar
+    },
+    setPermissions(permissions) {
+      this.permissions = permissions
+    },
+    setUserInfo(info: UserInfoType) {
+      this.info = info
+    },
+    setMerchantList(info) {
+      this.merchantList = info
+    },
+    setMenus(info) {
+      this.menus = info
+    },
+    setProductList(info) {
+      this.productList = info
+    },
+    setListMap(info) {
+      this.listMap = info
+    },
+    setBase(info) {
+      this.base = info
+    },
+    // 登录
+    async login(params: any) {
+      const { loginEmail, password, securityCode } = params
+      const response = await login({
+        loginEmail: loginEmail,
+        password: password,
+        // securityCode: securityCode,
+      })
+
+      const { data, code } = response
+      if (code === ResultEnum.SUCCESS) {
+        const ex = 7 * 24 * 60 * 60
+        storage.set(ACCESS_TOKEN, data.token, ex)
+        storage.set(IS_SCREENLOCKED, false)
+        this.setToken(data.token)
+      }
+      return response
+    },
+
+    // 获取用户信息
+    async getInfo() {
+      const res = await getUserInfoApi()
+      console.log(res);
+      
+      const { menus, merchantScopeList, permissions, productScopeList, user, showUrl } = res?.data ?? {}
+      this.setMenus(transformTree(menus))
+      const merchantData = merchantScopeList?.map((item) => ({
+        ...item,
+        value: item.merchantCode,
+        label: item.merchantName,
+      }))
+      this.setMerchantList(merchantData)
+      const productList =
+        productScopeList?.map((item) => ({
+          ...item,
+          key: item.merchantCode,
+          label: item.merchantName,
+          ...(item?.productScopeList?.length
+            ? {
+                children: item.productScopeList?.map((p) => ({
+                  ...p,
+                  key: p.appCode,
+                  label: p.appName,
+                })),
+              }
+            : {}),
+        })) ?? []
+      this.setProductList(productList)
+      this.setPermissions(permissions)
+      this.setUserInfo(user)
+      this.setAvatar(user?.avatar)
+      this.setBase(showUrl)
+      return res
+    },
+
+    // 获取所有下拉选项
+    async useAllOptions() {
+      const response = await getAllOptions(Object.values(typeMap))
+      const { data, code } = response
+      if (code === ResultEnum.SUCCESS) {
+        this.setListMap(data)
+      }
+    },
+    // 登出
+    async logout() {
+      try {
+        const res = await out({})
+        if (res?.code === 0) {
+          this.setPermissions([])
+          this.setUserInfo({ username: '', email: '' })
+          storage.remove(ACCESS_TOKEN)
+          storage.remove(CURRENT_USER)
+        }
+      } catch (error) {}
+    },
+  },
+})
+
+// Need to be used outside the setup
+export function useUser() {
+  return useUserStore(store)
+}

@@ -1,0 +1,65 @@
+@import url('./transition/index.less');
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+  box-shadow: 0 0 0 1000px #fff inset !important;
+  -webkit-text-fill-color: #333 !important;
+}
+
+.n-input--disabled {
+  .n-input__input-el,
+  .n-input__textarea-el,
+  .n-input__suffix,
+  .n-input__placeholder {
+    color: #000 !important;
+  }
+
+  .n-input__border {
+    display: none;
+  }
+}
+
+.n-base-selection--disabled {
+
+  .n-base-selection-overlay__wrapper,
+  .n-base-selection-input__content {
+    color: #000;
+  }
+
+  .n-base-suffix {
+    display: none;
+  }
+
+  .n-base-selection__border {
+    display: none;
+  }
+}
+
+/**
+ * 菜单选中项样式
+ */
+ .n-menu .n-menu-item-content.n-menu-item-content--selected::before {
+  background-color: rgba(22, 93, 255,0.2)!important;
+}
+
+.n-menu .n-menu-item-content.n-menu-item-content--selected::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  right: 20px;
+  transform: translate(-50%, 0px);
+  width: 5px;
+  height: 5px;
+  border-radius: 100%;
+  background-color: #60a5fa;
+
+}
+
+
+.n-menu .n-menu-item-content.n-menu-item-content--selected .n-menu-item-content-header,
+.n-menu .n-menu-item-content.n-menu-item-content--selected .n-menu-item-content__icon {
+  color: #60a5fa!important;
+}
+

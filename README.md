@@ -1,4 +1,4 @@
-# official-admin
+# template
 
 
 
@@ -15,14 +15,14 @@ Already a pro? Just edit this README.md and make it your own. Want to make it ea
 
 ```
 cd existing_repo
-git remote add origin http://opengit6688.com/jszx-ad/web/official-admin.git
+git remote add origin http://opengit6688.com/web/template.git
 git branch -M main
 git push -uf origin main
 ```
 
 ## Integrate with your tools
 
-- [ ] [Set up project integrations](http://opengit6688.com/jszx-ad/web/official-admin/-/settings/integrations)
+- [ ] [Set up project integrations](http://opengit6688.com/web/template/-/settings/integrations)
 
 ## Collaborate with your team
 
