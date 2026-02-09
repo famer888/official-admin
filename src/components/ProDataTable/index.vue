@@ -13,6 +13,9 @@
       <template #content>
         <n-data-table
           ref="tableRef"
+          :class="{
+            'pro-data-table': !title && true,
+          }"
           :data="list"
           :columns="columns"
           :bordered="true"
@@ -158,3 +161,10 @@
     table,
   })
 </script>
+<style scoped lang="less">
+  .proDataTable {
+    :deep(.n-data-table-wrapper) {
+      border-radius: 15px;
+    }
+  }
+</style>
