@@ -205,7 +205,7 @@
     flex: auto;
 
     &-default-background {
-      background: #f7fafc;
+      background: #ffffff;
     }
 
     .layout-sider {
@@ -236,6 +236,7 @@
     .layout-content {
       flex: auto;
       min-height: 100vh;
+      background: #ffffff;
     }
 
     .n-layout-header.n-layout-header--absolute-positioned {

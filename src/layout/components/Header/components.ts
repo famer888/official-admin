@@ -12,6 +12,10 @@ import {
   LogoutOutlined,
   UserOutlined,
   CheckOutlined,
+  BellOutlined,
+  WalletOutlined,
+  IdcardOutlined,
+  QuestionCircleOutlined,
 } from '@vicons/antd';
 
 export default {
@@ -28,4 +32,8 @@ export default {
   LogoutOutlined,
   UserOutlined,
   CheckOutlined,
+  BellOutlined,
+  WalletOutlined,
+  IdcardOutlined,
+  QuestionCircleOutlined,
 };

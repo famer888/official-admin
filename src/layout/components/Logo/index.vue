@@ -1,7 +1,7 @@
 <template>
   <div class="logo">
-    <div class="p-[3px] bg-[#165dFF] rounded-[5px] mr-2">
-      <component :is="websiteConfig.logo" class="w-[25px] h-[25px]" />
+    <div class="mr-2">
+      <img :src="websiteConfig.logo" alt="logo" class="w-[25px] h-[25px]" />
     </div>
     <h2 v-show="!collapsed" class="title">{{ websiteConfig.title }}</h2>
   </div>

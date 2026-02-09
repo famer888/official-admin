@@ -66,3 +66,8 @@ export function pageTypeDownBox(params) {
 export function getAccessTypeDownBox(params) {
   return Alova.Get('/admin-api/system/common/getAccessTypeDownBox', params)
 }
+
+/* 分页查询广告超市配置列表 */
+export function getAdvertiseSupermarketPage(params) {
+  return Alova.Post('/admin-api/system/advertiseSupermarket/getAdvertiseSupermarketPage', params)
+}

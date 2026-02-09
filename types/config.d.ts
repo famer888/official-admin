@@ -53,6 +53,8 @@ export interface GlobConfig {
   urlPrefix?: string;
   uploadUrl?: string;
   fileUrl?: string;
+  showUrl?: string;
+  movieUrl?: string;
 }
 
 export interface LocalConfig {
@@ -75,6 +77,10 @@ export interface GlobEnvConfig {
   VITE_GLOB_UPLOAD_URL?: string;
   // 文件前缀地址
   VITE_GLOB_FILE_URL?: string;
+  // 图片拼接域名
+  VITE_GLOB_SHOW_URL?: string;
+  // 视频拼接域名
+  VITE_GLOB_MOVIE_URL?: string;
   // 开启 mock
   VITE_USE_MOCK: string;
   // 是否开启控制台打印 mock 请求信息

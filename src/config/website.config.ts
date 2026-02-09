@@ -1,9 +1,9 @@
-import loginImage from '@/assets/images/account-logo.png'
-import { LineChartOutlined } from '@vicons/antd'
+import loginImage from '@/assets/images/logo.svg'
+import logoImage from '@/assets/images/logo.svg'
 
 export const websiteConfig = Object.freeze({
   title: 'TI后台管理',
-  logo: LineChartOutlined,
+  logo: logoImage,
   loginImage: loginImage,
   loginDesc: '数据中心后台管理系统',
 })
