@@ -83,6 +83,7 @@ export const typeMap = {
   17: 'materialType', // 广告素材类型
   18: 'jumpType', // 跳转类型
   19: 'businessDomain', // 业务域
+  20: 'payType', // 支付方式
 }
 
 //应用类型

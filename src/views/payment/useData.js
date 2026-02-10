@@ -107,6 +107,6 @@ export const payAmountOptions = [
     },
     {
         label: '大额充值',
-        value: undefined,
+        value: null,
     },
 ]
