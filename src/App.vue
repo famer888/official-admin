@@ -89,6 +89,13 @@
           },
         },
       },
+      Checkbox: {
+        colorChecked: '#08caa2',
+        colorCheckedHover: '#08caa2',
+        colorCheckedPressed: '#08caa2',
+        borderChecked: '1px solid #08caa2',
+        borderFocus: '1px solid #08caa2',
+      },
     }
   })
 

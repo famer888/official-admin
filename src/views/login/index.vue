@@ -102,6 +102,7 @@
   import { GooglePlusOutlined } from '@vicons/antd'
   import { PageEnum } from '@/enums/pageEnum'
   import { websiteConfig } from '@/config/website.config'
+  import { useCollectUserInfoModal } from '@/views/manage/collectUserInformation/index'
 
   // 添加页面加载动画效果
   onMounted(() => {
@@ -138,7 +139,7 @@
   }
 
   const userStore = useUserStore()
-
+  const { openCollectUserInfoModal } = useCollectUserInfoModal()
   const router = useRouter()
   const route = useRoute()
 
@@ -157,7 +158,7 @@
         }
 
         try {
-          const { code, message: msg } = await userStore.login(params)
+          const { code, message: msg, data } = await userStore.login(params)
 
           message.destroyAll()
 
@@ -171,6 +172,12 @@
                 path: toPath,
                 query: { ...route.query, redirect: undefined },
               })
+              console.log(data, 'data')
+              if (data?.isCompleteInfo !== 1) {
+                // 1完善 2未完善
+                await new Promise((resolve) => setTimeout(resolve, 3000))
+                openCollectUserInfoModal({ visible: true })
+              }
             } else {
               router.replace(toPath)
             }

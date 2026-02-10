@@ -1,5 +1,6 @@
 import { h, ref } from 'vue'
 import useFeedback from '@/composables/useFeedback'
+import useAsync from '@/composables/useAsync'
 import {
   userScaleMap,
   adBudgetMap,
@@ -8,6 +9,7 @@ import {
   industryCategoryMap,
   industryDetailMap,
 } from '@/constants/website'
+import { completeUserDetail } from './useApi'
 
 // 通用：map -> options
 const mapToOptions = (map: Record<number, string>) =>
@@ -56,7 +58,7 @@ export const collectUserInfoSchemas = [
     },
   },
   {
-    field: 'contactName',
+    field: 'jobTitle',
     label: '您的身份',
     component: 'NInput',
     required: true,
@@ -76,7 +78,7 @@ export const collectUserInfoSchemas = [
     required: true,
   },
   {
-    field: 'industryDetail',
+    field: 'subIndustry',
     label: '所属行业（小类）',
     component: 'NSelect',
     triggerType: 'number',
@@ -86,9 +88,10 @@ export const collectUserInfoSchemas = [
     },
   },
   {
-    field: 'adScene',
+    field: 'userScale',
     label: '用户规模',
-    component: 'NRadioGroup',
+    component: 'NCheckbox',
+    triggerType: 'array',
     giProps: { span: 24 },
     required: true,
     componentProps: {
@@ -98,9 +101,10 @@ export const collectUserInfoSchemas = [
 
   // 预计第一波投放预算
   {
-    field: 'firstRoundBudget',
+    field: 'adBudget',
     label: '您预期一次的广告预算',
-    component: 'NRadioGroup',
+    component: 'NCheckbox',
+    triggerType: 'array',
     giProps: { span: 24 },
     required: true,
     componentProps: {
@@ -110,9 +114,10 @@ export const collectUserInfoSchemas = [
 
   // 投放诉求
   {
-    field: 'demandType',
+    field: 'adPreference',
     label: '您的广告类型偏好',
-    component: 'NRadioGroup',
+    component: 'NCheckbox',
+    triggerType: 'array',
     giProps: { span: 24 },
     required: true,
     componentProps: {
@@ -124,7 +129,8 @@ export const collectUserInfoSchemas = [
   {
     field: 'trafficPreference',
     label: '您的流量偏好',
-    component: 'NRadioGroup',
+    component: 'NCheckbox',
+    triggerType: 'array',
     giProps: { span: 24 },
     required: true,
     componentProps: {
@@ -142,6 +148,41 @@ export const collectUserInfoFormProps = {
   resetButtonText: '取消',
 }
 
+// Checkbox 字段列表
+const CHECKBOX_FIELDS = ['userScale', 'adBudget', 'adPreference', 'trafficPreference'] as const
+
+// 工具函数：数组转字符串（逗号分隔）
+const arrayToString = (val: any): string =>
+  Array.isArray(val) ? val.map(String).join(',') : val ? String(val) : ''
+
+// 工具函数：字符串转数组（用于初始值）
+const stringToArray = (val: any): number[] | any =>
+  typeof val === 'string' && val
+    ? val
+        .split(',')
+        .filter((v) => v.trim())
+        .map((v) => Number(v.trim()))
+    : val
+
+// 处理初始值：将字符串转换为数组
+const processInitialValues = (initialValues?: Record<string, any>) => {
+  if (!initialValues) return {}
+  const processed = { ...initialValues }
+  CHECKBOX_FIELDS.forEach((field) => {
+    if (processed[field]) processed[field] = stringToArray(processed[field])
+  })
+  return processed
+}
+
+// 处理提交数据：将数组转换为字符串
+const processSubmitValues = (values: Record<string, any>) => ({
+  ...values,
+  ...CHECKBOX_FIELDS.reduce((acc, field) => {
+    acc[field] = arrayToString(values[field])
+    return acc
+  }, {} as Record<string, string>),
+})
+
 /**
  * 收集用户信息弹窗（配置式）
  *
@@ -152,57 +193,43 @@ export const collectUserInfoFormProps = {
 export function useCollectUserInfoModal() {
   const { showModal } = useFeedback()
 
-  /**
-   * 打开弹窗
-   * @param options.visible 是否弹出（默认 true）
-   * @param options.initialValues 初始表单数据（可选）
-   */
   const openCollectUserInfoModal = (options?: {
     visible?: boolean
     initialValues?: Record<string, any>
   }) => {
-    const shouldOpen = options?.visible ?? true
-    if (!shouldOpen) return
+    if (options?.visible === false) return
 
     const formRef = ref<any>(null)
-    // 为本次弹窗实例克隆一份 schema，方便在内部做联动修改
+    const processedInitialValues = processInitialValues(options?.initialValues)
     const localSchemas = collectUserInfoSchemas.map((schema) => ({
       ...schema,
-      componentProps: {
-        ...(schema.componentProps || {}),
-      },
+      componentProps: { ...(schema.componentProps || {}) },
     }))
 
-    // 行业大类 / 小类联动
+    // 行业大类/小类联动
     const industrySchema = localSchemas.find((item) => item.field === 'industry')
-    const industryDetailSchema = localSchemas.find((item) => item.field === 'industryDetail')
-
-    const updateIndustryDetailOptions = (category: number | undefined) => {
-      if (!industryDetailSchema) return
-      // 避免和原始输入组件 props 类型冲突，这里仅在下拉上设置 options
-      ;(industryDetailSchema.componentProps as any).options = getIndustryDetailOptions(category)
-    }
+    const industryDetailSchema = localSchemas.find((item) => item.field === 'subIndustry')
 
     if (industrySchema && industryDetailSchema) {
-      // 大类变化时，联动小类 options，并清空小类已选
-      ;(industrySchema.componentProps as any).onUpdateValue = (val: number) => {
-        updateIndustryDetailOptions(val)
-        formRef.value?.setFieldsValue({ industryDetail: undefined })
+      const updateOptions = (category?: number) => {
+        ;(industryDetailSchema.componentProps as any).options = getIndustryDetailOptions(category)
       }
 
-      // 如果有初始值，打开时先根据大类填充一次小类
-      const initialIndustry = options?.initialValues?.industry
-      if (initialIndustry != null) {
-        updateIndustryDetailOptions(initialIndustry)
+      ;(industrySchema.componentProps as any).onUpdateValue = (val: number) => {
+        updateOptions(val)
+        formRef.value?.setFieldsValue({ subIndustry: null })
+      }
+
+      if (processedInitialValues?.industry != null) {
+        updateOptions(processedInitialValues.industry)
       }
     }
-    let d: any
 
-    const handleSubmit = (values: Record<string, any>) => {
-      // TODO: 这里后续接入实际接口
-      // 例如：await saveUserInfoApi(values)
-      console.log('【收集用户信息】表单提交数据：', values)
-      d?.destroy()
+    let d: any
+    const handleSubmit = async (values: Record<string, any>) => {
+      await useAsync(() => completeUserDetail(processSubmitValues(values)), formRef.value?.form, [
+        d?.destroy,
+      ])
     }
 
     d = showModal({
@@ -213,7 +240,7 @@ export function useCollectUserInfoModal() {
           ref: formRef,
           schemas: localSchemas,
           formProps: collectUserInfoFormProps,
-          record: options?.initialValues ?? {},
+          record: processedInitialValues,
           onSubmit: handleSubmit,
           onClose: () => d?.destroy(),
         }),
@@ -222,5 +249,3 @@ export function useCollectUserInfoModal() {
 
   return { openCollectUserInfoModal }
 }
-
-
