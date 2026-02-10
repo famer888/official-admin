@@ -219,7 +219,7 @@
         crumbsSetting,
         messageCount: 99,
         usdBalance: '234.23',
-        userId: (userStore?.info as any)?.id ?? '2323242',
+        userId: (userStore?.info as any)?.id ?? '',
       })
 
       const getInverted = computed(() => {
