@@ -5,14 +5,13 @@
       <template v-for="method in payMethod" :key="method.value">
         <div
           :class="{
-            'bg-[#3A82F9]': current === method.value,
-            'text-[#fff]': current === method.value,
-            'bg-[#F4F5F9]': current !== method.value,
+            'bg-[#3A82F9] text-[#fff]': current === method.value,
+            'bg-[#F4F5F9] text-[#1D2129]': current !== method.value,
           }"
-          class="flex gap-2 items-center px-4 h-[42px] text-left text-[#1D2129] text-[16px] rounded-[4px] cursor-pointer"
+          class="flex gap-2 items-center px-4 h-[42px] text-left text-[16px] rounded-[4px] cursor-pointer"
           @click="handleChange(method.value)"
         >
-          <img :src="method.icon" alt="" />
+          <img :src="current === method.value ? method.icon.active : method.icon.default" alt="" />
           <span>{{ method.label }}</span>
         </div>
       </template>
@@ -20,7 +19,12 @@
   </div>
 </template>
 <script setup>
-  import { payMethod } from './useData'
+  import { getPayMethod } from '../useData'
+  import { useUser } from '@/store/modules/user'
+
+  const user = useUser()
+
+  const payMethod = computed(() => getPayMethod(user.listMap.payType || []))
 
   const emit = defineEmits(['change'])
 
