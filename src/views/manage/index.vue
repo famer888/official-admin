@@ -95,7 +95,7 @@
     window.open(VITE_WEBSITE_URL + '/contact/help-center', '_blank')
   }
   watch (userInfo.value, (newVal) => {
-    if (newVal&&newVal.isCompelte === 1) {
+    if (newVal&&newVal.isCompelte === 0) {
       openCollectUserInfoModal({ visible: true })
     }
   }, { immediate: true })
