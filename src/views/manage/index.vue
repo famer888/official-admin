@@ -69,14 +69,14 @@
   import topBannerBg from '@/assets/images/mag-top.jpg'
   import helpCenterIcon from '@/assets/images/mag-left.jpg'
   import magBtmRight from '@/assets/images/mag-right.jpg'
-  import { useCollectUserInfoModal } from './collectUserInformation/index'
-
-  //测试弹窗组件
-  const { openCollectUserInfoModal } = useCollectUserInfoModal()
-  openCollectUserInfoModal({ visible: true })
+  import { useCollectUserInfoModal } from '@/views/manage/collectUserInfo/index'
+  import { useUserStore } from '@/store/modules/user'
   defineOptions({
     name: 'Manage',
   })
+  const userStore = useUserStore()
+  const userInfo = computed(() => userStore.getUserInfo)
+  const { openCollectUserInfoModal } = useCollectUserInfoModal()
 
   const router = useRouter()
   const { VITE_WEBSITE_URL } = import.meta.env
@@ -94,4 +94,9 @@
   const goToHelpCenter = () => {
     window.open(VITE_WEBSITE_URL + '/contact/help-center', '_blank')
   }
+  watch (userInfo.value, (newVal) => {
+    if (newVal&&newVal.isCompelte === 1) {
+      openCollectUserInfoModal({ visible: true })
+    }
+  }, { immediate: true })
 </script>

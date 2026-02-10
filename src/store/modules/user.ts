@@ -12,7 +12,8 @@ import { typeMap } from '@/constants'
 export type UserInfoType = {
   // TODO: add your own data
   username: string
-  email: string
+  email: string,
+  isCompelte: number
 }
 
 export interface IUserState {
