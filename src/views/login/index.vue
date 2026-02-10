@@ -102,7 +102,6 @@
   import { GooglePlusOutlined } from '@vicons/antd'
   import { PageEnum } from '@/enums/pageEnum'
   import { websiteConfig } from '@/config/website.config'
-
   // 添加页面加载动画效果
   onMounted(() => {
     // 聚焦用户名输入框
@@ -138,7 +137,6 @@
   }
 
   const userStore = useUserStore()
-
   const router = useRouter()
   const route = useRoute()
 
@@ -157,7 +155,7 @@
         }
 
         try {
-          const { code, message: msg } = await userStore.login(params)
+          const { code, message: msg} = await userStore.login(params)
 
           message.destroyAll()
 
