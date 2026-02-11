@@ -5,7 +5,7 @@ export enum ResultEnum {
   SUCCESS = 0,
   ERROR = -1,
   TIMEOUT = 10042,
-  
+
   // ✅ 权限不足（已登录但没权限）
   FORBIDDEN = 403,
   // 非法token
@@ -14,6 +14,8 @@ export enum ResultEnum {
   TOKEN_EXPIRED = 11,
   // ✅ 登录失效（token过期/未登录）
   UNAUTHORIZED = 12,
+  // ✅ 鉴权失败
+  AUTH_FAILED = 401,
   TYPE = 'success',
 }
 

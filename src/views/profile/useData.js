@@ -132,39 +132,117 @@ export const userInfoSchemas = [
   },
 ]
 
-// 密码修改表单配置
-export const passwordSchemas = [
+// 密码修改表单配置（基础配置）
+const passwordSchemasBase = [
   {
     field: 'oldPassword',
     label: '原密码',
-    component: 'NInputPassword',
+    component: 'NInput',
     required: true,
+    giProps: { span: 13 },
     componentProps: {
-      showPasswordOn: 'click',
       placeholder: '请输入原密码',
+      type: 'password',
+      showPasswordOn: 'click',
     },
+    rules: [
+      {
+        validator: (rule, value) => {
+          if (!value) {
+            return new Error('请输入原密码')
+          }
+          if (value.length < 8 || value.length > 20) {
+            return new Error('密码长度必须在8-20位之间')
+          }
+          return true
+        },
+        trigger: ['blur', 'change'],
+      },
+    ],
   },
   {
     field: 'newPassword',
     label: '新密码',
-    component: 'NInputPassword',
+    component: 'NInput',
     required: true,
+    giProps: { span: 13 },
     componentProps: {
-      showPasswordOn: 'click',
       placeholder: '请输入新密码',
+      type: 'password',
+      showPasswordOn: 'click',
     },
+    rules: [
+      {
+        validator: (rule, value) => {
+          if (!value) {
+            return new Error('请输入新密码')
+          }
+          if (value.length < 8 || value.length > 20) {
+            return new Error('密码长度必须在8-20位之间')
+          }
+          return true
+        },
+        trigger: ['blur', 'change'],
+      },
+    ],
   },
   {
     field: 'confirmPassword',
     label: '再次输入新密码',
-    component: 'NInputPassword',
+    component: 'NInput',
     required: true,
+    giProps: { span: 13 },
     componentProps: {
-      showPasswordOn: 'click',
       placeholder: '请再次输入新密码',
+      type: 'password',
+      showPasswordOn: 'click',
     },
   },
 ]
+
+// 密码修改表单配置（动态生成，支持密码一致性校验）
+export const passwordSchemas = (getNewPassword, setNewPassword) => {
+  return passwordSchemasBase.map((schema) => {
+    // 为新密码字段添加 onUpdateValue，更新响应式变量
+    if (schema.field === 'newPassword') {
+      return {
+        ...schema,
+        componentProps: {
+          ...schema.componentProps,
+          onUpdateValue: (value) => {
+            setNewPassword?.(value)
+          },
+        },
+      }
+    }
+    // 为确认密码字段添加校验规则，使用最新的新密码值
+    if (schema.field === 'confirmPassword') {
+      return {
+        ...schema,
+        rules: [
+          {
+            validator: (rule, value) => {
+              if (!value) {
+                return new Error('请再次输入新密码')
+              }
+              if (value.length < 8 || value.length > 20) {
+                return new Error('密码长度必须在8-20位之间')
+              }
+              // 使用响应式的 newPassword 值
+              const newPasswordValue = getNewPassword?.() || ''
+              if (value !== newPasswordValue) {
+                return new Error('两次输入的密码不一致')
+              }
+              return true
+            },
+            trigger: ['blur', 'change'],
+          },
+        ],
+      }
+    }
+    return schema
+  })
+}
 
 // Checkbox 字段列表
 const CHECKBOX_FIELDS = ['userScale', 'adBudget', 'adPreference', 'trafficPreference']

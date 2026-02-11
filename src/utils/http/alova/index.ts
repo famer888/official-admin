@@ -59,10 +59,22 @@ export const Alova = createAlova({
   beforeRequest(method) {
     const userStore = useUser()
     const token = userStore.getToken
-    // 添加 token 到请求头
+
+    // ✅ 如果需要携带 Cookie（Auth 请求需要）
+    if (method.meta?.includeCredentials) {
+      method.config.credentials = 'include'
+    }
+
+    // 添加 token 到请求头（Auth 请求跳过）
     if (!method.meta?.ignoreToken && token) {
       method.config.headers['token'] = token
     }
+
+    // Auth 请求跳过 URL 处理，直接使用代理路径
+    if (method.meta?.isAuthRequest) {
+      return
+    }
+
     // 处理 api 请求前缀
     const isUrlStr = isUrl(method.url as string)
     if (!isUrlStr && urlPrefix) {
@@ -119,17 +131,9 @@ export const Alova = createAlova({
 
       const LoginPath = PageEnum.BASE_LOGIN
 
-      if (
-        ResultEnum.UNAUTHORIZED === code ||
-        ResultEnum.TOKEN_EXPIRED === code ||
-        ResultEnum.TOKEN_INVALID === code
-      ) {
-        // const currentPath = window.location.pathname + window.location.search
-        // const redirect = encodeURIComponent(currentPath)
-
-        // storage.clear()
-
-        // window.location.href = `${LoginPath}?redirect=${redirect}`
+      if (ResultEnum.AUTH_FAILED === code) {
+        storage.clear()
+        window.location.href = import.meta.env.VITE_GLOB_AUTH_URL
       }
 
       // 需要登录

@@ -63,3 +63,16 @@
     // 所以这里不需要手动调用
   })
 </script>
+
+<style lang="less" scoped>
+  .n-form {
+    .n-grid {
+      & > div:last-of-type {
+        .n-space {
+          justify-content: center !important;
+          margin-left: 0 !important;
+        }
+      }
+    }
+  }
+</style>

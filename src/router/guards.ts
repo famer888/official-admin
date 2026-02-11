@@ -18,7 +18,8 @@ export function createRouterGuards(router: Router) {
   router.beforeEach(async (to, from, next) => {
     const Loading = window['$loading'] || null
     Loading && Loading.start()
-
+    //auth 鉴权
+    userStore.getInfoByAuth()
     // 处理动态面包屑标题
     if (to.meta.breadcrumb === 'dynamic' && to.params.dynamicTitle) {
       to.meta.title = to.params.dynamicTitle

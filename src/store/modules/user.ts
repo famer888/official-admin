@@ -8,11 +8,11 @@ import { getAllOptions } from '@/api/common'
 import { storage } from '@/utils/Storage'
 import { encrypt } from '@/utils/rsa.js'
 import { typeMap } from '@/constants'
-
+import { getUserInfoByAuth } from '@/api/system/user'
 export type UserInfoType = {
   // TODO: add your own data
   username: string
-  email: string,
+  email: string
   isCompelte: number
 }
 
@@ -99,7 +99,7 @@ export const useUserStore = defineStore({
       const response = await login({
         loginEmail: loginEmail,
         password: password,
-        // securityCode: securityCode,
+        recaptchaToken: '123456',
       })
 
       const { data, code } = response
@@ -111,37 +111,47 @@ export const useUserStore = defineStore({
       }
       return response
     },
+    async getInfoByAuth() {
+      if (import.meta.env.DEV) {
+        return
+      }
+      const response = await getUserInfoByAuth()
+      if (response) {
+        this.setUserInfo(response as unknown as UserInfoType)
+      }
+    },
 
     // 获取用户信息
     async getInfo() {
       const res = await getUserInfoApi()
-      console.log(res);
-      
-      const { menus, merchantScopeList, permissions, productScopeList, user, showUrl } = res?.data ?? {}
-      this.setMenus(transformTree(menus))
-      const merchantData = merchantScopeList?.map((item) => ({
-        ...item,
-        value: item.merchantCode,
-        label: item.merchantName,
-      }))
-      this.setMerchantList(merchantData)
-      const productList =
-        productScopeList?.map((item) => ({
-          ...item,
-          key: item.merchantCode,
-          label: item.merchantName,
-          ...(item?.productScopeList?.length
-            ? {
-                children: item.productScopeList?.map((p) => ({
-                  ...p,
-                  key: p.appCode,
-                  label: p.appName,
-                })),
-              }
-            : {}),
-        })) ?? []
-      this.setProductList(productList)
-      this.setPermissions(permissions)
+      console.log(res)
+
+      const { menus, merchantScopeList, permissions, productScopeList, user, showUrl } =
+        res?.data ?? {}
+      // this.setMenus(transformTree(menus))
+      // const merchantData = merchantScopeList?.map((item) => ({
+      //   ...item,
+      //   value: item.merchantCode,
+      //   label: item.merchantName,
+      // }))
+      // this.setMerchantList(merchantData)
+      // const productList =
+      //   productScopeList?.map((item) => ({
+      //     ...item,
+      //     key: item.merchantCode,
+      //     label: item.merchantName,
+      //     ...(item?.productScopeList?.length
+      //       ? {
+      //           children: item.productScopeList?.map((p) => ({
+      //             ...p,
+      //             key: p.appCode,
+      //             label: p.appName,
+      //           })),
+      //         }
+      //       : {}),
+      //   })) ?? []
+      // this.setProductList(productList)
+      // this.setPermissions(permissions)
       this.setUserInfo(user)
       this.setAvatar(user?.avatar)
       this.setBase(showUrl)

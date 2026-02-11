@@ -6,6 +6,28 @@ import { Alova } from '@/utils/http/alova/index'
 export function getUserInfo() {
   return Alova.Get<InResult>('/admin-api/system/menu/getPermissionInfo', { cacheFor: null })
 }
+/**
+ *
+ * @param params auth 鉴权
+ * @returns
+ */
+/**
+ * @description: 通过 Auth 服务获取用户信息（携带 Cookie）
+ */
+export function getUserInfoByAuth() {
+  const authUrl = import.meta.env.DEV
+    ? '/auth-api/api/userinfo'
+    : `${import.meta.env.VITE_GLOB_AUTH_API_URL}/api/userinfo`
+
+  return Alova.Get<InResult>(authUrl, {
+    cacheFor: null,
+    meta: {
+      includeCredentials: true, // 标记需要携带 Cookie
+      ignoreToken: true, // 忽略 token，使用 Cookie 认证
+      isAuthRequest: true, // 标记这是 Auth 请求，避免 URL 被处理
+    },
+  })
+}
 
 /* 用户登录 */
 export function login(params) {

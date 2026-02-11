@@ -18,7 +18,7 @@
 </template>
 
 <script setup>
-  import { ref, computed, watch, nextTick } from 'vue'
+  import { ref, computed, watchEffect, nextTick } from 'vue'
   import { useUserStore } from '@/store/modules/user'
   import { storeToRefs } from 'pinia'
   import ProForm from '@/components/ProForm/index.vue'
@@ -50,38 +50,51 @@
   // 处理后的用户信息（用于表单回显）
   const processedUserInfo = computed(() => processInitialValues(userInfoData.value))
 
+  // 行业详情选项（响应式）
+  const industryDetailOptions = ref([])
+
   // 个人信息表单配置（动态生成，支持行业联动）
   const infoSchemas = computed(() => {
-    const schemas = userInfoSchemas.map((schema) => ({
-      ...schema,
-      componentProps: { ...(schema.componentProps || {}) },
-    }))
+    const schemas = userInfoSchemas.map((schema) => {
+      const schemaCopy = {
+        ...schema,
+        componentProps: { ...(schema.componentProps || {}) },
+      }
+
+      // 如果是行业详情字段，使用响应式的 options
+      if (schema.field === 'subIndustry') {
+        schemaCopy.componentProps.options = industryDetailOptions.value
+      }
+
+      return schemaCopy
+    })
 
     // 行业大类/小类联动
     const industrySchema = schemas.find((item) => item.field === 'industry')
-    const industryDetailSchema = schemas.find((item) => item.field === 'subIndustry')
-
-    if (industrySchema && industryDetailSchema) {
-      const updateOptions = (category) => {
-        industryDetailSchema.componentProps.options = getIndustryDetailOptions(category)
-      }
-
+    if (industrySchema) {
       industrySchema.componentProps.onUpdateValue = async (val) => {
-        updateOptions(val)
-        // 使用 nextTick 确保 formRef 已初始化
+        industryDetailOptions.value = getIndustryDetailOptions(val)
         await nextTick()
-        if (formRef.value?.setFieldsValue) {
-          await formRef.value.setFieldsValue({ subIndustry: null })
-        }
-      }
-
-      // 如果有初始值，打开时先根据大类填充一次小类
-      if (userInfoData.value?.industry != null) {
-        updateOptions(userInfoData.value.industry)
+        formRef.value?.setFieldsValue?.({ subIndustry: null })
       }
     }
 
     return schemas
+  })
+
+  // 自动监听行业变化，更新选项和表单
+  watchEffect(async () => {
+    const industry = userInfoData.value?.industry
+    if (industry != null) {
+      industryDetailOptions.value = getIndustryDetailOptions(industry)
+      await nextTick()
+      if (formRef.value?.setProps) {
+        formRef.value.setProps(infoSchemas.value)
+      }
+      if (formRef.value?.setFieldsValue && userInfoData.value?.subIndustry) {
+        formRef.value.setFieldsValue({ subIndustry: userInfoData.value.subIndustry })
+      }
+    }
   })
 
   // 加载用户信息
