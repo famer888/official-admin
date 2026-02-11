@@ -1,4 +1,8 @@
 import {NTag} from 'naive-ui'
+  import usdtDefaultUrl from '@/assets/images/usdt-1.svg'
+  import usdtActiveUrl from '@/assets/images/usdt-2.svg'
+  import visaUrl from '@/assets/images/visa.svg'
+  import bitcoinUrl from '@/assets/images/bitcoin.svg'
 
 const orderStatus = {
     0: {
@@ -42,7 +46,7 @@ export const getColumns = () => {
             width: '200px',
             align: 'center',  
             render(row) {
-                const status = orderStatus[row.status]
+                const status = orderStatus[row.orderState]
                 return status ? h(NTag, {type: status.type}, {
                     default: () => status.text
                 }) : null
@@ -56,3 +60,53 @@ export const getColumns = () => {
         },
     ]
 }
+
+export const getPayMethod = (methods) => (
+    methods.map((item) => ({
+        label: item.label,
+        value: item.value,
+        icon: {
+            default: item.icon,
+            active: item.icon,
+        }
+    })).map(item => {
+        if(item.value === 0) {
+            item.icon.active = usdtActiveUrl
+            item.icon.default = usdtDefaultUrl
+        }else if(item.value === 1) {
+            item.icon.active = visaUrl
+            item.icon.default = visaUrl
+        }
+
+        return {
+            ...item
+        }
+    })
+)
+
+export const payAmountOptions = [
+    {
+        label: '200',
+        value: 200,
+    },
+    {
+        label: '300',
+        value: 300,
+    },
+    {
+        label: '500',
+        value: 500,
+    },
+    {
+        label: '1000',
+        value: 1000,
+    },
+    {
+        label: '1500',
+        value: 1500,
+    },
+    {
+        label: '大额充值',
+        value: null,
+    },
+]
