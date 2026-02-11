@@ -1,5 +1,5 @@
 <template>
- <div class="h-full w-full bg-red p-4 lg:p-6 -m-[10px] overflow-hidden relative" >
+ <div class="h-full w-full bg-red p-4 lg:p-6 -m-[10px] overflow-hidden relative">
     <!-- 详情弹窗 -->
     <AdDetailModal
       v-if="selectedAdData"
@@ -9,7 +9,7 @@
 
     <!-- 顶部横幅 -->
     <div
-      class="rounded-lg py-6 px-5 lg:py-8 lg:px-10 mb-6 relative overflow-hidden before:content-[''] before:absolute before:right-0 before:top-0 before:w-[300px] before:h-full before:bg-[url('data:image/svg+xml,%3Csvg%20width%3D%27200%27%20height%3D%27200%27%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%3E%3Cdefs%3E%3Cpattern%20id%3D%27grid%27%20width%3D%2740%27%20height%3D%2740%27%20patternUnits%3D%27userSpaceOnUse%27%3E%3Cpath%20d%3D%27M%2040%200%20L%200%200%200%2040%27%20fill%3D%27none%27%20stroke%3D%27rgba(255%2C255%2C255%2C0.1)%27%20stroke-width%3D%271%27%2F%3E%3C%2Fpattern%3E%3C%2Fdefs%3E%3Crect%20width%3D%27100%25%27%20height%3D%27100%25%27%20fill%3D%27url(%23grid)%27%20%2F%3E%3C%2Fsvg%3E')] before:bg-cover before:opacity-30"
+      :class="['rounded-lg py-6 px-5 lg:py-8 lg:px-10 mb-6 relative overflow-hidden before:content-[\'\'] before:absolute before:right-0 before:top-0 before:w-[300px] before:h-full', beforeBgClass, 'before:bg-cover before:opacity-30']"
       :style="backgroundStyle"
     >
       <div class="relative z-10 w-[60%] mx-auto">
@@ -23,11 +23,11 @@
     <div class="flex flex-col gap-5">
       <!-- 标题 -->
       <div class="pt-2">
-        <h2 class="text-xl lg:text-2xl font-semibold text-gray-800 m-0 text-left">广告类型</h2>
+        <h2 class="text-xl lg:text-2xl font-semibold text-[#455980] m-0 text-left">广告类型</h2>
       </div>
 
       <!-- 广告卡片网格 -->
-      <div class="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-3 gap-4 md:gap-6 w-full">
+      <div class="grid grid-cols-3 w-full" style="column-gap: 1.36%; row-gap: 9%;">
         <AdTypeCard
           v-for="adType in adTypesData"
           :key="adType.id"
@@ -36,11 +36,23 @@
         />
       </div>
     </div>
+
+    <!-- 分页组件 - 固定在右下角 -->
+    <div class="fixed bottom-6 right-6 z-10">
+      <n-pagination
+        v-model:page="pagination.page"
+        :page-size="pagination.pageSize"
+        :item-count="pagination.itemCount"
+        :show-size-picker="false"
+        @update:page="handlePageChange"
+      />
+    </div>
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent, ref, onMounted } from 'vue'
+<script setup lang="ts">
+import { ref, onMounted, computed, reactive } from 'vue'
+import { NPagination } from 'naive-ui'
 import AdTypeCard from './components/AdTypeCard.vue'
 import AdDetailModal from './components/AdDetailModal.vue'
 import type { AdTypeData } from './types'
@@ -48,65 +60,76 @@ import { getAdvertiseSupermarketPage } from '@/api/common'
 import { useGlobSetting } from '@/hooks/setting'
 import market6Icon from '@/assets/images/supermarket/market6.svg'
 
-export default defineComponent({
-  name: 'AdTypesPage',
-  components: {
-    AdTypeCard,
-    AdDetailModal,
-  },
-  setup() {
-    const selectedAdData = ref<AdTypeData | null>(null)
-    const adTypesData = ref<AdTypeData[]>([])
-    const { showUrl } = useGlobSetting()
+const selectedAdData = ref<AdTypeData | null>(null)
+const adTypesData = ref<AdTypeData[]>([])
+const { showUrl } = useGlobSetting()
 
-    const handleBuy = (adData: AdTypeData) => {
-      selectedAdData.value = adData
-    }
+// 分页配置
+const pagination = reactive({
+  page: 1,
+  pageSize: 6,
+  itemCount: 0,
+})
 
-    // 调用接口获取数据
-    onMounted(async () => {
-      try {
-        const res: any = await getAdvertiseSupermarketPage({ 
-          pageNum: 1, 
-          pageSize: 10 
-        })
-        console.log('广告超市配置列表数据:', res)
-        
-        if (res?.data?.dataList) {
-          // 将接口返回的数据映射为组件需要的数据格式
-          adTypesData.value = res.data.dataList.map((item: any) => ({
-            id: item.id?.toString() || '',
-            title: item.displayScenario || '',
-            description: item.advertiseDesc || '',
-            image: item.exampleUrl ? `${showUrl || ''}${item.exampleUrl}` : undefined,
-            buttonType: 'primary' as const,
-            buttonGhost: false,
-            // 保留原始数据，供详情页使用
-            ...item,
-          }))
-        }
-      } catch (error) {
-        console.error('获取广告超市配置列表失败:', error)
-      }
+const handleBuy = (adData: AdTypeData) => {
+  selectedAdData.value = adData
+}
+
+// 获取广告超市配置列表
+const fetchAdTypesData = async (pageNo: number = 1) => {
+  try {
+    const res: any = await getAdvertiseSupermarketPage({ 
+      pageNo, 
+      pageSize: pagination.pageSize 
     })
-
-    // 背景图样式
-    const backgroundStyle = {
-      backgroundImage: `url(${market6Icon})`,
-      backgroundSize: 'cover',
-      backgroundPosition: 'center',
-      backgroundRepeat: 'no-repeat',
-      minHeight: 'calc(100% + 30px)'
+    if (res?.data) {
+      // 更新分页信息
+      pagination.itemCount = res.data.total || 0
+      pagination.page = pageNo
+      
+      // 将接口返回的数据映射为组件需要的数据格式
+      if (res.data.dataList) {
+        adTypesData.value = res.data.dataList.map((item: any) => ({
+          id: item.id?.toString() || '',
+          title: item.displayScenario || '',
+          description: item.advertiseDesc || '',
+          image: item.exampleUrl ? `${showUrl || ''}${item.exampleUrl}` : undefined,
+          buttonType: 'primary' as const,
+          buttonGhost: false,
+          // 保留原始数据，供详情页使用
+          ...item,
+        }))
+      } else {
+        adTypesData.value = []
+      }
     }
+  } catch (error) {
+    console.error('获取广告超市配置列表失败:', error)
+  }
+}
 
-    return {
-      adTypesData,
-      handleBuy,
-      market6Icon,
-      backgroundStyle,
-      selectedAdData,
-    }
-  },
+// 处理分页变化
+const handlePageChange = (page: number) => {
+  fetchAdTypesData(page)
+}
+
+// 调用接口获取数据
+onMounted(() => {
+  fetchAdTypesData(1)
+})
+
+// 背景图样式
+const backgroundStyle = {
+  backgroundImage: `url(${market6Icon})`,
+  backgroundSize: 'cover',
+  backgroundPosition: 'center',
+  backgroundRepeat: 'no-repeat',
+  minHeight: 'calc(100% + 30px)'
+}
+
+// 计算 before 伪元素的背景图 class
+const beforeBgClass = computed(() => {
+  return `before:bg-[url('${market6Icon}')]`
 })
 </script>
 
