@@ -72,20 +72,20 @@
   </div>
 </template>
 
-<script setup lang="ts">
+<script setup>
 import { ref, onMounted, nextTick, watch } from 'vue'
 import { NButton, NTooltip } from 'naive-ui'
-import type { AdTypeData } from '../types'
 
-const props = defineProps<{
-  adData: AdTypeData
-}>()
+const props = defineProps({
+  adData: {
+    type: Object,
+    required: true,
+  },
+})
 
-const emit = defineEmits<{
-  buy: [adData: AdTypeData]
-}>()
+const emit = defineEmits(['buy'])
 
-const textRef = ref<HTMLDivElement>()
+const textRef = ref()
 const isTextTruncated = ref(false)
 
 const checkTextTruncated = () => {

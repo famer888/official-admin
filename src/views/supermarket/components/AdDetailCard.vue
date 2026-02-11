@@ -26,13 +26,15 @@
   </div>
 </template>
 
-<script setup lang="ts">
+<script setup>
 import { computed } from 'vue'
-import type { AdTypeData } from '../types'
 
-const props = defineProps<{
-  adData?: AdTypeData
-}>()
+const props = defineProps({
+  adData: {
+    type: Object,
+    default: undefined,
+  },
+})
 
 const infoFields = computed(() => {
   return [

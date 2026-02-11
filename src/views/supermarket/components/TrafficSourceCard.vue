@@ -12,18 +12,19 @@
   </div>
 </template>
 
-<script setup lang="ts">
+<script setup>
 import { computed, ref, watch, onMounted, onUnmounted, nextTick } from 'vue'
-import type { AdTypeData } from '../types'
 import { useECharts } from '@/hooks/web/useECharts'
-import type { EChartsOption } from 'echarts'
 
-const props = defineProps<{
-  adData?: AdTypeData
-}>()
+const props = defineProps({
+  adData: {
+    type: Object,
+    default: undefined,
+  },
+})
 
-const chartRef = ref<HTMLDivElement>()
-const { setOptions, getInstance } = useECharts(chartRef as any)
+const chartRef = ref()
+const { setOptions, getInstance } = useECharts(chartRef)
 
 const trafficSources = computed(() => {
   const chrome = props.adData?.trafficSourceChrome || 0
@@ -49,7 +50,7 @@ const trafficSources = computed(() => {
   ].filter(item => item.value > 0)
 })
 
-const getChartOption = (containerWidth: number): EChartsOption => {
+const getChartOption = (containerWidth) => {
   const chartData = trafficSources.value.map((item) => ({
     value: item.value,
     name: item.name,

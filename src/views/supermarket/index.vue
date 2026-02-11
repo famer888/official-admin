@@ -50,18 +50,17 @@
   </div>
 </template>
 
-<script setup lang="ts">
+<script setup>
 import { ref, onMounted, computed, reactive } from 'vue'
 import { NPagination } from 'naive-ui'
 import AdTypeCard from './components/AdTypeCard.vue'
 import AdDetailModal from './components/AdDetailModal.vue'
-import type { AdTypeData } from './types'
 import { getAdvertiseSupermarketPage } from '@/api/common'
 import { useGlobSetting } from '@/hooks/setting'
 import market6Icon from '@/assets/images/supermarket/market6.svg'
 
-const selectedAdData = ref<AdTypeData | null>(null)
-const adTypesData = ref<AdTypeData[]>([])
+const selectedAdData = ref(null)
+const adTypesData = ref([])
 const { showUrl } = useGlobSetting()
 
 // 分页配置
@@ -71,14 +70,14 @@ const pagination = reactive({
   itemCount: 0,
 })
 
-const handleBuy = (adData: AdTypeData) => {
+const handleBuy = (adData) => {
   selectedAdData.value = adData
 }
 
 // 获取广告超市配置列表
-const fetchAdTypesData = async (pageNo: number = 1) => {
+const fetchAdTypesData = async (pageNo = 1) => {
   try {
-    const res: any = await getAdvertiseSupermarketPage({ 
+    const res = await getAdvertiseSupermarketPage({ 
       pageNo, 
       pageSize: pagination.pageSize 
     })
@@ -89,12 +88,12 @@ const fetchAdTypesData = async (pageNo: number = 1) => {
       
       // 将接口返回的数据映射为组件需要的数据格式
       if (res.data.dataList) {
-        adTypesData.value = res.data.dataList.map((item: any) => ({
+        adTypesData.value = res.data.dataList.map((item) => ({
           id: item.id?.toString() || '',
           title: item.displayScenario || '',
           description: item.advertiseDesc || '',
           image: item.exampleUrl ? `${showUrl || ''}${item.exampleUrl}` : undefined,
-          buttonType: 'primary' as const,
+          buttonType: 'primary',
           buttonGhost: false,
           // 保留原始数据，供详情页使用
           ...item,
@@ -109,7 +108,7 @@ const fetchAdTypesData = async (pageNo: number = 1) => {
 }
 
 // 处理分页变化
-const handlePageChange = (page: number) => {
+const handlePageChange = (page) => {
   fetchAdTypesData(page)
 }
 

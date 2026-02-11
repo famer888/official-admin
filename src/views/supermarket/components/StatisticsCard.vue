@@ -45,13 +45,15 @@
   </div>
 </template>
 
-<script setup lang="ts">
+<script setup>
 import { computed } from 'vue'
-import type { AdTypeData } from '../types'
 
-const props = defineProps<{
-  adData?: AdTypeData
-}>()
+const props = defineProps({
+  adData: {
+    type: Object,
+    default: undefined,
+  },
+})
 
 // 计算圆形图的进度百分比（基于最大值）
 const maxClicks = computed(() => {
@@ -88,18 +90,18 @@ const averageExposurePercentage = computed(() => {
 
 // 计算圆形图的 stroke-dashoffset
 const circumference = 326.73 // 2 * π * 52
-const getStrokeDashoffset = (percentage: number) => {
+const getStrokeDashoffset = (percentage) => {
   return circumference - (circumference * percentage) / 100
 }
 
-const formatExposure = (value: number) => {
+const formatExposure = (value) => {
   if (value >= 10000) {
     return `${(value / 10000).toFixed(0)} W`
   }
   return value.toString()
 }
 
-const formatExposureWithUnit = (value: number) => {
+const formatExposureWithUnit = (value) => {
   if (!value) return '0/日'
   if (value >= 10000) {
     return `${(value / 10000).toFixed(0)}万/日`

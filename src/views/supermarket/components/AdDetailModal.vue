@@ -38,7 +38,7 @@
   </div>
 </template>
 
-<script setup lang="ts">
+<script setup>
 import { computed, onMounted, onUnmounted, ref } from 'vue'
 import { NButton, NIcon } from 'naive-ui'
 import { LeftOutlined } from '@vicons/antd'
@@ -47,16 +47,16 @@ import StatisticsCard from './StatisticsCard.vue'
 import TrafficSourceCard from './TrafficSourceCard.vue'
 import PriceCard from './PriceCard.vue'
 import RegionalTrafficCard from './RegionalTrafficCard.vue'
-import type { AdTypeData } from '../types'
 import { useGlobSetting } from '@/hooks/setting'
 
-const props = defineProps<{
-  adData: AdTypeData
-}>()
+const props = defineProps({
+  adData: {
+    type: Object,
+    required: true,
+  },
+})
 
-const emit = defineEmits<{
-  close: []
-}>()
+const emit = defineEmits(['close'])
 
 const { showUrl } = useGlobSetting()
 
