@@ -2,7 +2,7 @@
   <div class="py-5 w-full md:w-1/2">
     <div class="mb-6 px-4 py-3 bg-gray-100 rounded">
       <span class="font-medium text-gray-600 mr-2">账户:</span>
-      <span class="text-gray-800">{{ userInfo.email || userInfo.username }}</span>
+      <span class="text-gray-800">{{ userInfo.loginEmail }}</span>
     </div>
 
     <pro-form
@@ -88,10 +88,10 @@
   const loadUserInfo = async () => {
     try {
       loading.value = true
-      // const res = await getUserInfo()
-      // if (res?.code === 0) {
-      //   userInfoData.value = res.data || {}
-      // }
+      const res = await getUserInfo()
+      if (res?.code === 0) {
+        userInfoData.value = res.data || {}
+      }
     } catch (error) {
       console.error('加载用户信息失败：', error)
     } finally {

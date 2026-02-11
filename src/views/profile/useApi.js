@@ -1,8 +1,8 @@
 import { Alova } from '@/utils/http/alova/index'
 
-/* 获取个人信息 */
+/* 获取用户详情 */
 export function getUserInfo() {
-  return Alova.Get('/user/getUserInfo', { cacheFor: null })
+  return Alova.Get('/admin-api/system/user/getUserDetail')
 }
 
 /* 更新个人信息 */
