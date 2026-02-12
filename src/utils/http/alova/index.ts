@@ -20,7 +20,7 @@ const mockAdapter = createAlovaMockAdapter([...mocks], {
   enable: useMock,
 
   // 非模拟请求适配器，用于未匹配mock接口时发送请求
-  httpAdapter: adapterFetch(),
+  httpAdapter: adapterFetch({ credentials: 'include' }),
 
   // mock接口响应延迟，单位毫秒
   delay: 1000,
@@ -61,9 +61,9 @@ export const Alova = createAlova({
     const token = userStore.getToken
 
     // ✅ 如果需要携带 Cookie（Auth 请求需要）
-    if (method.meta?.includeCredentials) {
-      method.config.credentials = 'include'
-    }
+    // if (method.meta?.includeCredentials) {
+    method.config.credentials = 'include'
+    // }
 
     // 添加 token 到请求头（Auth 请求跳过）
     if (!method.meta?.ignoreToken && token) {
