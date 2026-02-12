@@ -15,9 +15,7 @@ export function getUserInfo() {
  * @description: 通过 Auth 服务获取用户信息（携带 Cookie）
  */
 export function getUserInfoByAuth() {
-  const authUrl = import.meta.env.DEV
-    ? '/auth-api/admin-api/auth/sso/userinfo'
-    : `${import.meta.env.VITE_GLOB_AUTH_URL}/admin-api/auth/sso/userinfo`
+  const authUrl = `${window.location.origin}/admin-api/auth/sso/userinfo`
 
   return Alova.Get<InResult>(authUrl, {
     cacheFor: null,
@@ -34,9 +32,7 @@ export function getUserInfoByAuth() {
  * @returns
  */
 export function logoutAuth() {
-  const authUrl = import.meta.env.DEV
-    ? '/auth-api/admin-api/auth/sso/logout'
-    : `${import.meta.env.VITE_GLOB_AUTH_URL}/admin-api/auth/sso/logout`
+  const authUrl = `${window.location.origin}/admin-api/auth/sso/logout`
   return Alova.Get(authUrl, {
     cacheFor: null,
     meta: {
