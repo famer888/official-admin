@@ -240,7 +240,7 @@
     }
 
     .n-layout-header.n-layout-header--absolute-positioned {
-      z-index: 11;
+      z-index: 100;
     }
 
     .n-layout-footer {

@@ -283,7 +283,7 @@
     box-shadow: 0 1px 4px rgb(0 21 41 / 8%);
     transition: all 0.2s ease-in-out;
     width: 100%;
-    z-index: 11;
+    z-index: 100;
 
     &-left {
       display: flex;
@@ -466,7 +466,7 @@
     top: 0;
     right: 0;
     left: 200px;
-    z-index: 11;
+    z-index: 100;
   }
 
   //::v-deep(.menu-router-link) {

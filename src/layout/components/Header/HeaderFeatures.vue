@@ -5,7 +5,12 @@
       <div class="flex flex-col items-center justify-center px-3 py-2 cursor-pointer rounded transition-all relative hover:bg-white/8" @click="handleMessageClick">
         <div class="relative w-[29px] h-[29px] flex items-center justify-center mb-1">
           <img :src="layout1Icon" alt="站内消息" class="w-[29px] h-[29px] block" />
-          <n-badge :value="state.messageCount" :max="99" class="absolute -top-1 -right-1" />
+          <n-badge 
+            :value="state.messageCount" 
+            :max="99" 
+            class="absolute message-badge"
+            :class="{ 'message-badge-double': state.messageCount >= 10 }"
+          />
         </div>
         <span class="text-xs leading-tight whitespace-nowrap text-[#455980] transition-colors" :class="{ 'text-[#3A82F9]': activeFeature === 'message' }">站内消息</span>
       </div>
@@ -59,7 +64,7 @@
         </div>
       </div>
     </div>
-    <div class="w-px h-10 bg-[#e8e8e8] mx-1"></div>
+    <div class="w-px h-10 bg-[#DEE5EE] mx-1"></div>
     <!-- USD余额 -->
     <div class="flex flex-col items-center justify-center px-3 py-2 cursor-pointer rounded transition-all relative hover:bg-white/8">
       <div class="relative w-[29px] h-[29px] flex items-center justify-center mb-1">
@@ -67,7 +72,7 @@
       </div>
       <span class="text-xs leading-tight whitespace-nowrap text-[#EB445A] transition-colors">USD:{{ state.usdBalance }}</span>
     </div>
-    <div class="w-px h-10 bg-[#e8e8e8] mx-1"></div>
+    <div class="w-px h-10 bg-[#DEE5EE] mx-1"></div>
     <!-- 用户ID -->
     <div class="flex flex-col items-center justify-center px-3 py-2 cursor-pointer rounded transition-all relative hover:bg-white/8">
       <div class="relative w-[29px] h-[29px] flex items-center justify-center mb-1">
@@ -75,7 +80,7 @@
       </div>
       <span class="text-xs leading-tight whitespace-nowrap text-[#455980] transition-colors" :class="{ 'text-[#3A82F9]': activeFeature === 'userId' }">ID:{{ state.userId }}</span>
     </div>
-    <div class="w-px h-10 bg-[#e8e8e8] mx-1"></div>
+    <div class="w-px h-10 bg-[#DEE5EE] mx-1"></div>
     <!-- 常见问题 -->
     <div class="relative" ref="faqTriggerRef">
       <div class="flex flex-col items-center justify-center px-3 py-2 cursor-pointer rounded transition-all relative hover:bg-white/8" @click="handleFaqClick">
@@ -85,7 +90,7 @@
         <span class="text-xs leading-tight whitespace-nowrap text-[#455980] transition-colors" :class="{ 'text-[#3A82F9]': activeFeature === 'faq' }">常见问题</span>
       </div>
     </div>
-    <div class="w-px h-10 bg-[#e8e8e8] mx-1"></div>
+    <div class="w-px h-10 bg-[#DEE5EE] mx-1"></div>
     <!-- 登出 -->
     <div class="flex flex-col items-center justify-center px-3 py-2 cursor-pointer rounded transition-all relative hover:bg-white/8" @click="handleLogout">
       <div class="relative w-[29px] h-[29px] flex items-center justify-center mb-1">
@@ -368,5 +373,41 @@ defineExpose({
   userId: computed(() => state.userId),
 })
 </script>
+
+<style lang="less" scoped>
+.message-badge {
+  top: -6px !important;
+  right: -6px !important;
+  
+  :deep(.n-badge-sup) {
+    min-width: 18px !important;
+    height: 18px !important;
+    border-radius: 9px !important;
+    padding: 0 4px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    
+    .n-badge-sup__content {
+      font-size: 11px !important;
+      line-height: 1 !important;
+    }
+  }
+  
+  &.message-badge-double {
+    :deep(.n-badge-sup) {
+      min-width: 18px !important;
+      max-width: 18px !important;
+      width: 18px !important;
+      padding: 0 2px !important;
+      
+      .n-badge-sup__content {
+        font-size: 9px !important;
+        line-height: 1 !important;
+      }
+    }
+  }
+}
+</style>
 
 
