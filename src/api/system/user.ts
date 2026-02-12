@@ -16,8 +16,8 @@ export function getUserInfo() {
  */
 export function getUserInfoByAuth() {
   const authUrl = import.meta.env.DEV
-    ? '/auth-api/api/userinfo'
-    : `${import.meta.env.VITE_GLOB_AUTH_API_URL}/api/userinfo`
+    ? '/auth-api/admin-api/auth/sso/userinfo'
+    : `${import.meta.env.VITE_GLOB_AUTH_URL}/admin-api/auth/sso/userinfo`
 
   return Alova.Get<InResult>(authUrl, {
     cacheFor: null,
@@ -35,8 +35,8 @@ export function getUserInfoByAuth() {
  */
 export function logoutAuth() {
   const authUrl = import.meta.env.DEV
-    ? '/auth-api/api/logout'
-    : `${import.meta.env.VITE_GLOB_AUTH_API_URL}/api/logout`
+    ? '/auth-api/admin-api/auth/sso/logout'
+    : `${import.meta.env.VITE_GLOB_AUTH_URL}/admin-api/auth/sso/logout`
   return Alova.Get(authUrl, {
     cacheFor: null,
     meta: {
