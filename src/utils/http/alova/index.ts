@@ -131,7 +131,12 @@ export const Alova = createAlova({
 
       const LoginPath = PageEnum.BASE_LOGIN
 
-      if (ResultEnum.AUTH_FAILED === code) {
+      if (
+        ResultEnum.AUTH_FAILED === code ||
+        ResultEnum.TOKEN_INVALID === code ||
+        ResultEnum.TOKEN_EXPIRED === code ||
+        ResultEnum.UNAUTHORIZED === code
+      ) {
         storage.clear()
         window.location.href = import.meta.env.VITE_GLOB_AUTH_URL
       }
