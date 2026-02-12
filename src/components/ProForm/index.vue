@@ -2,9 +2,11 @@
   <n-spin :show="loading">
     <BasicForm
       ref="formRef"
-      submitButtonText="提交"
-      resetButtonText="取消"
       class="pro-form pt-3"
+      :submit-button-text="formProps.submitButtonText || '提交'"
+      :reset-button-text="formProps.resetButtonText || '取消'"
+      :submit-button-options="formProps.submitButtonOptions"
+      :reset-button-options="formProps.resetButtonOptions"
       @register="register"
       @submit="handleSubmit"
       @reset="handleClose"

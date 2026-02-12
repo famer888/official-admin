@@ -37,8 +37,9 @@ export function createRouterGuards(router: Router) {
     }
 
     const token = storage.get(ACCESS_TOKEN)
+    //是否开发环境，开发环境不进行鉴权
 
-    if (!token) {
+    if (!token && import.meta.env.DEV) {
       // You can access without permissions. You need to set the routing meta.ignoreAuth to true
       if (to.meta.ignoreAuth) {
         next()

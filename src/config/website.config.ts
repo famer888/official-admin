@@ -5,5 +5,5 @@ export const websiteConfig = Object.freeze({
   title: 'TI后台管理',
   logo: logoImage,
   loginImage: loginImage,
-  loginDesc: '数据中心后台管理系统',
+  loginDesc: '广告主后台管理系统',
 })

@@ -37,6 +37,15 @@
     gridProps: { cols: 24, xGap: 16, yGap: 16 },
     submitButtonText: '保存',
     showResetButton: false,
+    submitButtonOptions: {
+      size: 'large', // 明显大一号
+      type: 'primary', // 按钮类型
+      style: {
+        width: '200px', // 宽一点
+        borderRadius: '4px', // 做成圆角胶囊
+        fontWeight: 500,
+      },
+    },
   }
 
   // 修改密码
