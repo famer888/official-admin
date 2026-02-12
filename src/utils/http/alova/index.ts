@@ -20,7 +20,7 @@ const mockAdapter = createAlovaMockAdapter([...mocks], {
   enable: useMock,
 
   // 非模拟请求适配器，用于未匹配mock接口时发送请求
-  httpAdapter: adapterFetch(),
+  httpAdapter: adapterFetch({ credentials: 'include' }),
 
   // mock接口响应延迟，单位毫秒
   delay: 1000,
