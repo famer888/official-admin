@@ -28,6 +28,24 @@ export function getUserInfoByAuth() {
     },
   })
 }
+/**
+ *
+ * @param params 退出登录
+ * @returns
+ */
+export function logoutAuth() {
+  const authUrl = import.meta.env.DEV
+    ? '/auth-api/api/logout'
+    : `${import.meta.env.VITE_GLOB_AUTH_API_URL}/api/logout`
+  return Alova.Get(authUrl, {
+    cacheFor: null,
+    meta: {
+      includeCredentials: true, // 标记需要携带 Cookie
+      ignoreToken: true, // 忽略 token，使用 Cookie 认证
+      isAuthRequest: true, // 标记这是 Auth 请求，避免 URL 被处理
+    },
+  })
+}
 
 /* 用户登录 */
 export function login(params) {

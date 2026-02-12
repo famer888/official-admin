@@ -1,26 +1,19 @@
 <template>
-  <div class="messages">
+  <div class="py-5">
     <n-list v-if="messageList.length">
       <n-list-item v-for="item in messageList" :key="item.messageId">
-        <div class="message-item" @click="handleMarkRead(item)">
-          <div class="message-icon">
-            <n-icon
-              :size="24"
-              :color="getMessageIconColor(item.bizType)"
-              v-if="getMessageType(item.bizType) === 'warning'"
-            >
-              <WarningOutlined />
-            </n-icon>
-            <n-icon :size="24" color="#18a058" v-else-if="getMessageType(item.bizType) === 'info'">
-              <InfoCircleOutlined />
-            </n-icon>
-            <n-icon :size="24" color="#2080f0" v-else>
-              <BellOutlined />
-            </n-icon>
+        <div
+          class="flex px-4 items-start py-3 border-b border-gray-200 transition-colors hover:bg-gray-50"
+        >
+          <div class="mr-3 mt-0.5 shrink-0">
+            <img :src="getMessageType(item.bizType)" />
           </div>
-          <div class="message-content">
-            <div class="message-text">{{ item.message }}</div>
-            <div class="message-status" :class="item.isRead === 1 ? 'read' : 'unread'">
+          <div class="flex-1 flex justify-between items-center min-w-0">
+            <div class="flex-1 text-gray-600 leading-relaxed">{{ item.message }}</div>
+            <div
+              class="ml-4 text-xs shrink-0"
+              :class="item.isRead === 1 ? 'text-green-600' : 'text-red-500 font-medium'"
+            >
               {{ item.isRead === 1 ? '已读' : '未读' }}
             </div>
           </div>
@@ -36,9 +29,9 @@
       :item-count="messageTotal"
       :page-sizes="[10, 20, 50]"
       show-size-picker
+      class="mt-5 flex justify-end"
       @update:page="loadMessages"
       @update:page-size="loadMessages"
-      class="pagination"
     />
   </div>
 </template>
@@ -46,8 +39,9 @@
 <script setup>
   import { ref, onMounted } from 'vue'
   import { getMessageList, markMessageRead, getUnreadCount } from '../useApi'
-  import { WarningOutlined, InfoCircleOutlined, BellOutlined } from '@vicons/antd'
-
+  import msgType from '@/assets/svgIcon/msg-type.svg'
+  import msgType1 from '@/assets/svgIcon/msg-type2.svg'
+  import msgType2 from '@/assets/svgIcon/msg-type3.svg'
   const emit = defineEmits(['update:unread-count'])
 
   const messageList = ref([])
@@ -60,17 +54,12 @@
 
   // 根据 bizType 获取消息类型
   const getMessageType = (bizType) => {
-    // 根据业务类型判断消息类型，可以根据实际业务调整
-    // 1: warning, 2: info, 其他: default
-    if (bizType === 1) return 'warning'
-    if (bizType === 2) return 'info'
-    return 'default'
-  }
-
-  // 获取消息图标颜色
-  const getMessageIconColor = (bizType) => {
-    const type = getMessageType(bizType)
-    return type === 'warning' ? '#f53f3f' : '#18a058'
+    let iconMap = {
+      1: msgType,
+      2: msgType1,
+      3: msgType2,
+    }
+    return iconMap[bizType]
   }
 
   // 加载未读消息数量
@@ -86,37 +75,37 @@
     }
   }
 
-  // 加载消息列表
+  // 加载消息列表，并自动将本页未读消息标记为已读
   const loadMessages = async () => {
     try {
       const res = await getMessageList({
         ...messageParams.value,
       })
       if (res?.code === 0) {
-        messageList.value = res.data?.dataList || []
+        const list = res.data?.dataList || []
+        messageList.value = list
         messageTotal.value = res.data?.total || 0
-        // 加载未读数量
-        await loadUnreadCount()
-      }
-    } catch (error) {
-      console.error('加载消息列表失败：', error)
-    }
-  }
 
-  // 标记消息为已读
-  const handleMarkRead = async (item) => {
-    if (item.isRead === 1) return
-    try {
-      const res = await markMessageRead({ messageIds: [item.messageId] })
-      if (res?.code === 0) {
-        item.isRead = 1
-        unreadCount.value = Math.max(0, unreadCount.value - 1)
-        emit('update:unread-count', unreadCount.value)
+        // 本页中所有未读消息的 ID
+        const unreadIds = list.filter((m) => m.isRead === 0).map((m) => m.messageId)
+
+        if (unreadIds.length) {
+          try {
+            await markMessageRead({ messageIds: unreadIds })
+            // 本地也更新为已读
+            messageList.value = list.map((m) =>
+              unreadIds.includes(m.messageId) ? { ...m, isRead: 1 } : m
+            )
+          } catch (error) {
+            console.error('批量标记消息已读失败：', error)
+          }
+        }
+
         // 重新加载未读数量
         await loadUnreadCount()
       }
     } catch (error) {
-      console.error('标记消息已读失败：', error)
+      console.error('加载消息列表失败：', error)
     }
   }
 
@@ -129,7 +118,6 @@
   // 暴露方法供父组件调用
   defineExpose({
     loadMessages,
-    getUnreadCount: getUnreadCountValue,
   })
 
   // 初始化加载
@@ -137,60 +125,3 @@
     loadMessages()
   })
 </script>
-
-<style lang="less" scoped>
-  .messages {
-    padding: 20px 0;
-
-    .message-item {
-      display: flex;
-      align-items: flex-start;
-      padding: 12px 0;
-      border-bottom: 1px solid #ebeef5;
-      cursor: pointer;
-      transition: background-color 0.2s;
-
-      &:hover {
-        background-color: #f5f7fa;
-      }
-
-      .message-icon {
-        margin-right: 12px;
-        margin-top: 2px;
-      }
-
-      .message-content {
-        flex: 1;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-
-        .message-text {
-          flex: 1;
-          color: #606266;
-          line-height: 1.5;
-        }
-
-        .message-status {
-          margin-left: 16px;
-          font-size: 12px;
-
-          &.read {
-            color: #67c23a;
-          }
-
-          &.unread {
-            color: #f56c6c;
-            font-weight: 500;
-          }
-        }
-      }
-    }
-
-    .pagination {
-      margin-top: 20px;
-      display: flex;
-      justify-content: flex-end;
-    }
-  }
-</style>

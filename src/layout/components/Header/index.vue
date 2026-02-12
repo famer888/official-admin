@@ -61,21 +61,7 @@
       </n-breadcrumb>
     </div>
     <div class="layout-header-right">
-      <div
-        class="layout-header-trigger layout-header-trigger-min"
-        v-for="item in iconList"
-        :key="item.icon"
-      >
-        <n-tooltip placement="bottom">
-          <template #trigger>
-            <n-icon size="18">
-              <component :is="item.icon" v-on="item.eventObject || {}" />
-            </n-icon>
-          </template>
-          <span>{{ item.tips }}</span>
-        </n-tooltip>
-      </div>
-      <!-- 功能区域 -->
+
       <HeaderFeatures @logout="doLogout" />
     </div>
   </div>
@@ -196,17 +182,16 @@
           negativeText: '取消',
           onPositiveClick: () => {
             userStore.logout().then(() => {
-              message.success('成功退出登录')
               // 移除标签页
               localStorage.removeItem(TABS_ROUTES)
-              router
-                .replace({
-                  name: 'Login',
-                  query: {
-                    redirect: route.fullPath,
-                  },
-                })
-                .finally(() => location.reload())
+              // router
+              //   .replace({
+              //     name: 'Login',
+              //     query: {
+              //       redirect: route.fullPath,
+              //     },
+              //   })
+              //   .finally(() => location.reload())
             })
           },
           onNegativeClick: () => {},
@@ -231,28 +216,6 @@
           }
         }
       }
-
-      // 图标列表
-      const iconList = [
-        // {
-        //   icon: 'SearchOutlined',
-        //   tips: '搜索',
-        // },
-        // {
-        //   icon: 'GithubOutlined',
-        //   tips: 'github',
-        //   eventObject: {
-        //     click: () => window.open('https://github.com/jekip/naive-ui-admin'),
-        //   },
-        // },
-        // {
-        //   icon: 'LockOutlined',
-        //   tips: '锁屏',
-        //   eventObject: {
-        //     click: () => useLockscreen.setLock(true),
-        //   },
-        // },
-      ]
       const avatarOptions = [
         // {
         //   label: '个人设置',
@@ -288,7 +251,6 @@
 
       return {
         ...toRefs(state),
-        iconList,
         toggleFullScreen,
         doLogout,
         route,
@@ -408,6 +370,74 @@
     }
   }
 
+  .header-features {
+    display: flex;
+    align-items: center;
+    height: 64px;
+    margin: 0 8px;
+
+    .header-feature-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 0 12px;
+      cursor: pointer;
+      transition: all 0.2s ease-in-out;
+      position: relative;
+
+      &:hover {
+        background: hsla(0, 0%, 100%, 0.08);
+      }
+
+      .feature-icon-wrapper {
+        position: relative;
+        width: 29px;
+        height: 29px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 4px;
+
+        .feature-icon-img {
+          width: 29px;
+          height: 29px;
+          display: block;
+        }
+
+        .feature-badge {
+          position: absolute;
+          top: -4px;
+          right: -4px;
+        }
+      }
+
+      .feature-text {
+        font-size: 12px;
+        line-height: 1.2;
+        white-space: nowrap;
+
+        &.feature-text-message {
+          color: #3a82f9;
+        }
+
+        &.feature-text-blue {
+          color: #455980;
+        }
+
+        &.feature-text-red {
+          color: #eb445a;
+        }
+      }
+    }
+
+    .feature-divider {
+      width: 1px;
+      height: 40px;
+      background: #e8e8e8;
+      margin: 0 4px;
+    }
+  }
 
   .layout-header-light {
     background: #fff;

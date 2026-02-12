@@ -37,8 +37,9 @@ export function createRouterGuards(router: Router) {
     }
 
     const token = storage.get(ACCESS_TOKEN)
+    //是否开发环境，开发环境不进行鉴权
 
-    if (!token) {
+    if (!token && import.meta.env.DEV) {
       // You can access without permissions. You need to set the routing meta.ignoreAuth to true
       if (to.meta.ignoreAuth) {
         next()
@@ -68,9 +69,9 @@ export function createRouterGuards(router: Router) {
       return
     }
 
-    const userInfo = await userStore.getInfo()
+    await userStore.getInfo()
 
-    const routes = await asyncRouteStore.generateRoutes(userInfo?.data?.permissions)
+    const routes = await asyncRouteStore.generateRoutes([])
 
     // 动态添加可访问路由表
     routes.forEach((item) => {

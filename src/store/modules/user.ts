@@ -3,7 +3,7 @@ import { store } from '@/store'
 import { ACCESS_TOKEN, CURRENT_USER, IS_SCREENLOCKED } from '@/store/mutation-types'
 import { ResultEnum } from '@/enums/httpEnum'
 import { transformTree } from '@/utils'
-import { getUserInfo as getUserInfoApi, login, logout as out } from '@/api/system/user'
+import { getUserInfo as getUserInfoApi, login, logoutAuth, logout as out } from '@/api/system/user'
 import { getAllOptions } from '@/api/common'
 import { storage } from '@/utils/Storage'
 import { encrypt } from '@/utils/rsa.js'
@@ -109,6 +109,7 @@ export const useUserStore = defineStore({
         storage.set(IS_SCREENLOCKED, false)
         this.setToken(data.token)
       }
+
       return response
     },
     async getInfoByAuth() {
@@ -169,12 +170,14 @@ export const useUserStore = defineStore({
     // 登出
     async logout() {
       try {
-        const res = await out({})
-        if (res?.code === 0) {
+        const res = await logoutAuth()
+        if (res) {
+          $message.success('成功退出登录')
           this.setPermissions([])
           this.setUserInfo({ username: '', email: '' })
           storage.remove(ACCESS_TOKEN)
           storage.remove(CURRENT_USER)
+          await this.getInfoByAuth()
         }
       } catch (error) {}
     },

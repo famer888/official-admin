@@ -1,54 +1,57 @@
 <template>
-  <div class="header-features">
+  <div class="relative flex items-center h-16" ref="headerFeaturesRef">
     <!-- 站内消息 -->
-    <div class="message-trigger-wrapper" ref="messageTriggerRef">
-      <div class="header-feature-item" @click="handleMessageClick">
-        <div class="feature-icon-wrapper">
-          <img :src="layout1Icon" alt="站内消息" class="feature-icon-img" />
-          <n-badge :value="state.messageCount" :max="99" class="feature-badge" />
+    <div class="relative" ref="messageTriggerRef">
+      <div class="flex flex-col items-center justify-center px-3 py-2 cursor-pointer rounded transition-all relative hover:bg-white/8" @click="handleMessageClick">
+        <div class="relative w-[29px] h-[29px] flex items-center justify-center mb-1">
+          <img :src="layout1Icon" alt="站内消息" class="w-[29px] h-[29px] block" />
+          <n-badge :value="state.messageCount" :max="99" class="absolute -top-1 -right-1" />
         </div>
-        <span class="feature-text" :class="{ 'active': activeFeature === 'message' }">站内消息</span>
+        <span class="text-xs leading-tight whitespace-nowrap text-[#455980] transition-colors" :class="{ 'text-[#3A82F9]': activeFeature === 'message' }">站内消息</span>
       </div>
       
       <!-- 消息弹窗 -->
       <div 
         v-if="showMessagePopover" 
-        class="message-popover-content"
+        ref="messagePopoverRef"
+        class="absolute top-full left-1/2 -translate-x-1/2 w-[290px] bg-white rounded-lg shadow-lg overflow-hidden z-[1000] mt-2 flex flex-col"
         @click.stop
       >
         <!-- 消息列表 -->
-        <div class="message-list">
-          <div v-if="loadingMessages" class="message-loading">
+        <div class="max-h-[300px] overflow-y-auto p-0">
+          <div v-if="loadingMessages" class="py-10 px-5 text-center text-[#86909c] text-sm">
             加载中...
           </div>
           <template v-else>
             <div
               v-for="(msg, index) in displayedMessages"
               :key="msg.messageId || index"
-              class="message-item"
-              :class="{ 'active': selectedMessageIndex === index }"
+              class="flex items-center h-[46px] px-4 border-b border-[#DEE9FF] cursor-pointer transition-colors last:border-b-0"
+              :class="{ 'bg-[#DEE9FF]': selectedMessageIndex === index || hoveredMessageIndex === index }"
               @click="handleMessageItemClick(index)"
+              @mouseenter="hoveredMessageIndex = index"
+              @mouseleave="hoveredMessageIndex = -1"
             >
-              <div class="message-icon">
-                <img src="@/assets/images/money.svg" alt="icon" />
+              <div class="w-7 h-7 flex-shrink-0 flex items-center justify-center mr-[7px]">
+                <img src="@/assets/images/money.svg" alt="icon" class="w-6 h-6" />
               </div>
-              <div class="message-content">
-                <div class="message-text">{{ msg.message }}</div>
+              <div class="flex-1 min-w-0 overflow-hidden flex items-center">
+                <div class="text-[15px] font-medium leading-[1.4] whitespace-nowrap overflow-hidden text-ellipsis" :class="selectedMessageIndex === index || hoveredMessageIndex === index ? 'text-[#3A82F9]' : 'text-[#455980]'">{{ msg.message }}</div>
               </div>
             </div>
-            <div v-if="state.messages.length === 0" class="message-empty">
+            <div v-if="state.messages.length === 0" class="py-10 px-5 text-center text-[#86909c] text-sm">
               暂无消息
             </div>
           </template>
         </div>
         
         <!-- 底部信息 -->
-        <div class="message-footer">
-          <div class="message-count">共有{{ state.total }}条未读消息</div>
+        <div class="py-3 px-4 border-t border-[#f0f0f0] flex flex-col items-center justify-center bg-white">
+          <div class="text-[13px] text-[#86909c] mb-3">共有{{ state.total }}条未读消息</div>
           <button
             v-if="state.total > 0"
             @click="toggleShowAll"
-            class="view-all-btn"
+            class="w-[192px] h-10 bg-[#3A82F9] border-none text-white text-sm rounded cursor-pointer transition-opacity outline-none hover:opacity-90 disabled:opacity-60 disabled:cursor-not-allowed focus:outline-none"
             :disabled="loadingMessages"
           >
             {{ loadingMessages ? '加载中...' : '查看全部消息' }}
@@ -56,50 +59,52 @@
         </div>
       </div>
     </div>
-    <div class="feature-divider"></div>
+    <div class="w-px h-10 bg-[#e8e8e8] mx-1"></div>
     <!-- USD余额 -->
-    <div class="header-feature-item">
-      <div class="feature-icon-wrapper">
-        <img :src="layout2Icon" alt="USD余额" class="feature-icon-img" />
+    <div class="flex flex-col items-center justify-center px-3 py-2 cursor-pointer rounded transition-all relative hover:bg-white/8">
+      <div class="relative w-[29px] h-[29px] flex items-center justify-center mb-1">
+        <img :src="layout2Icon" alt="USD余额" class="w-[29px] h-[29px] block" />
       </div>
-      <span class="feature-text feature-text-red">USD:{{ state.usdBalance }}</span>
+      <span class="text-xs leading-tight whitespace-nowrap text-[#EB445A] transition-colors">USD:{{ state.usdBalance }}</span>
     </div>
-    <div class="feature-divider"></div>
+    <div class="w-px h-10 bg-[#e8e8e8] mx-1"></div>
     <!-- 用户ID -->
-    <div class="header-feature-item">
-      <div class="feature-icon-wrapper">
-        <img :src="layout3Icon" alt="用户ID" class="feature-icon-img" />
+    <div class="flex flex-col items-center justify-center px-3 py-2 cursor-pointer rounded transition-all relative hover:bg-white/8">
+      <div class="relative w-[29px] h-[29px] flex items-center justify-center mb-1">
+        <img :src="layout3Icon" alt="用户ID" class="w-[29px] h-[29px] block" />
       </div>
-      <span class="feature-text feature-text-blue">ID:{{ state.userId }}</span>
+      <span class="text-xs leading-tight whitespace-nowrap text-[#455980] transition-colors" :class="{ 'text-[#3A82F9]': activeFeature === 'userId' }">ID:{{ state.userId }}</span>
     </div>
-    <div class="feature-divider"></div>
+    <div class="w-px h-10 bg-[#e8e8e8] mx-1"></div>
     <!-- 常见问题 -->
-    <div class="faq-trigger-wrapper" ref="faqTriggerRef">
-      <div class="header-feature-item" @click="handleFaqClick">
-        <div class="feature-icon-wrapper">
-          <img :src="layout4Icon" alt="常见问题" class="feature-icon-img" />
+    <div class="relative" ref="faqTriggerRef">
+      <div class="flex flex-col items-center justify-center px-3 py-2 cursor-pointer rounded transition-all relative hover:bg-white/8" @click="handleFaqClick">
+        <div class="relative w-[29px] h-[29px] flex items-center justify-center mb-1">
+          <img :src="layout4Icon" alt="常见问题" class="w-[29px] h-[29px] block" />
         </div>
-        <span class="feature-text" :class="{ 'active': activeFeature === 'faq' }">常见问题</span>
-      </div>
-      
-      <!-- 常见问题弹窗 -->
-      <div 
-        v-if="showFaqPopover" 
-        class="faq-popover-content"
-        @click.stop
-      >
-        <button class="help-center-btn" @click="goToHelpCenter">
-          前往帮助中心
-        </button>
+        <span class="text-xs leading-tight whitespace-nowrap text-[#455980] transition-colors" :class="{ 'text-[#3A82F9]': activeFeature === 'faq' }">常见问题</span>
       </div>
     </div>
-    <div class="feature-divider"></div>
+    <div class="w-px h-10 bg-[#e8e8e8] mx-1"></div>
     <!-- 登出 -->
-    <div class="header-feature-item" @click="handleLogout">
-      <div class="feature-icon-wrapper">
-        <img :src="layout5Icon" alt="登出" class="feature-icon-img" />
+    <div class="flex flex-col items-center justify-center px-3 py-2 cursor-pointer rounded transition-all relative hover:bg-white/8" @click="handleLogout">
+      <div class="relative w-[29px] h-[29px] flex items-center justify-center mb-1">
+        <img :src="layout5Icon" alt="登出" class="w-[29px] h-[29px] block" />
       </div>
-      <span class="feature-text" :class="{ 'active': activeFeature === 'logout' }">登出</span>
+      <span class="text-xs leading-tight whitespace-nowrap text-[#455980] transition-colors" :class="{ 'text-[#3A82F9]': activeFeature === 'logout' }">登出</span>
+    </div>
+    
+    <!-- 常见问题弹窗 - 相对于整个容器居中 -->
+    <div 
+      v-if="showFaqPopover" 
+      ref="faqPopoverRef"
+      class="absolute top-full left-1/2 -translate-x-1/2 z-[1000] mt-2 flex items-center justify-center"
+      @click.stop
+    >
+      <button class="w-[180px] h-[47px] bg-[#3A82F9] border-none text-white text-base rounded cursor-pointer outline-none flex items-center justify-center gap-1.5 focus:outline-none shadow-lg" @click="goToHelpCenter">
+        前往帮助中心
+        <img :src="helpCenterIcon" alt="icon" class="w-7 h-7 flex-shrink-0" />
+      </button>
     </div>
   </div>
 </template>
@@ -113,8 +118,8 @@ import layout2Icon from '@/assets/images/layout/layout2.svg'
 import layout3Icon from '@/assets/images/layout/layout3.svg'
 import layout4Icon from '@/assets/images/layout/layout4.svg'
 import layout5Icon from '@/assets/images/layout/layout5.svg'
-import { getUnreadMessageCount } from '@/api/header'
-import { getMessageList } from '@/views/profile/useApi'
+import helpCenterIcon from '@/assets/images/msg-type4.svg'
+import { getUnreadMessageCount, getUnreadMessageList, markMessageRead } from '@/api/header'
 import { getUserInfo } from '@/api/system/user'
 import { SSEManager } from '@/utils/sse'
 import { useGlobSetting } from '@/hooks/setting'
@@ -130,10 +135,14 @@ const showMessagePopover = ref(false)
 const showAllMessages = ref(false)
 const loadingMessages = ref(false)
 const messageTriggerRef = ref(null)
+const messagePopoverRef = ref(null) // 消息弹窗的引用
 const selectedMessageIndex = ref(-1)
+const hoveredMessageIndex = ref(-1) // 当前 hover 的消息项索引
 const activeFeature = ref('') // 当前激活的功能项
 const showFaqPopover = ref(false)
 const faqTriggerRef = ref(null)
+const faqPopoverRef = ref(null) // 常见问题弹窗的引用
+const headerFeaturesRef = ref(null) // 整个 header-features 容器的引用
 
 const state = reactive({
   messageCount: 0,
@@ -187,8 +196,6 @@ const initSSEConnection = async () => {
 
     // 消息处理回调
     const handleMessage = (data) => {
-      console.log('收到 SSE 推送消息:', data)
-      
       // 如果是新消息推送，只刷新未读消息数量
       if (data.cmd === 'newMessage') {
         // 调用接口刷新未读消息数量
@@ -208,63 +215,34 @@ const closeSSEConnection = () => {
   sseManager.close()
 }
 
-// 获取消息列表（固定参数：pageSize: 5, pageNo: 1）
+// 获取未读消息列表
 const fetchMessageList = async () => {
   try {
     loadingMessages.value = true
-    const res = await getMessageList({
-      pageNo: 1,
-      pageSize: 5,
-    })
-    
+    const res = await getUnreadMessageList()
     if (res?.data) {
-      let messages = res.data.dataList || []
-      const total = res.data.total || 0
-      
-      // 如果数据不足5条，添加假数据
-      if (messages.length < 5) {
-        const fakeMessages = [
-          {
-            messageId: 'fake-1',
-            title: '请注意! 您的预存款项已不足',
-            message: '10 USD',
-            bizType: 1,
-            isRead: 0,
-            createTime: new Date().toISOString(),
-          },
-          {
-            messageId: 'fake-2',
-            title: '请注意! 您的预存款项已不足',
-            message: '100 USD',
-            bizType: 1,
-            isRead: 0,
-            createTime: new Date().toISOString(),
-          },
-          {
-            messageId: 'fake-3',
-            title: '请注意! 您的竞价排名已不是最高',
-            message: '您的竞价排名已不是最高',
-            bizType: 2,
-            isRead: 0,
-            createTime: new Date().toISOString(),
-          },
-          {
-            messageId: 'fake-4',
-            title: '广告活动"AXX"已经开始',
-            message: '广告活动"AXX"已经开始',
-            bizType: 3,
-            isRead: 0,
-            createTime: new Date().toISOString(),
-          },
-        ]
-        
-        // 补充假数据到5条
-        const needCount = 5 - messages.length
-        messages = [...messages, ...fakeMessages.slice(0, needCount)]
-      }
+      // 新接口返回的数据结构：data.unreadCount 和 data.latestUnreadMessages
+      const messages = res.data.latestUnreadMessages || []
+      const total = res.data.unreadCount || 0
       
       state.messages = messages
       state.total = total
+      
+      // 如果有新消息，调用标记已读接口
+      if (messages.length > 0 && state.userId) {
+        try {
+          const messageIds = messages.map(msg => msg.messageId).filter(id => id != null)
+          if (messageIds.length > 0) {
+            await markMessageRead({
+              messageIds: messageIds,
+              userId: state.userId
+            })
+          }
+        } catch (error) {
+          console.error('标记消息为已读失败:', error)
+          // 标记已读失败不影响消息列表显示，只记录错误
+        }
+      }
     }
   } catch (error) {
     console.error('获取消息列表失败:', error)
@@ -283,7 +261,8 @@ const toggleShowAll = () => {
   router.push({
     name: 'center',
     query: {
-      tab: 'messages'
+      tab: 'messages',
+      type: 2
     }
   })
 }
@@ -291,15 +270,19 @@ const toggleShowAll = () => {
 // 处理消息点击
 const handleMessageClick = (e) => {
   e.stopPropagation()
+  // 关闭其他弹窗
+  showFaqPopover.value = false
+  
   if (!showMessagePopover.value) {
     // 立即打开弹窗
     showMessagePopover.value = true
     showAllMessages.value = false
     selectedMessageIndex.value = -1
     activeFeature.value = 'message'
-    // 然后获取消息列表（不等待，loading 会在 fetchMessageList 中控制）
+    // 获取消息列表（不等待，loading 会在 fetchMessageList 中控制）
     fetchMessageList()
   } else {
+    // 如果弹窗已打开，关闭弹窗
     showMessagePopover.value = false
     activeFeature.value = ''
   }
@@ -314,6 +297,8 @@ const handleMessageItemClick = (index) => {
 const handleFaqClick = (e) => {
   e.stopPropagation()
   if (!showFaqPopover.value) {
+    // 关闭其他弹窗
+    showMessagePopover.value = false
     showFaqPopover.value = true
     activeFeature.value = 'faq'
   } else {
@@ -336,16 +321,27 @@ const handleLogout = () => {
 
 // 点击外部关闭弹窗
 const handleClickOutside = (e) => {
-  if (messageTriggerRef.value && !messageTriggerRef.value.contains(e.target)) {
-    showMessagePopover.value = false
-    if (activeFeature.value === 'message') {
-      activeFeature.value = ''
+  // 检查消息弹窗：点击目标不在触发区域和弹窗内时关闭
+  if (showMessagePopover.value) {
+    const isClickInMessageTrigger = messageTriggerRef.value && messageTriggerRef.value.contains(e.target)
+    const isClickInMessagePopover = messagePopoverRef.value && messagePopoverRef.value.contains(e.target)
+    if (!isClickInMessageTrigger && !isClickInMessagePopover) {
+      showMessagePopover.value = false
+      if (activeFeature.value === 'message') {
+        activeFeature.value = ''
+      }
     }
   }
-  if (faqTriggerRef.value && !faqTriggerRef.value.contains(e.target)) {
-    showFaqPopover.value = false
-    if (activeFeature.value === 'faq') {
-      activeFeature.value = ''
+  
+  // 检查常见问题弹窗：点击目标不在触发区域和弹窗内时关闭
+  if (showFaqPopover.value) {
+    const isClickInFaqTrigger = faqTriggerRef.value && faqTriggerRef.value.contains(e.target)
+    const isClickInFaqPopover = faqPopoverRef.value && faqPopoverRef.value.contains(e.target)
+    if (!isClickInFaqTrigger && !isClickInFaqPopover) {
+      showFaqPopover.value = false
+      if (activeFeature.value === 'faq') {
+        activeFeature.value = ''
+      }
     }
   }
 }
@@ -373,264 +369,4 @@ defineExpose({
 })
 </script>
 
-<style lang="less" scoped>
-.header-features {
-  display: flex;
-  align-items: center;
-  height: 64px;
-
-  .header-feature-item {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 8px 12px;
-    cursor: pointer;
-    border-radius: 4px;
-    transition: all 0.2s ease-in-out;
-    position: relative;
-
-    &:hover {
-      background: hsla(0, 0%, 100%, 0.08);
-    }
-
-    .feature-icon-wrapper {
-      position: relative;
-      width: 29px;
-      height: 29px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin-bottom: 4px;
-
-      .feature-icon-img {
-        width: 29px;
-        height: 29px;
-        display: block;
-      }
-
-      .feature-badge {
-        position: absolute;
-        top: -4px;
-        right: -4px;
-      }
-    }
-
-    .feature-text {
-      font-size: 12px;
-      line-height: 1.2;
-      white-space: nowrap;
-      color: #455980;
-      transition: color 0.2s;
-
-      &.active {
-        color: #3A82F9;
-      }
-
-      &.feature-text-red {
-        color: #EB445A;
-      }
-    }
-  }
-
-  .feature-divider {
-    width: 1px;
-    height: 40px;
-    background: #e8e8e8;
-    margin: 0 4px;
-  }
-
-  .faq-trigger-wrapper {
-    position: relative;
-  }
-}
-
-// 消息触发区域
-.message-trigger-wrapper {
-  position: relative;
-}
-
-// 消息弹窗样式
-.message-popover-content {
-  position: absolute;
-  top: 100%;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 290px;
-  background: #fff;
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  overflow: hidden;
-  z-index: 1000;
-  margin-top: 8px;
-  display: flex;
-  flex-direction: column;
-}
-
-.message-list {
-  max-height: 300px;
-  overflow-y: auto;
-  padding: 0;
-}
-
-.message-item {
-  display: flex;
-  align-items: center;
-  height: 46px;
-  padding: 0 16px;
-  border-bottom: 1px solid #DEE9FF;
-  cursor: pointer;
-  transition: background-color 0.2s;
-
-  &:last-child {
-    border-bottom: none;
-  }
-
-  &.active {
-    background-color: #DEE9FF;
-    
-    .message-content {
-      .message-text {
-        color: #3A82F9;
-      }
-    }
-  }
-
-  &:hover {
-    background-color: #DEE9FF;
-    
-    .message-content {
-      .message-text {
-        color: #3A82F9;
-      }
-    }
-  }
-
-  .message-icon {
-    width: 28px;
-    height: 28px;
-    flex-shrink: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-right: 7px;
-
-    img {
-      width: 24px;
-      height: 24px;
-    }
-  }
-
-  .message-content {
-    flex: 1;
-    min-width: 0;
-    overflow: hidden;
-    display: flex;
-    align-items: center;
-
-    .message-text {
-      font-size: 15px;
-      font-weight: 500;
-      color: #455980;
-      line-height: 1.4;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-  }
-}
-
-.message-footer {
-  padding: 12px 16px;
-  border-top: 1px solid #f0f0f0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  background: #fff;
-
-  .message-count {
-    font-size: 13px;
-    color: #86909c;
-    margin-bottom: 12px;
-  }
-
-  .view-all-btn {
-    width: 192px;
-    height: 40px;
-    background-color: #3A82F9;
-    border: none;
-    color: #fff;
-    font-size: 14px;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: opacity 0.2s;
-    outline: none;
-
-    &:hover {
-      opacity: 0.9;
-    }
-
-    &:disabled {
-      opacity: 0.6;
-      cursor: not-allowed;
-    }
-
-    &:focus {
-      outline: none;
-    }
-  }
-}
-
-.message-empty {
-  padding: 40px 20px;
-  text-align: center;
-  color: #86909c;
-  font-size: 14px;
-}
-
-.message-loading {
-  padding: 40px 20px;
-  text-align: center;
-  color: #86909c;
-  font-size: 14px;
-}
-
-// 常见问题弹窗样式
-.faq-popover-content {
-  position: absolute;
-  top: 100%;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 1000;
-  margin-top: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.help-center-btn {
-  width: 154px;
-  height: 40px;
-  background-color: #3A82F9;
-  border: none;
-  color: #fff;
-  font-size: 16px;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: opacity 0.2s;
-  outline: none;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  &:hover {
-    opacity: 0.9;
-  }
-
-  &:focus {
-    outline: none;
-  }
-}
-</style>
 
