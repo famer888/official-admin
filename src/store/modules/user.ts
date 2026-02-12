@@ -109,6 +109,7 @@ export const useUserStore = defineStore({
         storage.set(IS_SCREENLOCKED, false)
         this.setToken(data.token)
       }
+
       return response
     },
     async getInfoByAuth() {
