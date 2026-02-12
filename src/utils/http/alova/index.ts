@@ -61,9 +61,9 @@ export const Alova = createAlova({
     const token = userStore.getToken
 
     // ✅ 如果需要携带 Cookie（Auth 请求需要）
-    if (method.meta?.includeCredentials) {
-      method.config.credentials = 'include'
-    }
+    // if (method.meta?.includeCredentials) {
+    method.config.credentials = 'include'
+    // }
 
     // 添加 token 到请求头（Auth 请求跳过）
     if (!method.meta?.ignoreToken && token) {
