@@ -27,7 +27,7 @@
     >
       <h2 
         class="font-semibold text-gray-800 mb-2 md:mb-2 m-0 mt-1"
-        style="font-size: 1.5em;"
+        style="font-size: 1em;"
       >
         {{ adData.displayScenario || adData.title }}
       </h2>
