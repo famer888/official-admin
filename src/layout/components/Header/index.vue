@@ -18,18 +18,7 @@
     </div>
     <!--左侧菜单-->
     <div class="layout-header-left" v-else>
-      <!-- 菜单收起 -->
-      <!-- <div
-        class="ml-1 layout-header-trigger layout-header-trigger-min"
-        @click="handleMenuCollapsed"
-      >
-        <n-icon size="18" v-if="collapsed">
-          <MenuUnfoldOutlined />
-        </n-icon>
-        <n-icon size="18" v-else>
-          <MenuFoldOutlined />
-        </n-icon>
-      </div> -->
+
       <!-- 刷新 -->
       <div
         class="mr-1 layout-header-trigger layout-header-trigger-min"
@@ -72,98 +61,8 @@
       </n-breadcrumb>
     </div>
     <div class="layout-header-right">
-      <div
-        class="layout-header-trigger layout-header-trigger-min"
-        v-for="item in iconList"
-        :key="item.icon"
-      >
-        <n-tooltip placement="bottom">
-          <template #trigger>
-            <n-icon size="18">
-              <component :is="item.icon" v-on="item.eventObject || {}" />
-            </n-icon>
-          </template>
-          <span>{{ item.tips }}</span>
-        </n-tooltip>
-      </div>
-      <!--切换全屏-->
-      <!-- <div class="layout-header-trigger layout-header-trigger-min">
-        <n-tooltip placement="bottom">
-          <template #trigger>
-            <n-icon size="18">
-              <component :is="fullscreenIcon" @click="toggleFullScreen" />
-            </n-icon>
-          </template>
-          <span>全屏</span>
-        </n-tooltip>
-      </div> -->
-      <!-- 新功能区域 -->
-      <div class="header-features">
-        <!-- 站内消息 -->
-        <div class="header-feature-item" @click="handleMessageClick">
-          <div class="feature-icon-wrapper">
-            <img :src="layout1Icon" alt="站内消息" class="feature-icon-img" />
-            <n-badge :value="messageCount" :max="99" class="feature-badge" />
-          </div>
-          <span class="feature-text feature-text-message">站内消息</span>
-        </div>
-        <div class="feature-divider"></div>
-        <!-- USD余额 -->
-        <div class="header-feature-item">
-          <div class="feature-icon-wrapper">
-            <img :src="layout2Icon" alt="USD余额" class="feature-icon-img" />
-          </div>
-          <span class="feature-text feature-text-red">USD:{{ usdBalance }}</span>
-        </div>
-        <div class="feature-divider"></div>
-        <!-- 用户ID -->
-        <div class="header-feature-item">
-          <div class="feature-icon-wrapper">
-            <img :src="layout3Icon" alt="用户ID" class="feature-icon-img" />
-          </div>
-          <span class="feature-text feature-text-blue">ID:{{ userId }}</span>
-        </div>
-        <div class="feature-divider"></div>
-        <!-- 常见问题 -->
-        <div class="header-feature-item" @click="handleFaqClick">
-          <div class="feature-icon-wrapper">
-            <img :src="layout4Icon" alt="常见问题" class="feature-icon-img" />
-          </div>
-          <span class="feature-text feature-text-blue">常见问题</span>
-        </div>
-        <div class="feature-divider"></div>
-        <!-- 登出 -->
-        <div class="header-feature-item" @click="doLogout">
-          <div class="feature-icon-wrapper">
-            <img :src="layout5Icon" alt="登出" class="feature-icon-img" />
-          </div>
-          <span class="feature-text feature-text-blue">登出</span>
-        </div>
-      </div>
-      <!-- 个人中心 -->
-      <!-- <div class="layout-header-trigger layout-header-trigger-min">
-        <n-dropdown trigger="hover" @select="avatarSelect" :options="avatarOptions">
-          <div class="avatar">
-            <n-avatar round color="#165dFF" class="mr-2">
-              {{ username.charAt(0).toUpperCase() }}
-            </n-avatar>
-            <div class="flex flex-col">
-              <span>{{ username }}</span>
-            </div>
-          </div>
-        </n-dropdown>
-      </div> -->
-      <!--设置-->
-      <!-- <div class="layout-header-trigger layout-header-trigger-min" @click="openSetting">
-        <n-tooltip placement="bottom-end">
-          <template #trigger>
-            <n-icon size="18" style="font-weight: bold">
-              <SettingOutlined />
-            </n-icon>
-          </template>
-          <span>项目配置</span>
-        </n-tooltip>
-      </div> -->
+
+      <HeaderFeatures @logout="doLogout" />
     </div>
   </div>
   <!--项目配置-->
@@ -183,15 +82,11 @@
   import { useRoute, useRouter } from 'vue-router'
   import components from './components'
   import ProjectSetting from './ProjectSetting.vue'
-  import layout1Icon from '@/assets/images/layout/layout1.svg'
-  import layout2Icon from '@/assets/images/layout/layout2.svg'
-  import layout3Icon from '@/assets/images/layout/layout3.svg'
-  import layout4Icon from '@/assets/images/layout/layout4.svg'
-  import layout5Icon from '@/assets/images/layout/layout5.svg'
+  import HeaderFeatures from './HeaderFeatures.vue'
 
   export default defineComponent({
     name: 'PageHeader',
-    components: { ...components, NDialogProvider, ProjectSetting, AsideMenu },
+    components: { ...components, NDialogProvider, ProjectSetting, AsideMenu, HeaderFeatures },
     props: {
       collapsed: {
         type: Boolean,
@@ -217,9 +112,6 @@
         navTheme,
         headerSetting,
         crumbsSetting,
-        messageCount: 99,
-        usdBalance: '234.23',
-        userId: (userStore?.info as any)?.id ?? '',
       })
 
       const getInverted = computed(() => {
@@ -282,7 +174,7 @@
       }
 
       // 退出登录
-      const doLogout = () => {
+      const doLogout = async () => {
         dialog.info({
           title: '提示',
           content: '您确定要退出登录吗',
@@ -324,28 +216,6 @@
           }
         }
       }
-
-      // 图标列表
-      const iconList = [
-        // {
-        //   icon: 'SearchOutlined',
-        //   tips: '搜索',
-        // },
-        // {
-        //   icon: 'GithubOutlined',
-        //   tips: 'github',
-        //   eventObject: {
-        //     click: () => window.open('https://github.com/jekip/naive-ui-admin'),
-        //   },
-        // },
-        // {
-        //   icon: 'LockOutlined',
-        //   tips: '锁屏',
-        //   eventObject: {
-        //     click: () => useLockscreen.setLock(true),
-        //   },
-        // },
-      ]
       const avatarOptions = [
         // {
         //   label: '个人设置',
@@ -378,21 +248,9 @@
         emit('update:collapsed', !props.collapsed)
       }
 
-      // 处理消息点击
-      const handleMessageClick = () => {
-        // TODO: 跳转到消息页面或打开消息弹窗
-        message.info('站内消息功能')
-      }
-
-      // 处理常见问题点击
-      const handleFaqClick = () => {
-        // TODO: 跳转到常见问题页面或打开FAQ弹窗
-        message.info('常见问题功能')
-      }
 
       return {
         ...toRefs(state),
-        iconList,
         toggleFullScreen,
         doLogout,
         route,
@@ -410,13 +268,6 @@
         websiteConfig,
         handleMenuCollapsed,
         RedirectName,
-        handleMessageClick,
-        handleFaqClick,
-        layout1Icon,
-        layout2Icon,
-        layout3Icon,
-        layout4Icon,
-        layout5Icon,
       }
     },
   })
@@ -432,7 +283,7 @@
     box-shadow: 0 1px 4px rgb(0 21 41 / 8%);
     transition: all 0.2s ease-in-out;
     width: 100%;
-    z-index: 11;
+    z-index: 100;
 
     &-left {
       display: flex;
@@ -608,13 +459,6 @@
       }
     }
 
-    .header-features {
-      .header-feature-item {
-        &:hover {
-          background: #f8f8f9;
-        }
-      }
-    }
   }
 
   .layout-header-fix {
@@ -622,7 +466,7 @@
     top: 0;
     right: 0;
     left: 200px;
-    z-index: 11;
+    z-index: 100;
   }
 
   //::v-deep(.menu-router-link) {
@@ -636,4 +480,5 @@
   ::v-deep(.n-avatar .n-avatar__text) {
     transform: translate(-50%, -50%);
   }
+
 </style>
