@@ -4,7 +4,7 @@ import { Alova } from '@/utils/http/alova/index'
  * @description: 获取用户信息
  */
 export function getUserInfo() {
-  return Alova.Get<InResult>('/admin-api/system/menu/getPermissionInfo', { cacheFor: null })
+  return Alova.Get<InResult>('/proxy/menu/getPermissionInfo', { cacheFor: null })
 }
 /**
  *
@@ -15,7 +15,7 @@ export function getUserInfo() {
  * @description: 通过 Auth 服务获取用户信息（携带 Cookie）
  */
 export function getUserInfoByAuth() {
-  const authUrl = `${window.location.origin}/admin-api/auth/sso/userinfo`
+  const authUrl = `${window.location.origin}/api/userinfo`
 
   return Alova.Get<InResult>(authUrl, {
     cacheFor: null,
