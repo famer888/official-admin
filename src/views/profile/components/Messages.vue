@@ -1,14 +1,20 @@
 <template>
-  <div class="messages">
+  <div class="py-5">
     <n-list v-if="messageList.length">
       <n-list-item v-for="item in messageList" :key="item.messageId">
-        <div class="message-item" @click="handleMarkRead(item)">
-          <div class="message-icon">
+        <div
+          class="flex px-4 items-start py-3 border-b border-gray-200 cursor-pointer transition-colors hover:bg-gray-50"
+          @click="handleMarkRead(item)"
+        >
+          <div class="mr-3 mt-0.5 shrink-0">
             <img :src="getMessageType(item.bizType)" />
           </div>
-          <div class="message-content">
-            <div class="message-text">{{ item.message }}</div>
-            <div class="message-status" :class="item.isRead === 1 ? 'read' : 'unread'">
+          <div class="flex-1 flex justify-between items-center min-w-0">
+            <div class="flex-1 text-gray-600 leading-relaxed">{{ item.message }}</div>
+            <div
+              class="ml-4 text-xs shrink-0"
+              :class="item.isRead === 1 ? 'text-green-600' : 'text-red-500 font-medium'"
+            >
               {{ item.isRead === 1 ? '已读' : '未读' }}
             </div>
           </div>
@@ -24,9 +30,9 @@
       :item-count="messageTotal"
       :page-sizes="[10, 20, 50]"
       show-size-picker
+      class="mt-5 flex justify-end"
       @update:page="loadMessages"
       @update:page-size="loadMessages"
-      class="pagination"
     />
   </div>
 </template>
@@ -123,60 +129,3 @@
     loadMessages()
   })
 </script>
-
-<style lang="less" scoped>
-  .messages {
-    padding: 20px 0;
-
-    .message-item {
-      display: flex;
-      align-items: flex-start;
-      padding: 12px 0;
-      border-bottom: 1px solid #ebeef5;
-      cursor: pointer;
-      transition: background-color 0.2s;
-
-      &:hover {
-        background-color: #f5f7fa;
-      }
-
-      .message-icon {
-        margin-right: 12px;
-        margin-top: 2px;
-      }
-
-      .message-content {
-        flex: 1;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-
-        .message-text {
-          flex: 1;
-          color: #606266;
-          line-height: 1.5;
-        }
-
-        .message-status {
-          margin-left: 16px;
-          font-size: 12px;
-
-          &.read {
-            color: #67c23a;
-          }
-
-          &.unread {
-            color: #f56c6c;
-            font-weight: 500;
-          }
-        }
-      }
-    }
-
-    .pagination {
-      margin-top: 20px;
-      display: flex;
-      justify-content: flex-end;
-    }
-  }
-</style>

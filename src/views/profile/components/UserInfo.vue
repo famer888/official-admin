@@ -1,8 +1,8 @@
 <template>
   <div class="py-5 w-full md:w-1/2">
-    <div class="mb-6 px-4 py-3 bg-gray-100 rounded">
-      <span class="font-medium text-gray-600 mr-2">账户:</span>
-      <span class="text-gray-800">{{ userInfo.loginEmail }}</span>
+    <div class="mb-6 px-4 py-3 bg-gray-100 rounded text-[#3A82F9]">
+      <span class="font-medium mr-2">账户:</span>
+      <span>{{ userInfo.loginEmail }}</span>
     </div>
 
     <pro-form
@@ -45,6 +45,15 @@
     gridProps: { cols: 24, xGap: 10, yGap: 2 },
     submitButtonText: '更新信息',
     showResetButton: false,
+    submitButtonOptions: {
+      size: 'large', // 明显大一号
+      type: 'primary', // 按钮类型
+      style: {
+        width: '200px', // 宽一点
+        borderRadius: '4px', // 做成圆角胶囊
+        fontWeight: 500,
+      },
+    },
   }
 
   // 处理后的用户信息（用于表单回显）
@@ -117,11 +126,6 @@
     const params = processSubmitValues(values)
     await useAsync(() => updateUserInfo(params), formRef.value?.form, [loadUserInfo])
   }
-
-  // 暴露方法供父组件调用
-  defineExpose({
-    loadUserInfo,
-  })
 
   // 初始化加载
   loadUserInfo()

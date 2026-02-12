@@ -38,35 +38,46 @@
   const getThemeOverrides = computed(() => {
     const appTheme = designStore.appTheme
     const lightenStr = lighten(designStore.appTheme, 6)
+    const common: Record<string, unknown> = {
+      primaryColor: appTheme,
+      primaryColorHover: lightenStr,
+      primaryColorPressed: lightenStr,
+      primaryColorSuppl: appTheme,
+
+      infoColor: appTheme,
+      infoColorHover: lightenStr,
+      infoColorPressed: lightenStr,
+      infoColorSuppl: appTheme,
+
+      successColor: '#00b42a',
+      successColorHover: '#73d13d',
+      successColorPressed: '#389e0d',
+      successColorSuppl: '#95de64',
+
+      warningColor: '#faad14',
+      warningColorHover: '#ffc53d',
+      warningColorPressed: '#d48806',
+      warningColorSuppl: '#ffd666',
+
+      errorColor: '#f53f3f',
+      errorColorHover: '#ff4d4f',
+      errorColorPressed: '#cf1322',
+      errorColorSuppl: '#ff7875',
+    }
+
+    // 亮色系下覆盖默认字体颜色
+    if (!designStore.darkTheme) {
+      common.textColor1 = '#455980' // 主文字（最深）
+      // common.textColor2 = '#000000' // 次要文字
+      // common.textColor3 = '#000000' // 辅助/
+      common.primaryColor = '#3A82F9'
+      common.primaryColorHover = '#3A82F9'
+      common.primaryColorPressed = '#3A82F9'
+      common.primaryColorSuppl = '#3A82F9'
+    }
+
     return {
-      common: {
-        primaryColor: appTheme,
-        primaryColorHover: lightenStr,
-        primaryColorPressed: lightenStr,
-        primaryColorSuppl: appTheme,
-
-        infoColor: appTheme,
-        infoColorHover: lightenStr,
-        infoColorPressed: lightenStr,
-        infoColorSuppl: appTheme,
-
-        successColor: '#00b42a',
-        successColorHover: '#73d13d',
-        successColorPressed: '#389e0d',
-        successColorSuppl: '#95de64',
-
-        warningColor: '#faad14',
-        warningColorHover: '#ffc53d',
-        warningColorPressed: '#d48806',
-        warningColorSuppl: '#ffd666',
-
-        errorColor: '#f53f3f',
-        errorColorHover: '#ff4d4f',
-        errorColorPressed: '#cf1322',
-        errorColorSuppl: '#ff7875',
-
-        // borderRadius: '6px',
-      },
+      common,
       Tag: {
         borderRadius: '4px',
       },

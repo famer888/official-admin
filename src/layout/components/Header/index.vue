@@ -290,17 +290,16 @@
           negativeText: '取消',
           onPositiveClick: () => {
             userStore.logout().then(() => {
-              message.success('成功退出登录')
               // 移除标签页
               localStorage.removeItem(TABS_ROUTES)
-              router
-                .replace({
-                  name: 'Login',
-                  query: {
-                    redirect: route.fullPath,
-                  },
-                })
-                .finally(() => location.reload())
+              // router
+              //   .replace({
+              //     name: 'Login',
+              //     query: {
+              //       redirect: route.fullPath,
+              //     },
+              //   })
+              //   .finally(() => location.reload())
             })
           },
           onNegativeClick: () => {},
@@ -568,7 +567,7 @@
         white-space: nowrap;
 
         &.feature-text-message {
-          color: #3A82F9;
+          color: #3a82f9;
         }
 
         &.feature-text-blue {
@@ -576,7 +575,7 @@
         }
 
         &.feature-text-red {
-          color: #EB445A;
+          color: #eb445a;
         }
       }
     }
