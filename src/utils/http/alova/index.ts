@@ -60,11 +60,8 @@ export const Alova = createAlova({
     const userStore = useUser()
     const token = userStore.getToken
 
-    // ✅ 如果需要携带 Cookie（Auth 请求需要）
-    // if (method.meta?.includeCredentials) {
+    // 全局携带 Cookie（同源场景下会自动带当前域的 cookie）
     method.config.credentials = 'include'
-
-    // }
 
     // 添加 token 到请求头（Auth 请求跳过）
     if (!method.meta?.ignoreToken && token) {
@@ -74,6 +71,17 @@ export const Alova = createAlova({
     // Auth 请求跳过 URL 处理，直接使用代理路径
     if (method.meta?.isAuthRequest) {
       return
+    }
+
+    // 非本地环境 cookie接口路径变更
+    if (!import.meta.env.DEV && typeof method.url === 'string') {
+      const proxyPrefixes = ['/admin-api/system/', '/admin-api/payment/', '/admin-api/report/']
+      const hit = proxyPrefixes.find((prefix) => method.url.startsWith(prefix))
+      if (hit) {
+        // 保留原始路径中前缀之后的部分
+        const restPath = method.url.slice(hit.length - 1) // 包含前面的 '/'
+        method.url = `/proxy${restPath}`
+      }
     }
 
     // 处理 api 请求前缀

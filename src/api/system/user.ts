@@ -4,7 +4,7 @@ import { Alova } from '@/utils/http/alova/index'
  * @description: 获取用户信息
  */
 export function getUserInfo() {
-  return Alova.Get<InResult>('/proxy/menu/getPermissionInfo', { cacheFor: null })
+  return Alova.Get<InResult>('/admin-api/system/menu/getPermissionInfo', { cacheFor: null })
 }
 /**
  *
@@ -32,8 +32,8 @@ export function getUserInfoByAuth() {
  * @returns
  */
 export function logoutAuth() {
-  const authUrl = `${window.location.origin}/admin-api/auth/sso/logout`
-  return Alova.Get(authUrl, {
+  const authUrl = `${window.location.origin}/api/logout`
+  return Alova.Post(authUrl, {
     cacheFor: null,
     meta: {
       includeCredentials: true, // 标记需要携带 Cookie
