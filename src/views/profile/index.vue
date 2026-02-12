@@ -32,6 +32,7 @@
 
 <script setup>
   import { ref, watch, onMounted } from 'vue'
+  import { useRoute } from 'vue-router'
   import UserInfo from './components/UserInfo.vue'
   import PasswordChange from './components/PasswordChange.vue'
   import Messages from './components/Messages.vue'
@@ -41,6 +42,7 @@
     name: 'PersonCenter',
   })
 
+  const route = useRoute()
   const activeTab = ref('info')
   const userInfoRef = ref(null)
   const messagesRef = ref(null)
@@ -58,9 +60,12 @@
     }
   })
 
+  // 初始化时根据路由参数决定默认 tab
   onMounted(() => {
-    // Messages 组件会自动加载并触发 update:unread-count 事件
-    // 所以这里不需要手动调用
+    const type = route.query.type
+    if (type === '2') {
+      activeTab.value = 'messages'
+    }
   })
 </script>
 
