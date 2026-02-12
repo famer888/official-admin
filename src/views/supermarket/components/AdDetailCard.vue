@@ -18,9 +18,9 @@
     <div class="space-y-4">
       <template v-for="(field, index) in infoFields" :key="index">
         <div v-if="field.show" class="flex items-start gap-4">
-          <h3 v-if="field.label" class="text-lg font-semibold flex-shrink-0" style="color: #455980">{{ field.label }}:</h3>
+          <h3 v-if="field.label" class="text-lg font-medium flex-shrink-0" style="color: #455980">{{ field.label }}:</h3>
           <p :class="field.valueClass" style="color: #86909C">{{ field.value }}</p>
-        </div>
+      </div>
       </template>
     </div>
   </div>
@@ -30,10 +30,10 @@
 import { computed } from 'vue'
 
 const props = defineProps({
-  adData: {
+    adData: {
     type: Object,
-    default: undefined,
-  },
+      default: undefined,
+    },
 })
 
 const infoFields = computed(() => {

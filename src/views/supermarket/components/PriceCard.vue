@@ -42,7 +42,24 @@ const props = defineProps({
 const message = useMessage()
 
 const handleNegotiate = () => {
-  message.info('洽谈购买功能')
+  const contactDetails = props.adData?.contactDetails
+  if (!contactDetails) {
+    message.warning('客服联系方式未配置')
+    return
+  }
+
+  // 构建 Telegram 链接
+  let tgUrl = contactDetails.trim()
+    // 如果已经是完整的 URL（http 或 tg://），直接使用
+  if (tgUrl.startsWith('http') || tgUrl.startsWith('tg://')) {
+    // 已经是完整链接，直接使用
+  } else {
+    const username = tgUrl.startsWith('@') ? tgUrl.slice(1) : tgUrl
+    tgUrl = `tg://resolve?domain=${username}`
+  }
+
+  // 打开 Telegram 链接
+  window.open(tgUrl, '_blank')
 }
 
 const priceItems = computed(() => {
