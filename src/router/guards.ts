@@ -69,9 +69,9 @@ export function createRouterGuards(router: Router) {
       return
     }
 
-    const userInfo = await userStore.getInfo()
+    // const userInfo = await userStore.getInfo()
 
-    const routes = await asyncRouteStore.generateRoutes(userInfo?.data?.permissions)
+    const routes = await asyncRouteStore.generateRoutes([])
 
     // 动态添加可访问路由表
     routes.forEach((item) => {
