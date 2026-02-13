@@ -74,7 +74,7 @@ export const Alova = createAlova({
     }
 
     // 非本地环境 cookie接口路径变更
-    if (!import.meta.env.DEV && typeof method.url === 'string') {
+    if (!import.meta.env.DEV) {
       const proxyPrefixes = ['/admin-api/system/', '/admin-api/payment/', '/admin-api/report/']
       const hit = proxyPrefixes.find((prefix) => method.url.startsWith(prefix))
       if (hit) {

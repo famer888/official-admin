@@ -116,11 +116,11 @@ export const useUserStore = defineStore({
       if (import.meta.env.DEV) {
         return
       }
-      const response = await getUserInfoByAuth()
-      console.log('🚀 ~ response:', response)
-      if (response.code === ResultEnum.SUCCESS) {
-        this.setUserInfo(response.data)
-      }
+      await getUserInfoByAuth()
+      // console.log('🚀 ~ response:', response)
+      // if (response.code === ResultEnum.SUCCESS) {
+      //   this.setUserInfo(response.data)
+      // }
     },
 
     // 获取用户信息

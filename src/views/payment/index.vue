@@ -11,12 +11,11 @@
         <n-button
           class="w-[192px] h-[48px] rounded-[4px] bg-white text-[#3A82F9]"
           @click="handleClick"
-          v-permission="['system:pay:createOrder']"
           >存款</n-button
         >
       </div>
     </div>
-    <div v-permission="['system:pay:list']">
+    <div>
       <pro-data-table
         :columns="columns"
         :title="{
