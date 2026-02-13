@@ -10,6 +10,7 @@
       :schemas="infoSchemas"
       :form-props="formProps"
       :record="processedUserInfo"
+      :loading="loading"
       @submit="handleSubmit"
       @close="() => {}"
       class="user-info-form"

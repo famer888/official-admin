@@ -1,38 +1,40 @@
 <template>
   <div class="py-5">
-    <n-list v-if="messageList.length">
-      <n-list-item v-for="item in messageList" :key="item.messageId">
-        <div
-          class="flex px-4 items-start py-3 border-b border-gray-200 transition-colors hover:bg-gray-50"
-        >
-          <div class="mr-3 mt-0.5 shrink-0">
-            <img :src="getMessageType(item.bizType)" />
-          </div>
-          <div class="flex-1 flex justify-between items-center min-w-0">
-            <div class="flex-1 text-gray-600 leading-relaxed">{{ item.message }}</div>
-            <div
-              class="ml-4 text-xs shrink-0"
-              :class="item.isRead === 1 ? 'text-green-600' : 'text-red-500 font-medium'"
-            >
-              {{ item.isRead === 1 ? '已读' : '未读' }}
+    <n-spin :show="loading">
+      <n-list v-if="messageList.length">
+        <n-list-item v-for="item in messageList" :key="item.messageId">
+          <div
+            class="flex px-4 items-start py-3 border-b border-gray-200 transition-colors hover:bg-gray-50"
+          >
+            <div class="mr-3 mt-0.5 shrink-0">
+              <img :src="getMessageType(item.bizType)" />
+            </div>
+            <div class="flex-1 flex justify-between items-center min-w-0">
+              <div class="flex-1 text-gray-600 leading-relaxed">{{ item.message }}</div>
+              <div
+                class="ml-4 text-xs shrink-0"
+                :class="item.isRead === 1 ? 'text-green-600' : 'text-red-500 font-medium'"
+              >
+                {{ item.isRead === 1 ? '已读' : '未读' }}
+              </div>
             </div>
           </div>
-        </div>
-      </n-list-item>
-    </n-list>
+        </n-list-item>
+      </n-list>
 
-    <n-empty v-if="!messageList.length" description="暂无消息" />
+      <n-empty v-if="!messageList.length && !loading" description="暂无消息" />
 
-    <n-pagination
-      v-model:page="messageParams.pageNo"
-      v-model:page-size="messageParams.pageSize"
-      :item-count="messageTotal"
-      :page-sizes="[10, 20, 50]"
-      show-size-picker
-      class="mt-5 flex justify-end"
-      @update:page="loadMessages"
-      @update:page-size="loadMessages"
-    />
+      <n-pagination
+        v-model:page="messageParams.pageNo"
+        v-model:page-size="messageParams.pageSize"
+        :item-count="messageTotal"
+        :page-sizes="[10, 20, 50]"
+        show-size-picker
+        class="mt-5 flex justify-end"
+        @update:page="loadMessages"
+        @update:page-size="loadMessages"
+      />
+    </n-spin>
   </div>
 </template>
 
@@ -47,6 +49,7 @@
   const messageList = ref([])
   const messageTotal = ref(0)
   const unreadCount = ref(0)
+  const loading = ref(false)
   const messageParams = ref({
     pageNo: 1,
     pageSize: 10,
@@ -78,6 +81,7 @@
   // 加载消息列表，并自动将本页未读消息标记为已读
   const loadMessages = async () => {
     try {
+      loading.value = true
       const res = await getMessageList({
         ...messageParams.value,
       })
@@ -106,6 +110,8 @@
       }
     } catch (error) {
       console.error('加载消息列表失败：', error)
+    } finally {
+      loading.value = false
     }
   }
 
