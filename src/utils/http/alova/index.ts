@@ -54,7 +54,7 @@ export const Alova = createAlova({
   //   HEAD: 60 * 10 * 1000 // 统一设置HEAD请求的缓存模式
   // },
   // 在开发环境开启缓存命中日志
-  cacheLogger: process.env.NODE_ENV === 'development',
+  cacheLogger: false,
   requestAdapter: mockAdapter,
   beforeRequest(method) {
     const userStore = useUser()

@@ -61,7 +61,6 @@
       </n-breadcrumb>
     </div>
     <div class="layout-header-right">
-
       <HeaderFeatures @logout="doLogout" />
     </div>
   </div>

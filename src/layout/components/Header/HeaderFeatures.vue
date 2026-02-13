@@ -8,7 +8,7 @@
           <n-badge 
             :value="state.messageCount" 
             :max="99" 
-            class="absolute message-badge"
+            class="absolute -top-[6px] -right-[6px] message-badge"
             :class="{ 'message-badge-double': state.messageCount >= 10 }"
           />
         </div>
@@ -16,42 +16,28 @@
       </div>
       
       <!-- 消息弹窗 -->
-      <div 
-        v-if="showMessagePopover" 
+      <PopoverList
+        :show="showMessagePopover"
+        :list="displayedMessages"
+        :loading="loadingMessages"
+        loading-text="加载中..."
+        empty-text="暂无消息"
+        :hovered-index="hoveredMessageIndex"
+        :selected-index="selectedMessageIndex"
+        @item-click="(item, index) => handleMessageItemClick(index)"
+        @mouse-enter="(item, index) => hoveredMessageIndex = index"
+        @mouse-leave="() => hoveredMessageIndex = -1"
         ref="messagePopoverRef"
-        class="absolute top-full left-1/2 -translate-x-1/2 w-[290px] bg-white rounded-lg shadow-lg overflow-hidden z-[1000] mt-2 flex flex-col"
-        @click.stop
       >
-        <!-- 消息列表 -->
-        <div class="max-h-[300px] overflow-y-auto p-0">
-          <div v-if="loadingMessages" class="py-10 px-5 text-center text-[#86909c] text-sm">
-            加载中...
+        <template #item="{ item, index }">
+          <div class="w-7 h-7 flex-shrink-0 flex items-center justify-center mr-[7px]">
+            <img src="@/assets/images/money.svg" alt="icon" class="w-6 h-6" />
           </div>
-          <template v-else>
-            <div
-              v-for="(msg, index) in displayedMessages"
-              :key="msg.messageId || index"
-              class="flex items-center h-[46px] px-4 border-b border-[#DEE9FF] cursor-pointer transition-colors last:border-b-0"
-              :class="{ 'bg-[#DEE9FF]': selectedMessageIndex === index || hoveredMessageIndex === index }"
-              @click="handleMessageItemClick(index)"
-              @mouseenter="hoveredMessageIndex = index"
-              @mouseleave="hoveredMessageIndex = -1"
-            >
-              <div class="w-7 h-7 flex-shrink-0 flex items-center justify-center mr-[7px]">
-                <img src="@/assets/images/money.svg" alt="icon" class="w-6 h-6" />
-              </div>
-              <div class="flex-1 min-w-0 overflow-hidden flex items-center">
-                <div class="text-[15px] font-medium leading-[1.4] whitespace-nowrap overflow-hidden text-ellipsis" :class="selectedMessageIndex === index || hoveredMessageIndex === index ? 'text-[#3A82F9]' : 'text-[#455980]'">{{ msg.message }}</div>
-              </div>
-            </div>
-            <div v-if="state.messages.length === 0" class="py-10 px-5 text-center text-[#86909c] text-sm">
-              暂无消息
-            </div>
-          </template>
-        </div>
-        
-        <!-- 底部信息 -->
-        <div class="py-3 px-4 border-t border-[#f0f0f0] flex flex-col items-center justify-center bg-white">
+          <div class="flex-1 min-w-0 overflow-hidden flex items-center">
+            <div class="text-[15px] font-medium leading-[1.4] whitespace-nowrap overflow-hidden text-ellipsis" :class="selectedMessageIndex === index || hoveredMessageIndex === index ? 'text-[#3A82F9]' : 'text-[#455980]'">{{ item.message }}</div>
+          </div>
+        </template>
+        <template #footer>
           <div class="text-[13px] text-[#86909c] mb-3">共有{{ state.total }}条未读消息</div>
           <button
             v-if="state.total > 0"
@@ -61,8 +47,8 @@
           >
             {{ loadingMessages ? '加载中...' : '查看全部消息' }}
           </button>
-        </div>
-      </div>
+        </template>
+      </PopoverList>
     </div>
     <div class="w-px h-10 bg-[#DEE5EE] mx-1"></div>
     <!-- USD余额 -->
@@ -99,9 +85,10 @@
       <span class="text-xs leading-tight whitespace-nowrap text-[#455980] transition-colors" :class="{ 'text-[#3A82F9]': activeFeature === 'logout' }">登出</span>
     </div>
     
-    <!-- 常见问题弹窗 - 相对于整个容器居中 -->
+    <!-- 常见问题弹窗 -->
+    <!-- 简单模式：只显示按钮 -->
     <div 
-      v-if="showFaqPopover" 
+      v-if="showFaqPopover && !faqShowDetailMode" 
       ref="faqPopoverRef"
       class="absolute top-full left-1/2 -translate-x-1/2 z-[1000] mt-2 flex items-center justify-center"
       @click.stop
@@ -111,11 +98,51 @@
         <img :src="helpCenterIcon" alt="icon" class="w-7 h-7 flex-shrink-0" />
       </button>
     </div>
+    
+    <!-- 详细模式：弹窗样式，包含按钮和联系方式列表 -->
+    <PopoverList
+      :show="showFaqPopover && faqShowDetailMode"
+      :list="contactList"
+      :loading="false"
+      empty-text="暂无联系方式"
+      :hovered-index="hoveredContactIndex"
+      @item-click="handleContactClick"
+      @mouse-enter="(item, index) => item.type !== 'hint' && (hoveredContactIndex = index)"
+      @mouse-leave="() => hoveredContactIndex = -1"
+      ref="faqPopoverRef"
+    >
+      <template #header>
+        <button class="w-[192px] h-10 bg-[#3A82F9] border-none text-white text-sm rounded cursor-pointer outline-none flex items-center justify-center gap-1.5 focus:outline-none hover:opacity-90" @click="goToHelpCenter">
+          前往帮助中心
+          <img :src="helpCenterIcon" alt="icon" class="w-5 h-5 flex-shrink-0" />
+        </button>
+      </template>
+      <template #item="{ item, index }">
+        <!-- 图标区域：hint 类型不显示图标 -->
+        <div v-if="item.type !== 'hint'" class="flex-shrink-0 flex items-center justify-center mr-[17px]" :class="item.type === 'avatar' ? 'w-8 h-8' : 'w-7 h-7'">
+          <img v-if="item.type === 'avatar'" :src="item.icon" alt="icon" class="w-7 h-7 rounded-full" />
+          <img v-else-if="item.icon" :src="item.icon" alt="icon" class="w-6 h-6" />
+        </div>
+        <!-- 文字区域 -->
+        <div :class="item.type === 'hint' ? 'w-full text-center' : 'flex-1 min-w-0 overflow-hidden flex items-center'">
+          <div 
+            class="text-[15px] leading-[1.4] whitespace-nowrap overflow-hidden text-ellipsis"
+            :class="{
+              'text-[#86909c]': item.type === 'hint',
+              'text-[#455980] font-semibold': item.type !== 'hint'
+            }"
+          >
+            {{ item.label }}
+          </div>
+        </div>
+      </template>
+    </PopoverList>
   </div>
 </template>
 
 <script setup>
 import { ref, reactive, computed, onMounted, onUnmounted, nextTick } from 'vue'
+import { onClickOutside } from '@vueuse/core'
 import { useRouter } from 'vue-router'
 import { NBadge, useMessage } from 'naive-ui'
 import layout1Icon from '@/assets/images/layout/layout1.svg'
@@ -124,10 +151,15 @@ import layout3Icon from '@/assets/images/layout/layout3.svg'
 import layout4Icon from '@/assets/images/layout/layout4.svg'
 import layout5Icon from '@/assets/images/layout/layout5.svg'
 import helpCenterIcon from '@/assets/images/msg-type4.svg'
-import { getUnreadMessageCount, getUnreadMessageList, markMessageRead } from '@/api/header'
+import telegramIcon from '@/assets/images/telegram.svg'
+import wechatIcon from '@/assets/images/wechat.svg'
+import emailIcon from '@/assets/images/email.svg'
+import avatarIcon from '@/assets/images/avatar.svg'
+import { getUnreadMessageCount, getUnreadMessageList, markMessageRead, getAdManager } from '@/api/header'
 import { getUserInfo } from '@/api/system/user'
 import { SSEManager } from '@/utils/sse'
 import { useGlobSetting } from '@/hooks/setting'
+import PopoverList from './PopoverList.vue'
 
 const emit = defineEmits(['logout'])
 
@@ -148,6 +180,12 @@ const showFaqPopover = ref(false)
 const faqTriggerRef = ref(null)
 const faqPopoverRef = ref(null) // 常见问题弹窗的引用
 const headerFeaturesRef = ref(null) // 整个 header-features 容器的引用
+const hoveredContactIndex = ref(-1) // 当前 hover 的联系方式项索引
+
+// 根据 name 是否为 null 判断显示模式
+const faqShowDetailMode = computed(() => {
+  return state.adManager.name !== null
+})
 
 const state = reactive({
   messageCount: 0,
@@ -155,6 +193,12 @@ const state = reactive({
   userId: '',
   messages: [],
   total: 0, // 消息总数
+  adManager: {
+    name: null,
+    telegram: null,
+    wechat: null,
+    email: null
+  }
 })
 
 // 计算显示的消息列表
@@ -226,17 +270,13 @@ const fetchMessageList = async () => {
     loadingMessages.value = true
     const res = await getUnreadMessageList()
     if (res?.data) {
-      // 新接口返回的数据结构：data.unreadCount 和 data.latestUnreadMessages
-      const messages = res.data.latestUnreadMessages || []
-      const total = res.data.unreadCount || 0
-      
-      state.messages = messages
-      state.total = total
+      state.messages = res.data.latestUnreadMessages || []
+      state.total = res.data.unreadCount || 0
       
       // 如果有新消息，调用标记已读接口
-      if (messages.length > 0 && state.userId) {
+      if (state.messages.length > 0 && state.userId) {
         try {
-          const messageIds = messages.map(msg => msg.messageId).filter(id => id != null)
+          const messageIds = state.messages.map(msg => msg.messageId).filter(id => id != null)
           if (messageIds.length > 0) {
             await markMessageRead({
               messageIds: messageIds,
@@ -298,6 +338,23 @@ const handleMessageItemClick = (index) => {
   selectedMessageIndex.value = index
 }
 
+// 获取广告经理信息
+const fetchAdManager = async () => {
+  try {
+    const res = await getAdManager()
+    if (res?.data) {
+      state.adManager = {
+        name: res.data.name || null,
+        telegram: res.data.telegram || null,
+        wechat: res.data.wechat || null,
+        email: res.data.email || null
+      }
+    }
+  } catch (error) {
+
+  }
+}
+
 // 处理常见问题点击
 const handleFaqClick = (e) => {
   e.stopPropagation()
@@ -312,6 +369,77 @@ const handleFaqClick = (e) => {
   }
 }
 
+// 联系方式配置
+const contactConfig = [
+  {
+    type: 'hint',
+    label: '亦可联系您专属的广告经理',
+    value: 'hint',
+    show: true // 提示项总是显示
+  },
+  {
+    type: 'avatar',
+    icon: avatarIcon,
+    label: '商务大神1',
+    value: 'manager',
+    field: 'name' // 对应的字段名
+  },
+  {
+    type: 'telegram',
+    icon: telegramIcon,
+    field: 'telegram',
+    value: 'telegram'
+  },
+  {
+    type: 'wechat',
+    icon: wechatIcon,
+    field: 'wechat',
+    value: 'wechat'
+  },
+  {
+    type: 'email',
+    icon: emailIcon,
+    field: 'email',
+    value: 'email'
+  }
+]
+
+// 动态生成联系方式列表
+const contactList = computed(() => {
+  return contactConfig
+    .filter(config => {
+      // 如果配置了 show: true，总是显示
+      if (config.show) return true
+      // 如果有 field 配置，检查对应字段是否有值
+      if (config.field) {
+        return state.adManager[config.field] !== null
+      }
+      return false
+    })
+    .map(config => ({
+      type: config.type,
+      icon: config.icon,
+      label: config.label || state.adManager[config.field],
+      value: config.value
+    }))
+})
+
+// 处理联系方式点击
+const handleContactClick = (contact) => {
+  // 根据联系方式类型执行不同操作
+  if (contact.type === 'hint') {
+    // 提示项，可以不做任何操作或显示提示
+    return
+  } else if (contact.type !== 'avatar') {
+    // 复制联系方式到剪贴板
+    navigator.clipboard.writeText(contact.label).then(() => {
+      message?.success('复制成功')
+    }).catch(() => {
+      message?.error('复制失败，请重试')
+    })
+  } 
+}
+
 // 跳转到官网帮助中心页
 const goToHelpCenter = () => {
   const { VITE_WEBSITE_URL } = import.meta.env
@@ -324,46 +452,40 @@ const handleLogout = () => {
   emit('logout')
 }
 
-// 点击外部关闭弹窗
-const handleClickOutside = (e) => {
-  // 检查消息弹窗：点击目标不在触发区域和弹窗内时关闭
-  if (showMessagePopover.value) {
-    const isClickInMessageTrigger = messageTriggerRef.value && messageTriggerRef.value.contains(e.target)
-    const isClickInMessagePopover = messagePopoverRef.value && messagePopoverRef.value.contains(e.target)
-    if (!isClickInMessageTrigger && !isClickInMessagePopover) {
-      showMessagePopover.value = false
-      if (activeFeature.value === 'message') {
-        activeFeature.value = ''
+// 通用的点击外部关闭弹窗处理函数
+const setupClickOutside = (showRef, triggerRef, popoverRef, featureName) => {
+  const popoverElement = computed(() => {
+    if (!showRef.value) return null
+    return popoverRef.value?.popoverRef || popoverRef.value
+  })
+
+  onClickOutside(
+    computed(() => [triggerRef.value, popoverElement.value].filter(Boolean)),
+    () => {
+      if (showRef.value) {
+        showRef.value = false
+        if (activeFeature.value === featureName) {
+          activeFeature.value = ''
+        }
       }
     }
-  }
-  
-  // 检查常见问题弹窗：点击目标不在触发区域和弹窗内时关闭
-  if (showFaqPopover.value) {
-    const isClickInFaqTrigger = faqTriggerRef.value && faqTriggerRef.value.contains(e.target)
-    const isClickInFaqPopover = faqPopoverRef.value && faqPopoverRef.value.contains(e.target)
-    if (!isClickInFaqTrigger && !isClickInFaqPopover) {
-      showFaqPopover.value = false
-      if (activeFeature.value === 'faq') {
-        activeFeature.value = ''
-      }
-    }
-  }
+  )
 }
+
+// 设置消息弹窗和常见问题弹窗的点击外部关闭
+setupClickOutside(showMessagePopover, messageTriggerRef, messagePopoverRef, 'message')
+setupClickOutside(showFaqPopover, faqTriggerRef, faqPopoverRef, 'faq')
 
 // 组件挂载时获取未读消息数量并建立 SSE 连接
 onMounted(() => {
   fetchUnreadMessageCount()
   initSSEConnection()
-  // 监听点击外部事件
-  document.addEventListener('click', handleClickOutside)
+  fetchAdManager() // 获取广告经理信息
 })
 
-// 组件卸载时关闭 SSE 连接
 onUnmounted(() => {
+  // 组件卸载时关闭 SSE 连接
   closeSSEConnection()
-  // 移除点击外部事件监听
-  document.removeEventListener('click', handleClickOutside)
 })
 
 // 暴露给父组件的数据
@@ -376,9 +498,6 @@ defineExpose({
 
 <style lang="less" scoped>
 .message-badge {
-  top: -6px !important;
-  right: -6px !important;
-  
   :deep(.n-badge-sup) {
     min-width: 18px !important;
     height: 18px !important;
