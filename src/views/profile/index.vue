@@ -1,5 +1,5 @@
 <template>
-  <div class="p-5">
+  <div class="p-5 bg-white">
     <div class="text-xl font-semibold text-gray-800 mb-4">个人中心</div>
     <n-tabs v-model:value="activeTab" type="bar" animated>
       <!-- 个人信息 -->

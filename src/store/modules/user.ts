@@ -117,8 +117,9 @@ export const useUserStore = defineStore({
         return
       }
       const response = await getUserInfoByAuth()
-      if (response) {
-        this.setUserInfo(response as unknown as UserInfoType)
+      console.log('🚀 ~ response:', response)
+      if (response.code === ResultEnum.SUCCESS) {
+        this.setUserInfo(response.data)
       }
     },
 

@@ -15,7 +15,7 @@ export function getUserInfo() {
  * @description: 通过 Auth 服务获取用户信息（携带 Cookie）
  */
 export function getUserInfoByAuth() {
-  const authUrl = `${window.location.origin}/admin-api/auth/sso/userinfo`
+  const authUrl = `${window.location.origin}/api/userinfo`
 
   return Alova.Get<InResult>(authUrl, {
     cacheFor: null,
@@ -32,8 +32,8 @@ export function getUserInfoByAuth() {
  * @returns
  */
 export function logoutAuth() {
-  const authUrl = `${window.location.origin}/admin-api/auth/sso/logout`
-  return Alova.Get(authUrl, {
+  const authUrl = `${window.location.origin}/api/logout`
+  return Alova.Post(authUrl, {
     cacheFor: null,
     meta: {
       includeCredentials: true, // 标记需要携带 Cookie
