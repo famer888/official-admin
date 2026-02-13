@@ -144,7 +144,9 @@ export const Alova = createAlova({
         ResultEnum.AUTH_FAILED === code ||
         ResultEnum.TOKEN_INVALID === code ||
         ResultEnum.TOKEN_EXPIRED === code ||
-        ResultEnum.UNAUTHORIZED === code
+        ResultEnum.UNAUTHORIZED === code ||
+        ResultEnum.NOT_LOGIN === code ||
+        ResultEnum.EXPIRED === code
       ) {
         storage.clear()
         window.location.href = import.meta.env.VITE_GLOB_AUTH_URL

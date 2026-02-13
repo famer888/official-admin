@@ -16,6 +16,10 @@ export enum ResultEnum {
   UNAUTHORIZED = 12,
   // ✅ 鉴权失败
   AUTH_FAILED = 401,
+  // 未登录
+  NOT_LOGIN = 6001,
+  //过期
+  EXPIRED = 6002,
   TYPE = 'success',
 }
 
