@@ -1,6 +1,6 @@
 import { RouteRecordRaw } from 'vue-router'
 import { Layout } from '@/router/constant'
-import { SettingOutlined } from '@vicons/antd'
+import { WalletOutlined } from '@vicons/antd'
 import { renderIcon } from '@/utils/index'
 // 系统设置
 const routes: Array<RouteRecordRaw> = [
@@ -11,7 +11,7 @@ const routes: Array<RouteRecordRaw> = [
     component: Layout,
     meta: {
       title: '款项管理',
-      icon: renderIcon(SettingOutlined),
+      icon: renderIcon(WalletOutlined),
       sort: 2,
     },
     children: [
