@@ -4,7 +4,8 @@ import { Alova } from '@/utils/http/alova/index'
  * @description: 获取用户信息
  */
 export function getUserInfo() {
-  return Alova.Get<InResult>('/admin-api/system/menu/getPermissionInfo', { cacheFor: null })
+  // return Alova.Get<InResult>('/admin-api/system/menu/getPermissionInfo', { cacheFor: null })
+  return Alova.Get<InResult>('/proxy/menu/getPermissionInfo', { cacheFor: null })
 }
 /**
  *
