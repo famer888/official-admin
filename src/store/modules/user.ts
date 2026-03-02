@@ -188,7 +188,8 @@ export const useUserStore = defineStore({
           this.setUserInfo({ username: '', email: '' })
           storage.remove(ACCESS_TOKEN)
           storage.remove(CURRENT_USER)
-          await this.getInfoByAuth()
+          window.location.href = window.origin + '/website'
+          // await this.getInfoByAuth()
         }
       } catch (error) {}
     },
