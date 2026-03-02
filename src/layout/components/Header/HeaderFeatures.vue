@@ -156,7 +156,7 @@ import wechatIcon from '@/assets/images/wechat.svg'
 import emailIcon from '@/assets/images/email.svg'
 import avatarIcon from '@/assets/images/avatar.svg'
 import { getUnreadMessageCount, getUnreadMessageList, markMessageRead, getAdManager } from '@/api/header'
-import { getUserInfo } from '@/api/system/user'
+import { useUser } from '@/store/modules/user'
 import { SSEManager } from '@/utils/sse'
 import { useGlobSetting } from '@/hooks/setting'
 import PopoverList from './PopoverList.vue'
@@ -167,6 +167,7 @@ const router = useRouter()
 const message = useMessage()
 const { apiUrl, urlPrefix } = useGlobSetting()
 const sseManager = new SSEManager(apiUrl, urlPrefix)
+const userStore = useUser()
 
 const showMessagePopover = ref(false)
 const showAllMessages = ref(false)
@@ -225,10 +226,9 @@ const fetchUnreadMessageCount = async () => {
 // 建立 SSE 订阅连接
 const initSSEConnection = async () => {
   try {
-    // 获取用户信息，从中获取 userId 和 balance
-    const res = await getUserInfo()
-    const userId = res?.data?.user?.userId
-    const balance = res?.data?.user?.balance
+    // 从数据仓库获取 userId 和 balance
+    const userId = userStore.info?.userId
+    const balance = userStore.info?.balance
     
     if (!userId) {
       console.warn('用户ID不存在，无法建立 SSE 连接')

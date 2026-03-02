@@ -14,6 +14,8 @@ export type UserInfoType = {
   username: string
   email: string
   isCompelte: number
+  userId?: string | number
+  balance?: number | string
 }
 
 export interface IUserState {
