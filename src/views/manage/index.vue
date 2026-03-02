@@ -97,7 +97,7 @@
   watch(
     userInfo.value,
     (newVal) => {
-      if (newVal && newVal.isCompelte === 1) {
+      if (newVal && newVal.isCompelte === 0) {
         openCollectUserInfoModal({ visible: true })
       }
     },
