@@ -1,6 +1,6 @@
 <template>
   <div
-    class="bg-[#F6F8FF] rounded-[15px] overflow-hidden flex flex-col md:flex-row gap-4 md:gap-6 aspect-[526/232]"
+    class="bg-[#F6F8FF] rounded-[15px] overflow-hidden flex flex-col md:flex-row gap-4 md:gap-2 aspect-[526/232]"
     style="container-type: inline-size;"
   >
   <div class="w-full md:w-[35.17%] h-full bg-[#EAECF6] flex items-center justify-center">
@@ -25,12 +25,15 @@
       class="flex-1 flex flex-col justify-center p-3 md:p-5"
       style="font-size: calc(100cqw * 0.0304);"
     >
-      <h2 
-        class="font-semibold text-gray-800 mb-2 md:mb-2 m-0 mt-1"
-        style="font-size: 1em;"
-      >
-        {{ adData.displayScenario || adData.title }}
-      </h2>
+      <div class="flex items-center gap-2 mb-2 md:mb-2 m-0 ">
+        <div class="bg-[#3A82F9] flex-shrink-0" style="width: 3px; height: 1.2rem;"></div>
+        <h2 
+          class="font-semibold text-gray-800"
+          style="font-size: 1em;"
+        >
+          {{ adData.displayScenario || adData.title }}
+        </h2>
+      </div>
       <n-tooltip 
         v-if="isTextTruncated" 
         trigger="hover" 
