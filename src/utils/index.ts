@@ -4,6 +4,14 @@ import { NIcon, NTag } from 'naive-ui'
 import { PageEnum } from '@/enums/pageEnum'
 import { isObject } from './is/index'
 import { cloneDeep } from 'lodash-es'
+import SvgIcon from '@/components/SvgIcon/SvgIcon.vue'
+
+/**
+ * svg 图标
+ * */
+export function renderSvgIcon(icon: string, size: number = 16, color: string = 'currentColor') {
+  return () => h(SvgIcon, { name: icon, size, color })
+}
 /**
  * render 图标
  * */

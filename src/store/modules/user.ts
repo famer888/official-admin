@@ -136,7 +136,6 @@ export const useUserStore = defineStore({
     // 获取用户信息
     async getInfo() {
       const res = await getUserInfoApi()
-      console.log(res)
 
       const { menus, merchantScopeList, permissions, productScopeList, user, showUrl, movieUrl } =
         res?.data ?? {}

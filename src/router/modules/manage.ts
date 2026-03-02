@@ -1,7 +1,6 @@
 import { RouteRecordRaw } from 'vue-router'
 import { Layout } from '@/router/constant'
-import { LaptopOutlined } from '@vicons/antd'
-import { renderIcon } from '@/utils/index'
+import { renderSvgIcon } from '@/utils/index'
 // 系统设置
 const routes: Array<RouteRecordRaw> = [
   {
@@ -11,7 +10,7 @@ const routes: Array<RouteRecordRaw> = [
     component: Layout,
     meta: {
       title: '管理中心',
-      icon: renderIcon(LaptopOutlined),
+      icon: renderSvgIcon('guanlizhongxin'),
       sort: 1,
     },
     children: [
