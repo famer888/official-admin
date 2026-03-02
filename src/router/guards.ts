@@ -18,7 +18,8 @@ export function createRouterGuards(router: Router) {
   router.beforeEach(async (to, from, next) => {
     const Loading = window['$loading'] || null
     Loading && Loading.start()
-
+    //auth 鉴权
+    userStore.getInfoByAuth()
     // 处理动态面包屑标题
     if (to.meta.breadcrumb === 'dynamic' && to.params.dynamicTitle) {
       to.meta.title = to.params.dynamicTitle
@@ -36,8 +37,9 @@ export function createRouterGuards(router: Router) {
     }
 
     const token = storage.get(ACCESS_TOKEN)
+    //是否开发环境，开发环境不进行鉴权
 
-    if (!token) {
+    if (!token && import.meta.env.DEV) {
       // You can access without permissions. You need to set the routing meta.ignoreAuth to true
       if (to.meta.ignoreAuth) {
         next()
@@ -67,9 +69,9 @@ export function createRouterGuards(router: Router) {
       return
     }
 
-    const userInfo = await userStore.getInfo()
+    await userStore.getInfo()
 
-    const routes = await asyncRouteStore.generateRoutes(userInfo?.data?.permissions)
+    const routes = await asyncRouteStore.generateRoutes([])
 
     // 动态添加可访问路由表
     routes.forEach((item) => {

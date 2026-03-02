@@ -1,8 +1,8 @@
 <template>
-  <div class="bg-white rounded-lg shadow-md p-6 relative before:content-[''] before:absolute before:top-0 before:left-1/2 before:-translate-x-1/2 before:w-[30%] before:h-[4px] before:bg-[#6389E1]">
+  <div class="bg-white rounded-lg p-6 relative h-full flex flex-col before:content-[''] before:absolute before:top-0 before:left-1/2 before:-translate-x-1/2 before:w-[30%] before:h-[4px] before:bg-[#6389E1]">
     <div class="flex items-center gap-3 mb-6">
       <img src="@/assets/images/supermarket/detail1.svg" alt="icon" class="w-7 h-7" />
-      <p class="text-2xl" style="color: #455980">{{ adData?.displayScenario || adData?.title }}</p>
+      <p class="text-[#455980] font-['PingFang_SC',sans-serif] text-2xl font-semibold">{{ adData?.displayScenario || adData?.title }}</p>
     </div>
     <!-- 手机预览图 -->
     <div class="mb-6 flex justify-center">
@@ -15,56 +15,72 @@
     </div>
 
     <!-- 广告信息 -->
-    <div class="space-y-4">
-      <div class="flex items-start gap-4">
-        <h3 class="text-lg font-semibold flex-shrink-0" style="color: #455980">广告类型:</h3>
-        <p style="color: #86909C">{{ adData?.displayScenario || adData?.title }}</p>
+    <div class="space-y-2">
+      <template v-for="(field, index) in infoFields" :key="index">
+        <div v-if="field.show" class="flex items-center gap-4">
+          <span v-if="field.label" class="flex-shrink-0 text-[#455980] font-['PingFang_SC',sans-serif] text-base font-semibold">{{ field.label }} :</span>
+          <span class="text-[#86909C] font-['PingFang_SC',sans-serif] text-base font-semibold">{{ field.value }}</span>
       </div>
-
-      <div class="flex items-start gap-4" v-if="adData?.advertiseDesc">
-        <p class="text-sm leading-relaxed" style="color: #86909C">{{ adData.advertiseDesc }}</p>
-      </div>
-
-      <div class="flex items-start gap-4">
-        <h3 class="text-lg font-semibold flex-shrink-0" style="color: #455980">展示场景:</h3>
-        <p class="text-sm" style="color: #86909C">{{ adData?.displayScenario || '所有应用的启动页' }}</p>
-      </div>
-
-      <div class="flex items-start gap-4">
-        <h3 class="text-lg font-semibold flex-shrink-0" style="color: #455980">支持格式:</h3>
-        <p class="text-sm" style="color: #86909C">{{ adData?.fileFormat || 'jpg、JPEG、PNG等静态图片' }}</p>
-      </div>
-
-      <div class="flex items-start gap-4">
-        <h3 class="text-lg font-semibold flex-shrink-0" style="color: #455980">样式尺寸:</h3>
-        <p class="text-sm" style="color: #86909C">{{ adData?.styleSizeDesc  }}</p>
-      </div>
-
-      <div class="flex items-start gap-4">
-        <h3 class="text-lg font-semibold flex-shrink-0" style="color: #455980">预估曝光量:</h3>
-        <p class="text-sm" style="color: #86909C">{{ adData?.estimatedExposure ? `${(adData.estimatedExposure / 10000).toFixed(0)}万/日` : '0万/日' }}</p>
-      </div>
-
-      <div class="flex items-start gap-4">
-        <h3 class="text-lg font-semibold flex-shrink-0" style="color: #455980">模式:</h3>
-        <p class="text-sm" style="color: #86909C">{{ adData?.adMode  }}</p>
-      </div>
+      </template>
     </div>
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue'
-import type { AdTypeData } from '../types'
+<script setup>
+import { computed } from 'vue'
 
-export default defineComponent({
-  name: 'AdDetailCard',
-  props: {
+const props = defineProps({
     adData: {
-      type: Object as () => AdTypeData | undefined,
+    type: Object,
       default: undefined,
     },
-  },
+})
+
+const infoFields = computed(() => {
+  return [
+    {
+      label: '广告类型',
+      value: props.adData?.displayScenario || props.adData?.title || '',
+      show: true,
+      valueClass: '',
+    },
+    {
+      label: '',
+      value: props.adData?.advertiseDesc || '',
+      show: !!props.adData?.advertiseDesc,
+      valueClass: 'text-sm leading-relaxed',
+    },
+    {
+      label: '展示场景',
+      value: props.adData?.displayScenario || '所有应用的启动页',
+      show: true,
+      valueClass: 'text-sm',
+    },
+    {
+      label: '支持格式',
+      value: props.adData?.fileFormat || 'jpg、JPEG、PNG等静态图片',
+      show: true,
+      valueClass: 'text-sm',
+    },
+    {
+      label: '样式尺寸',
+      value: props.adData?.styleSizeDesc || '',
+      show: true,
+      valueClass: 'text-sm',
+    },
+    {
+      label: '预估曝光量',
+      value: props.adData?.estimatedExposure ? `${(props.adData.estimatedExposure / 10000).toFixed(0)}万/日` : '0万/日',
+      show: true,
+      valueClass: 'text-sm',
+    },
+    {
+      label: '模式',
+      value: props.adData?.adMode || '',
+      show: true,
+      valueClass: 'text-sm',
+    },
+  ]
 })
 </script>
 

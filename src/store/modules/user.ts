@@ -3,17 +3,19 @@ import { store } from '@/store'
 import { ACCESS_TOKEN, CURRENT_USER, IS_SCREENLOCKED } from '@/store/mutation-types'
 import { ResultEnum } from '@/enums/httpEnum'
 import { transformTree } from '@/utils'
-import { getUserInfo as getUserInfoApi, login, logout as out } from '@/api/system/user'
+import { getUserInfo as getUserInfoApi, login, logoutAuth, logout as out } from '@/api/system/user'
 import { getAllOptions } from '@/api/common'
 import { storage } from '@/utils/Storage'
 import { encrypt } from '@/utils/rsa.js'
 import { typeMap } from '@/constants'
-
+import { getUserInfoByAuth } from '@/api/system/user'
 export type UserInfoType = {
   // TODO: add your own data
   username: string
-  email: string,
+  email: string
   isCompelte: number
+  userId?: string | number
+  balance?: number | string
 }
 
 export interface IUserState {
@@ -28,6 +30,8 @@ export interface IUserState {
   productList: any[]
   listMap: any
   base: any
+  showUrl: string
+  movieUrl: string
 }
 
 export const useUserStore = defineStore({
@@ -44,6 +48,8 @@ export const useUserStore = defineStore({
     productList: [],
     listMap: {},
     base: null,
+    showUrl: '',
+    movieUrl: '',
   }),
   getters: {
     getToken(): string {
@@ -93,13 +99,19 @@ export const useUserStore = defineStore({
     setBase(info) {
       this.base = info
     },
+    setShowUrl(showUrl: string) {
+      this.showUrl = showUrl
+    },
+    setMovieUrl(movieUrl: string) {
+      this.movieUrl = movieUrl
+    },
     // 登录
     async login(params: any) {
       const { loginEmail, password, securityCode } = params
       const response = await login({
         loginEmail: loginEmail,
         password: password,
-        // securityCode: securityCode,
+        recaptchaToken: '123456',
       })
 
       const { data, code } = response
@@ -109,42 +121,55 @@ export const useUserStore = defineStore({
         storage.set(IS_SCREENLOCKED, false)
         this.setToken(data.token)
       }
+
       return response
+    },
+    async getInfoByAuth() {
+      if (import.meta.env.DEV) {
+        return
+      }
+      await getUserInfoByAuth()
+      // console.log('🚀 ~ response:', response)
+      // if (response.code === ResultEnum.SUCCESS) {
+      //   this.setUserInfo(response.data)
+      // }
     },
 
     // 获取用户信息
     async getInfo() {
       const res = await getUserInfoApi()
-      console.log(res);
-      
-      const { menus, merchantScopeList, permissions, productScopeList, user, showUrl } = res?.data ?? {}
-      this.setMenus(transformTree(menus))
-      const merchantData = merchantScopeList?.map((item) => ({
-        ...item,
-        value: item.merchantCode,
-        label: item.merchantName,
-      }))
-      this.setMerchantList(merchantData)
-      const productList =
-        productScopeList?.map((item) => ({
-          ...item,
-          key: item.merchantCode,
-          label: item.merchantName,
-          ...(item?.productScopeList?.length
-            ? {
-                children: item.productScopeList?.map((p) => ({
-                  ...p,
-                  key: p.appCode,
-                  label: p.appName,
-                })),
-              }
-            : {}),
-        })) ?? []
-      this.setProductList(productList)
-      this.setPermissions(permissions)
+
+      const { menus, merchantScopeList, permissions, productScopeList, user, showUrl, movieUrl } =
+        res?.data ?? {}
+      // this.setMenus(transformTree(menus))
+      // const merchantData = merchantScopeList?.map((item) => ({
+      //   ...item,
+      //   value: item.merchantCode,
+      //   label: item.merchantName,
+      // }))
+      // this.setMerchantList(merchantData)
+      // const productList =
+      //   productScopeList?.map((item) => ({
+      //     ...item,
+      //     key: item.merchantCode,
+      //     label: item.merchantName,
+      //     ...(item?.productScopeList?.length
+      //       ? {
+      //           children: item.productScopeList?.map((p) => ({
+      //             ...p,
+      //             key: p.appCode,
+      //             label: p.appName,
+      //           })),
+      //         }
+      //       : {}),
+      //   })) ?? []
+      // this.setProductList(productList)
+      // this.setPermissions(permissions)
       this.setUserInfo(user)
       this.setAvatar(user?.avatar)
       this.setBase(showUrl)
+      this.setShowUrl(showUrl)
+      this.setMovieUrl(movieUrl)
       return res
     },
 
@@ -159,19 +184,26 @@ export const useUserStore = defineStore({
     // 登出
     async logout() {
       try {
-        const res = await out({})
-        if (res?.code === 0) {
+        const res = await logoutAuth()
+        if (res) {
+          $message.success('成功退出登录')
           this.setPermissions([])
           this.setUserInfo({ username: '', email: '' })
           storage.remove(ACCESS_TOKEN)
           storage.remove(CURRENT_USER)
+          await this.getInfoByAuth()
         }
-      } catch (error) {}
+      } catch (error) { }
     },
   },
 })
 
 // Need to be used outside the setup
 export function useUser() {
-  return useUserStore(store)
+  const userStore = useUserStore(store)
+  // 设置全局引用，供 useGlobSetting 使用，避免循环依赖
+  if (typeof window !== 'undefined') {
+    (window as any).__userStore = userStore
+  }
+  return userStore
 }

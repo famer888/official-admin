@@ -1,24 +1,20 @@
 <template>
-  <div class="bg-white rounded-lg shadow-md p-6 relative before:content-[''] before:absolute before:top-0 before:left-1/2 before:-translate-x-1/2 before:w-[30%] before:h-[4px] before:bg-[#E79D9D]">
+  <div class="bg-white rounded-lg p-6 relative h-full flex flex-col before:content-[''] before:absolute before:top-0 before:left-1/2 before:-translate-x-1/2 before:w-[30%] before:h-[4px] before:bg-[#E79D9D]">
     <div class="flex items-center gap-3 mb-6">
       <img src="@/assets/images/supermarket/detail4.svg" alt="icon" class="w-7 h-7" />
-      <p class="text-2xl" style="color: #455980">预估价格</p>
+      <p class="text-2xl text-[#455980] font-['PingFang_SC',sans-serif] font-semibold">预估价格</p>
     </div>
     
     <div class="space-y-4 mb-6">
-      <div class="flex items-center gap-3">
-        <div class="text-sm font-medium text-white px-3 py-1 rounded-lg bg-blue-500 text-center w-14">7日</div>
-        <span class="text-lg font-bold text-gray-700">{{ adData?.price7d ? adData.price7d.toFixed(2) : '0.00' }}</span>
-        <img src="@/assets/images/supermarket/detail5.svg" alt="$" class="w-5 h-5" />
-      </div>
-      <div class="flex items-center gap-3">
-        <div class="text-sm font-medium text-white px-3 py-1 rounded-lg bg-purple-400 text-center w-14">14日</div>
-        <span class="text-lg font-bold text-gray-700">{{ adData?.price14d ? adData.price14d.toFixed(2) : '0.00' }}</span>
-        <img src="@/assets/images/supermarket/detail5.svg" alt="$" class="w-5 h-5" />
-      </div>
-      <div class="flex items-center gap-3">
-        <div class="text-sm font-medium text-white px-3 py-1 rounded-lg text-center w-14" style="background-color: #E79D9D">30日</div>
-        <span class="text-lg font-bold text-gray-700">{{ adData?.price30d ? adData.price30d.toFixed(2) : '0.00' }}</span>
+      <div v-for="priceItem in priceItems" :key="priceItem.key" class="flex items-center gap-3">
+        <div 
+          class="text-sm font-medium text-white px-3 py-1 rounded-lg text-center w-14"
+          :class="priceItem.bgClass"
+          :style="priceItem.bgStyle"
+        >
+          {{ priceItem.label }}
+        </div>
+        <span class="text-lg font-bold text-gray-700">{{ priceItem.value }}</span>
         <img src="@/assets/images/supermarket/detail5.svg" alt="$" class="w-5 h-5" />
       </div>
     </div>
@@ -32,30 +28,64 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue'
+<script setup>
+import { computed } from 'vue'
 import { useMessage } from 'naive-ui'
-import type { AdTypeData } from '../types'
 
-export default defineComponent({
-  name: 'PriceCard',
-  props: {
-    adData: {
-      type: Object as () => AdTypeData | undefined,
-      default: undefined,
+const props = defineProps({
+  adData: {
+    type: Object,
+    default: undefined,
+  },
+})
+
+const message = useMessage()
+
+const handleNegotiate = () => {
+  const contactDetails = props.adData?.contactDetails
+  if (!contactDetails) {
+    message.warning('客服联系方式未配置')
+    return
+  }
+
+  // 构建 Telegram 链接
+  let tgUrl = contactDetails.trim()
+    // 如果已经是完整的 URL（http 或 tg://），直接使用
+  if (tgUrl.startsWith('http') || tgUrl.startsWith('tg://')) {
+    // 已经是完整链接，直接使用
+  } else {
+    const username = tgUrl.startsWith('@') ? tgUrl.slice(1) : tgUrl
+    tgUrl = `tg://resolve?domain=${username}`
+  }
+
+  // 打开 Telegram 链接
+  window.open(tgUrl, '_blank')
+}
+
+const priceItems = computed(() => {
+  return [
+    {
+      key: '7d',
+      label: '7日',
+      value: props.adData?.price7d ? props.adData.price7d.toFixed(2) : '0.00',
+      bgClass: 'bg-blue-500',
+      bgStyle: {},
     },
-  },
-  setup() {
-    const message = useMessage()
-
-    const handleNegotiate = () => {
-      message.info('洽谈购买功能')
-    }
-
-    return {
-      handleNegotiate,
-    }
-  },
+    {
+      key: '14d',
+      label: '14日',
+      value: props.adData?.price14d ? props.adData.price14d.toFixed(2) : '0.00',
+      bgClass: 'bg-purple-400',
+      bgStyle: {},
+    },
+    {
+      key: '30d',
+      label: '30日',
+      value: props.adData?.price30d ? props.adData.price30d.toFixed(2) : '0.00',
+      bgClass: '',
+      bgStyle: { backgroundColor: '#E79D9D' },
+    },
+  ]
 })
 </script>
 

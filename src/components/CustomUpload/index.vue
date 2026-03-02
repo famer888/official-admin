@@ -16,7 +16,9 @@
   // ===== 基础配置 =====
   const userStore = useUser()
   const base = userStore.getBase || ''
-  const action = '/api/admin-api/system/common/uploadFile'
+  const action = import.meta.env.DEV
+    ? '/api/admin-api/system/common/uploadFile'
+    : '/api/proxy/common/uploadFile'
   const isMulti = attrs.max !== 1
   const fileList = ref([])
 
