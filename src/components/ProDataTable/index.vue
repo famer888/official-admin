@@ -1,6 +1,6 @@
 <template>
   <div class="mt-3">
-    <Header :title="title">
+    <Header :title="title" :noWrapperStyle="restProps.noWrapperStyle">
       <template #filterForm>
         <Form
           ref="formRef"
@@ -38,7 +38,7 @@
   import { usePagination } from './hooks'
   import { removeEmpty } from '@/utils/removeEmpty'
 
-  const restProps = useAttrs()
+  const restProps = useAttrs() as unknown as any
 
   const form = useTemplateRef<FormActions>('formRef')
   const table = useTemplateRef<ComponentPublicInstance>('tableRef')

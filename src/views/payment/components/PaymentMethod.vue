@@ -21,17 +21,17 @@
 <script setup>
   import { getPayMethod } from '../useData'
   import { useUser } from '@/store/modules/user'
+  import { inject } from 'vue'
 
   const user = useUser()
+  const { formValue } = inject('info')
 
   const payMethod = computed(() => getPayMethod(user.listMap.payType || []))
-
-  const emit = defineEmits(['change'])
 
   const current = ref(0)
 
   const handleChange = (value) => {
     current.value = value
-    emit('change', value)
+    formValue.payType = value
   }
 </script>

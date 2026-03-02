@@ -15,13 +15,14 @@
         >
       </div>
     </div>
-    <div>
+    <div class="mt-5">
+      <div class="text-base font-bold">存款记录</div>
       <pro-data-table
+        ref="tableRef"
         :columns="columns"
-        :title="{
-          title: '存款记录',
-        }"
         :request="run"
+        :bordered="false"
+        :noWrapperStyle="true"
       />
     </div>
   </div>
@@ -33,22 +34,24 @@
   import { useDialog } from 'naive-ui'
   import Deposit from './components/Deposit.vue'
   import { useUser } from '@/store/modules/user'
+  import { provide } from 'vue'
 
   const dialog = useDialog()
   const user = useUser()
+  const tableRef = ref('')
 
-  const columns = computed(() => getColumns())
+  const columns = computed(() => getColumns(tableRef.value.reload))
   const { run } = useRequest(getRechargeOrderPage, { manual: true })
 
   const handleClick = () => {
     dialog.create({
+      class: 'upload-image-container',
       titleClass: 'text-center font-bold',
       showIcon: false,
       title: () => h('div', { class: 'w-full text-[16px]' }, '存入资金'),
       content: () =>
         h(Deposit, {
           onCancel: handleCancel,
-          onSubmit: handleSubmit,
         }),
       class: 'w-[600px]',
     })
@@ -56,6 +59,7 @@
 
   const handleCancel = () => {
     dialog.destroyAll()
+    tableRef.value?.reload()
   }
 
   const handleSubmit = (values) => {
