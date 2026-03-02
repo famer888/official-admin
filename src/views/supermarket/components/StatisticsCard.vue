@@ -4,7 +4,7 @@
       <img src="@/assets/images/supermarket/detail2.svg" alt="icon" class="w-7 h-7" />
       <p class="text-2xl text-[#455980] font-['PingFang_SC',sans-serif] font-semibold">广告统计数据</p>
     </div>
-    <p class="text-sm mb-6 text-[#86909C]">统计数据截止于2026-11-21</p>
+    <p class="text-sm mb-6 text-[#86909C]">统计数据截止于{{ currentDate }}</p>
 
     <div class="grid grid-cols-2 gap-6">
       <div v-for="(column, colIndex) in chartColumns" :key="colIndex" class="space-y-4">
@@ -47,6 +47,7 @@
 
 <script setup>
 import { computed } from 'vue'
+import { getCurrentDate } from '@/utils/dateUtil'
 
 const props = defineProps({
   adData: {
@@ -54,6 +55,9 @@ const props = defineProps({
     default: undefined,
   },
 })
+
+// 获取当前日期
+const currentDate = computed(() => getCurrentDate())
 
 // 计算圆形图的进度百分比（基于最大值）
 const maxClicks = computed(() => {
