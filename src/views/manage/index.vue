@@ -79,7 +79,6 @@
   const { openCollectUserInfoModal } = useCollectUserInfoModal()
 
   const router = useRouter()
-  const { VITE_WEBSITE_URL } = import.meta.env
 
   // 视频配置（可以从接口获取或通过props传入）
   const videoUrl = ref('') // 视频URL，如果不传则只显示封面
@@ -92,7 +91,7 @@
 
   // 跳转到官网帮助中心页
   const goToHelpCenter = () => {
-    window.open(VITE_WEBSITE_URL + '/contact/help-center', '_blank')
+    window.open(window.origin + '/contact/help-center', '_blank')
   }
   watch(
     userInfo.value,
