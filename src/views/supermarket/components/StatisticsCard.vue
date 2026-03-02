@@ -33,11 +33,11 @@
                 />
               </svg>
               <div class="absolute inset-0 flex items-center justify-center">
-                <span class="font-bold" :style="{ fontSize: chart.fontSize, color: chart.color }">{{ chart.displayValue }}</span>
+                <span class="font-bold text-4xl" :style="{ color: chart.color }">{{ chart.displayValue }}</span>
               </div>
             </div>
-            <h4 class="font-medium text-center mt-2" style="color: #455980; font-size: 1.125rem;">{{ chart.title }}</h4>
-            <p style="color: #455980; font-size: 0.875rem;">{{ chart.description }}</p>
+            <h4 class="font-medium text-center mt-2 text-[#455980] text-lg">{{ chart.title }}</h4>
+            <p class="text-[#455980] text-sm">{{ chart.description }}</p>
           </div>
         </div>
       </div>
