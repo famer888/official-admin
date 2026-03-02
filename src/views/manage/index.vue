@@ -18,7 +18,7 @@
         </div>
         <n-button
           :bordered="false"
-          class="!text-[16px] border-none !rounded-[4px] !bg-white !text-[#3A82F9] transition-all duration-300 px-8 py-4"
+          class="!text-[16px] border-none !rounded-[4px] !bg-white !text-[#3A82F9] transition-all duration-300 px-8 py-6"
         >
           查看广告超市
         </n-button>
@@ -40,12 +40,12 @@
           />
         </div>
         <div class="flex-1 flex flex-col justify-end gap-4 md:gap-6 mt-2 md:mt-0">
-          <div class="text-[16px] text-[#455980] leading-relaxed">
+          <div class="text-[16px] font-medium text-[#455980] leading-relaxed">
             有什么不清楚,可以查看常见问题。亦可联系您专属广告经理
           </div>
           <n-button
             :bordered="false"
-            class="!h-7 !px-8 md:mb-6 !py-4 !border-none !text-[16px] !rounded-[4px] !bg-white !text-[#3A82F9] self-center md:self-start transition-all duration-300"
+            class="!h-7 !px-8 md:mb-6 !py-6 !border-none !text-[16px] !rounded-[4px] !bg-white !text-[#3A82F9] self-center md:self-start transition-all duration-300"
           >
             前往帮助中心
           </n-button>
@@ -94,9 +94,13 @@
   const goToHelpCenter = () => {
     window.open(VITE_WEBSITE_URL + '/contact/help-center', '_blank')
   }
-  watch (userInfo.value, (newVal) => {
-    if (newVal&&newVal.isCompelte === 0) {
-      openCollectUserInfoModal({ visible: true })
-    }
-  }, { immediate: true })
+  watch(
+    userInfo.value,
+    (newVal) => {
+      if (newVal && newVal.isCompelte === 1) {
+        openCollectUserInfoModal({ visible: true })
+      }
+    },
+    { immediate: true }
+  )
 </script>
