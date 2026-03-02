@@ -2,7 +2,7 @@
   <div class="bg-white rounded-lg p-6 relative h-full flex flex-col before:content-[''] before:absolute before:top-0 before:left-1/2 before:-translate-x-1/2 before:w-[30%] before:h-[4px] before:bg-[#6389E1]">
     <div class="flex items-center gap-3 mb-6">
       <img src="@/assets/images/supermarket/detail1.svg" alt="icon" class="w-7 h-7" />
-      <p class="text-2xl" style="color: #455980">{{ adData?.displayScenario || adData?.title }}</p>
+      <p class="text-[#455980] font-['PingFang_SC',sans-serif] text-2xl font-semibold">{{ adData?.displayScenario || adData?.title }}</p>
     </div>
     <!-- 手机预览图 -->
     <div class="mb-6 flex justify-center">
@@ -15,11 +15,11 @@
     </div>
 
     <!-- 广告信息 -->
-    <div class="space-y-4">
+    <div class="space-y-2">
       <template v-for="(field, index) in infoFields" :key="index">
-        <div v-if="field.show" class="flex items-start gap-4">
-          <h3 v-if="field.label" class="text-lg font-medium flex-shrink-0" style="color: #455980">{{ field.label }}:</h3>
-          <p :class="field.valueClass" style="color: #86909C">{{ field.value }}</p>
+        <div v-if="field.show" class="flex items-center gap-4">
+          <span v-if="field.label" class="flex-shrink-0 text-[#455980] font-['PingFang_SC',sans-serif] text-sm">{{ field.label }} :</span>
+          <span class="text-[#86909C] font-['PingFang_SC',sans-serif] text-sm">{{ field.value }}</span>
       </div>
       </template>
     </div>

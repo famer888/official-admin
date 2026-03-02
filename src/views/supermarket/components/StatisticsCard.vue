@@ -2,9 +2,9 @@
   <div class="bg-white rounded-lg p-6 relative h-full flex flex-col before:content-[''] before:absolute before:top-0 before:left-1/2 before:-translate-x-1/2 before:w-[30%] before:h-[4px] before:bg-[#5ABBB2]">
     <div class="flex items-center gap-3 mb-4">
       <img src="@/assets/images/supermarket/detail2.svg" alt="icon" class="w-7 h-7" />
-      <p class="text-2xl" style="color: #455980">广告统计数据</p>
+      <p class="text-2xl text-[#455980] font-['PingFang_SC',sans-serif] font-semibold">广告统计数据</p>
     </div>
-    <p class="text-sm mb-6" style="color: #86909C">统计数据截止于2026-11-21</p>
+    <p class="text-sm mb-6 text-[#86909C]">统计数据截止于2026-11-21</p>
 
     <div class="grid grid-cols-2 gap-6">
       <div v-for="(column, colIndex) in chartColumns" :key="colIndex" class="space-y-4">

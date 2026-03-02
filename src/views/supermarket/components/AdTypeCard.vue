@@ -1,6 +1,6 @@
 <template>
   <div
-    class="bg-[#F6F8FF] rounded-[15px] overflow-hidden flex flex-col md:flex-row gap-4 md:gap-6 transition-all duration-300 hover:-translate-y-0.5 aspect-[526/232]"
+    class="bg-[#F6F8FF] rounded-[15px] overflow-hidden flex flex-col md:flex-row gap-4 md:gap-6 aspect-[526/232]"
     style="container-type: inline-size;"
   >
   <div class="w-full md:w-[35.17%] h-full bg-[#EAECF6] flex items-center justify-center">
@@ -63,7 +63,7 @@
       <n-button
         type="primary"
         class="rounded-full border-2 border-[#3a82f9] text-[#3a82f9] bg-white hover:bg-[#3a82f9] hover:text-white mt-3 md:mt-6 w-[35.8%] h-[18.97%]"
-        style="font-size: 1em;"
+        style="font-size: clamp(0.7em, 0.9em, 1em); white-space: nowrap; padding: 0 0.5em; min-width: 0;"
         @click="handleBuy"
       >
         立即选购

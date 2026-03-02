@@ -2,7 +2,7 @@
   <div class="bg-white rounded-lg p-6 relative h-full flex flex-col before:content-[''] before:absolute before:top-0 before:left-1/2 before:-translate-x-1/2 before:w-[30%] before:h-[4px] before:bg-[#E79D9D]">
     <div class="flex items-center gap-3 mb-6">
       <img src="@/assets/images/supermarket/detail4.svg" alt="icon" class="w-7 h-7" />
-      <p class="text-2xl" style="color: #455980">预估价格</p>
+      <p class="text-2xl text-[#455980] font-['PingFang_SC',sans-serif] font-semibold">预估价格</p>
     </div>
     
     <div class="space-y-4 mb-6">
