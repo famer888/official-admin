@@ -28,6 +28,8 @@ export interface IUserState {
   productList: any[]
   listMap: any
   base: any
+  showUrl: string
+  movieUrl: string
 }
 
 export const useUserStore = defineStore({
@@ -44,6 +46,8 @@ export const useUserStore = defineStore({
     productList: [],
     listMap: {},
     base: null,
+    showUrl: '',
+    movieUrl: '',
   }),
   getters: {
     getToken(): string {
@@ -93,6 +97,12 @@ export const useUserStore = defineStore({
     setBase(info) {
       this.base = info
     },
+    setShowUrl(showUrl: string) {
+      this.showUrl = showUrl
+    },
+    setMovieUrl(movieUrl: string) {
+      this.movieUrl = movieUrl
+    },
     // 登录
     async login(params: any) {
       const { loginEmail, password, securityCode } = params
@@ -128,7 +138,7 @@ export const useUserStore = defineStore({
       const res = await getUserInfoApi()
       console.log(res)
 
-      const { menus, merchantScopeList, permissions, productScopeList, user, showUrl } =
+      const { menus, merchantScopeList, permissions, productScopeList, user, showUrl, movieUrl } =
         res?.data ?? {}
       // this.setMenus(transformTree(menus))
       // const merchantData = merchantScopeList?.map((item) => ({
@@ -157,6 +167,8 @@ export const useUserStore = defineStore({
       this.setUserInfo(user)
       this.setAvatar(user?.avatar)
       this.setBase(showUrl)
+      this.setShowUrl(showUrl)
+      this.setMovieUrl(movieUrl)
       return res
     },
 
@@ -180,12 +192,17 @@ export const useUserStore = defineStore({
           storage.remove(CURRENT_USER)
           await this.getInfoByAuth()
         }
-      } catch (error) {}
+      } catch (error) { }
     },
   },
 })
 
 // Need to be used outside the setup
 export function useUser() {
-  return useUserStore(store)
+  const userStore = useUserStore(store)
+  // 设置全局引用，供 useGlobSetting 使用，避免循环依赖
+  if (typeof window !== 'undefined') {
+    (window as any).__userStore = userStore
+  }
+  return userStore
 }
