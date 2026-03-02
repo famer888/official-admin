@@ -125,14 +125,11 @@ export const useUserStore = defineStore({
       return response
     },
     async getInfoByAuth() {
-      if (import.meta.env.DEV) {
-        return
-      }
-      await getUserInfoByAuth()
-      // console.log('🚀 ~ response:', response)
-      // if (response.code === ResultEnum.SUCCESS) {
-      //   this.setUserInfo(response.data)
+      // if (import.meta.env.DEV) {
+      //   return
       // }
+      // await getUserInfoByAuth()
+      this.getInfo()
     },
 
     // 获取用户信息
@@ -193,7 +190,7 @@ export const useUserStore = defineStore({
           storage.remove(CURRENT_USER)
           await this.getInfoByAuth()
         }
-      } catch (error) { }
+      } catch (error) {}
     },
   },
 })
@@ -203,7 +200,7 @@ export function useUser() {
   const userStore = useUserStore(store)
   // 设置全局引用，供 useGlobSetting 使用，避免循环依赖
   if (typeof window !== 'undefined') {
-    (window as any).__userStore = userStore
+    ;(window as any).__userStore = userStore
   }
   return userStore
 }

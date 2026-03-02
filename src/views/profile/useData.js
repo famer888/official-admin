@@ -141,6 +141,7 @@ const passwordSchemasBase = [
     required: true,
     giProps: { span: 13 },
     componentProps: {
+     style: { minWidth: '200px' },
       placeholder: '请输入原密码',
       type: 'password',
       showPasswordOn: 'click',
@@ -167,6 +168,7 @@ const passwordSchemasBase = [
     required: true,
     giProps: { span: 13 },
     componentProps: {
+      style: { minWidth: '200px' },
       placeholder: '请输入新密码',
       type: 'password',
       showPasswordOn: 'click',
@@ -193,6 +195,7 @@ const passwordSchemasBase = [
     required: true,
     giProps: { span: 13 },
     componentProps: {
+      style: { minWidth: '200px' },
       placeholder: '请再次输入新密码',
       type: 'password',
       showPasswordOn: 'click',
