@@ -13,8 +13,8 @@
         class="relative z-10 h-full flex flex-col sm:flex-row items-center justify-between gap-3 px-5 sm:px-6"
       >
         <div class="text-white text-center sm:text-left">
-          <div class="text-[28px]">立即查看可用广告位</div>
-          <div class="text-[28px] pl-10">开启收入倍增之路!</div>
+          <div class="text-[32px]">立即查看可用广告位</div>
+          <div class="text-[32px] pl-10">开启收入倍增之路!</div>
         </div>
         <n-button
           :bordered="false"
@@ -29,7 +29,7 @@
     <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
       <!-- 左侧帮助中心 -->
       <div
-        class="bg-[#F4F5F9] rounded-md p-4 flex flex-col md:flex-row items-center md:items-center gap-4 cursor-pointer shadow-sm transition-all duration-300 text-center md:text-left h-auto md:h-[238px]"
+        class="bg-[#F4F5F9] overflow-hidden rounded-md p-4 flex flex-col md:flex-row items-center md:items-center gap-4 cursor-pointer shadow-sm transition-all duration-300 text-center md:text-left h-auto md:h-[238px]"
         @click="goToHelpCenter"
       >
         <div class="flex-shrink-0 w-auto h-24 md:h-full relative">
@@ -79,7 +79,6 @@
   const { openCollectUserInfoModal } = useCollectUserInfoModal()
 
   const router = useRouter()
-  const { VITE_WEBSITE_URL } = import.meta.env
 
   // 视频配置（可以从接口获取或通过props传入）
   const videoUrl = ref('') // 视频URL，如果不传则只显示封面
@@ -92,7 +91,7 @@
 
   // 跳转到官网帮助中心页
   const goToHelpCenter = () => {
-    window.open(VITE_WEBSITE_URL + '/contact/help-center', '_blank')
+    window.open(window.origin + '/contact/help-center', '_blank')
   }
   watch(
     userInfo.value,

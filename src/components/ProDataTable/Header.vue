@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-white rounded-2xl shadow border pb-2">
+  <div :class="{ 'bg-white rounded-2xl shadow border pb-2': !noWrapperStyle }">
     <div
       v-if="title !== false"
       class="flex p-4 border-b border-[#e5e5e5] justify-between items-center"
@@ -25,7 +25,11 @@
 <script lang="ts" setup>
   import { DataTableProps } from './types'
 
-  const props = withDefaults(defineProps<{ title: DataTableProps['title'] }>(), {
-    title: () => false,
-  })
+  const props = withDefaults(
+    defineProps<{ title: DataTableProps['title']; noWrapperStyle?: boolean }>(),
+    {
+      title: () => false,
+      noWrapperStyle: false,
+    }
+  )
 </script>

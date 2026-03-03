@@ -1,5 +1,7 @@
 <template>
-  <n-upload v-bind="uploadProps" @update:file-list="handleUpdate" @remove="handleRemove" />
+  <n-upload v-bind="uploadProps" @update:file-list="handleUpdate" @remove="handleRemove">
+    <slot></slot>
+  </n-upload>
 </template>
 
 <script setup>

@@ -149,7 +149,7 @@ export const Alova = createAlova({
         ResultEnum.EXPIRED === code
       ) {
         storage.clear()
-        window.location.href = import.meta.env.VITE_GLOB_AUTH_URL
+        window.location.href = window.origin + '/auth'
       }
 
       // 需要登录

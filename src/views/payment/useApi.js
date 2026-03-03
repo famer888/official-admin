@@ -9,3 +9,8 @@ export const getRechargeOrderPage = (data) => {
 export const createOrder = (data) => {
     return Alova.Post('/admin-api/payment/pay/createOrder', data)
 }
+
+// 上传支付凭据
+export const submitOrderScreenshot = (data) => {
+    return Alova.Post('/admin-api/payment/pay/submitOrderScreenshot', data)
+}

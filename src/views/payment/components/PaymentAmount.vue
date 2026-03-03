@@ -12,7 +12,7 @@
         :show-button="false"
         :readonly="showBigPayment"
         clearable
-        :min="0"
+        :min="100"
         :max="1500"
         placeholder=""
       >
@@ -57,7 +57,7 @@
     </div>
   </template>
   <template v-else>
-    <payment-upload @change="handlePayVoucherChange" />
+    <payment-upload />
   </template>
 </template>
 <script setup>
@@ -65,10 +65,10 @@
   import PaymentUpload from './PaymentUpload.vue'
   import copyUrl from '@/assets/images/copy.svg'
   import { useMessage } from 'naive-ui'
-
-  const emits = defineEmits(['changeAmount', 'changePayVoucher'])
+  import { inject } from 'vue'
 
   const message = useMessage()
+  const { formValue } = inject('info')
 
   const currentAmount = reactive({
     value: undefined,
@@ -82,12 +82,9 @@
 
   const handleChange = (amount) => {
     Object.assign(currentAmount, amount)
-    emits('changeAmount', amount.value)
     showBigPayment.value = !amount.value
-  }
 
-  const handlePayVoucherChange = (value) => {
-    emits('changePayVoucher', value)
+    formValue.payFee = amount.value
   }
 
   const copyTelegram = () => {
