@@ -391,6 +391,8 @@
       activeFeature.value = 'message'
       // 获取消息列表（不等待，loading 会在 fetchMessageList 中控制）
       fetchMessageList()
+      //获取用户信息
+      userStore.getInfo()
     } else {
       // 如果弹窗已打开，关闭弹窗
       showMessagePopover.value = false

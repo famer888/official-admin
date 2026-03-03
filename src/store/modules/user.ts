@@ -124,18 +124,10 @@ export const useUserStore = defineStore({
 
       return response
     },
-    async getInfoByAuth() {
-      // if (import.meta.env.DEV) {
-      //   return
-      // }
-      // await getUserInfoByAuth()
-      this.getInfo()
-    },
 
     // 获取用户信息
     async getInfo() {
-      const res = await getUserInfoApi()
-
+      const res = await getUserInfoApi().finally(this.useAllOptions)
       const { menus, merchantScopeList, permissions, productScopeList, user, showUrl, movieUrl } =
         res?.data ?? {}
       // this.setMenus(transformTree(menus))
@@ -189,7 +181,6 @@ export const useUserStore = defineStore({
           storage.remove(ACCESS_TOKEN)
           storage.remove(CURRENT_USER)
           window.location.href = window.origin + '/website'
-          // await this.getInfoByAuth()
         }
       } catch (error) {}
     },
