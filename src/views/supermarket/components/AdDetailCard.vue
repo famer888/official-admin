@@ -2,7 +2,7 @@
   <div class="bg-white rounded-lg p-6 relative h-full flex flex-col before:content-[''] before:absolute before:top-0 before:left-1/2 before:-translate-x-1/2 before:w-[30%] before:h-[4px] before:bg-[#6389E1]">
     <div class="flex items-center gap-3 mb-6">
       <img src="@/assets/images/supermarket/detail1.svg" alt="icon" class="w-7 h-7" />
-      <p class="text-[#455980] font-['PingFang_SC',sans-serif] text-2xl font-semibold">{{ adData?.displayScenario || adData?.title }}</p>
+      <p class="text-[#455980] font-['PingFang_SC',sans-serif] text-2xl font-semibold">{{ adData?.advertiseName || adData?.title }}</p>
     </div>
     <!-- 手机预览图 -->
     <div class="mb-6 flex justify-center">
@@ -40,7 +40,7 @@ const infoFields = computed(() => {
   return [
     {
       label: '广告类型',
-      value: props.adData?.displayScenario || props.adData?.title || '',
+      value: props.adData?.advertiseName || props.adData?.title || '',
       show: true,
       valueClass: '',
     },

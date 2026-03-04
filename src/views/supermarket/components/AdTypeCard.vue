@@ -15,7 +15,7 @@
           class="object-contain aspect-[120/210] max-w-full max-h-full"
         />
         <div v-else class="w-full h-full flex items-center justify-center bg-gray-200">
-          <div class="text-gray-400 text-sm">{{ adData.displayScenario || adData.title }}</div>
+          <div class="text-gray-400 text-sm">{{ adData.advertiseName || adData.title }}</div>
         </div>
       </div>
     </div>
@@ -31,7 +31,7 @@
           class="font-semibold text-gray-800"
           style="font-size: 1em;"
         >
-          {{ adData.displayScenario || adData.title }}
+          {{ adData.advertiseName || adData.title }}
         </h2>
       </div>
       <n-tooltip 
