@@ -9,7 +9,7 @@
       </div>
       <div>
         <n-button
-          class="w-[192px] h-[48px] rounded-[4px] bg-white text-[#3A82F9]"
+          class="w-[192px] h-[48px] rounded-[4px] bg-white text-[#3A82F9] text-[16px]"
           @click="handleClick"
           >存款</n-button
         >
