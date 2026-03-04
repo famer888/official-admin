@@ -149,6 +149,10 @@ export const Alova = createAlova({
         ResultEnum.EXPIRED === code
       ) {
         storage.clear()
+        //开发环境不跳转
+        if (import.meta.env.DEV) {
+          return
+        }
         window.location.href = window.origin + '/auth'
       }
 
