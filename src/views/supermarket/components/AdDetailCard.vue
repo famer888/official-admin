@@ -18,8 +18,8 @@
     <div class="space-y-2">
       <template v-for="(field, index) in infoFields" :key="index">
         <div v-if="field.show" class="flex items-center gap-4">
-          <span v-if="field.label" class="flex-shrink-0 text-[#455980] font-['PingFang_SC',sans-serif] text-base font-semibold">{{ field.label }} :</span>
-          <span class="text-[#86909C] font-['PingFang_SC',sans-serif] text-base font-semibold">{{ field.value }}</span>
+          <span v-if="field.label" class="flex-shrink-0 text-[#455980] font-['PingFang_SC',sans-serif] text-base font-[500]">{{ field.label }} :</span>
+          <span class="text-[#86909C] font-['PingFang_SC',sans-serif] text-base font-[400]">{{ field.value }}</span>
       </div>
       </template>
     </div>

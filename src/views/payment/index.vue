@@ -65,8 +65,4 @@
   const handleSubmit = (values) => {
     dialog.destroyAll()
   }
-
-  onMounted(() => {
-    user.useAllOptions()
-  })
 </script>

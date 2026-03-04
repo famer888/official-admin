@@ -100,7 +100,10 @@
 
   const handleSubmit = async (values) => {
     const params = processSubmitValues(values)
-    await useAsync(() => updateUserInfo(params), formRef.value?.form, [loadUserInfo])
+    await useAsync(() => updateUserInfo(params), formRef.value?.form, [
+      loadUserInfo,
+      userStore.getInfo,
+    ])
   }
 
   loadUserInfo()
