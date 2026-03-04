@@ -33,7 +33,11 @@
                 />
               </svg>
               <div class="absolute inset-0 flex items-center justify-center">
-                <span class="font-bold text-4xl" :style="{ color: chart.color }">{{ chart.displayValue }}</span>
+                <span
+                  class="font-bold"
+                  :class="(chart.displayValue || 0) >= 10000 ? 'text-2xl' : 'text-4xl'"
+                  :style="{ color: chart.color }"
+                >{{ formatDisplayNumber(chart.displayValue) }}</span>
               </div>
             </div>
             <h4 class="font-medium text-center mt-2 text-[#455980] text-lg">{{ chart.title }}</h4>
@@ -98,11 +102,17 @@ const getStrokeDashoffset = (percentage) => {
   return circumference - (circumference * percentage) / 100
 }
 
-const formatExposure = (value) => {
-  if (value >= 10000) {
-    return `${(value / 10000).toFixed(0)} W`
-  }
-  return value.toString()
+/**
+ * 环形图数值展示：少于 1 万正常显示，达到 1 万及以上显示为 xW / x.xW
+ * @param {number} value - 原始数值
+ * @returns {string} 如 9999 -> "9999", 10000 -> "1W", 11000 -> "1.1W"
+ */
+const formatDisplayNumber = (value) => {
+  const num = Number(value)
+  if (num === 0 || Number.isNaN(num)) return '0'
+  if (num < 10000) return String(num)
+  const w = num / 10000
+  return w % 1 === 0 ? `${w}W` : `${w.toFixed(1)}W`
 }
 
 const formatExposureWithUnit = (value) => {
@@ -129,7 +139,7 @@ const chartColumns = computed(() => {
         fontSize: '1.75rem',
         title: '曝光量',
         description: `最佳: ${formatExposureWithUnit(props.adData?.optimalExposure || 0)}`,
-        displayValue: formatExposure(props.adData?.optimalExposure || 0),
+        displayValue: props.adData?.optimalExposure ?? 0,
         percentage: optimalExposurePercentage.value,
       },
     ],
@@ -147,7 +157,7 @@ const chartColumns = computed(() => {
         fontSize: '1.75rem',
         title: '曝光量',
         description: `平均: ${formatExposureWithUnit(props.adData?.averageExposure || 0)}`,
-        displayValue: formatExposure(props.adData?.averageExposure || 0),
+        displayValue: props.adData?.averageExposure ?? 0,
         percentage: averageExposurePercentage.value,
       },
     ],

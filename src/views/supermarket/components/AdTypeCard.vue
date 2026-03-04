@@ -22,18 +22,19 @@
   </div>
    
     <div 
-      class="flex-1 flex flex-col justify-center p-3 md:p-5"
-      style="font-size: calc(100cqw * 0.0304);"
+      class="flex-1 flex flex-col justify-start p-3 md:p-5 min-h-0 relative"
+      style="font-size: calc(100cqw * 0.0304); padding-bottom: calc(clamp(4px, 5cqw, 50px) + 3.25em);"
     >
-      <div class="flex items-center gap-2 mb-2 md:mb-2 m-0 ">
-        <div class="bg-[#3A82F9] flex-shrink-0" style="width: 3px; height: 1.2rem;"></div>
-        <h2 
-          class="font-semibold text-gray-800"
-          style="font-size: 1em;"
-        >
-          {{ adData.advertiseName || adData.title }}
-        </h2>
-      </div>
+      <div class="min-h-0">
+        <div class="flex items-center gap-2 mb-2 md:mb-2 m-0 ">
+          <div class="bg-[#3A82F9] flex-shrink-0" style="width: 3px; height: 1.2rem;"></div>
+          <h2 
+            class="font-semibold text-gray-800"
+            style="font-size: 1em;"
+          >
+            {{ adData.advertiseName || adData.title }}
+          </h2>
+        </div>
       <n-tooltip 
         v-if="isTextTruncated" 
         trigger="hover" 
@@ -63,10 +64,11 @@
       >
         {{ adData.advertiseDesc  }}
       </div>
+      </div>
       <n-button
         type="primary"
-        class="rounded-full border-2 border-[#3a82f9] text-[#3a82f9] bg-white hover:bg-[#3a82f9] hover:text-white mt-3 md:mt-6 w-[35.8%] h-[18.97%]"
-        style="font-size: clamp(0.7em, 0.9em, 1em); white-space: nowrap; padding: 0 0.5em; min-width: 0;"
+        class="rounded-full border-2 border-[#3a82f9] text-[#3a82f9] bg-white hover:bg-[#3a82f9] hover:text-white w-[35.8%] flex-shrink-0 absolute left-3 md:left-5"
+        style="font-size: clamp(0.7em, 0.9em, 1em); white-space: nowrap; padding: 0 0.75em; min-width: 0; height: 2.75em; min-height: 2.75em; bottom: clamp(4px, 5cqw, 50px);"
         @click="handleBuy"
       >
         立即选购
