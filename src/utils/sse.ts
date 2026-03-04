@@ -42,7 +42,7 @@ export class SSEManager {
       const { apiUrl, urlPrefix } = useGlobSetting()
 
       // 构建 SSE URL
-      let sseUrl = import.meta.env.DEV ? '/admin-api/system/sse/subscribe' : '/proxy/sse/subscribe'
+      let sseUrl = '/admin-api/system/sse/subscribe'
       // 添加用户ID参数（注意：参数名是 userId，不是 userld）
       sseUrl += `?userId=${userId}`
       let fullUrl = sseUrl
