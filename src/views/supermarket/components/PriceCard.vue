@@ -30,7 +30,7 @@
 
 <script setup>
 import { computed } from 'vue'
-import { useMessage } from 'naive-ui'
+import { useMessage, useDialog } from 'naive-ui'
 
 const props = defineProps({
   adData: {
@@ -40,6 +40,7 @@ const props = defineProps({
 })
 
 const message = useMessage()
+const dialog = useDialog()
 
 const handleNegotiate = () => {
   const contactDetails = props.adData?.contactDetails
@@ -58,8 +59,16 @@ const handleNegotiate = () => {
     tgUrl = `tg://resolve?domain=${username}`
   }
 
-  // 打开 Telegram 链接
-  window.open(tgUrl, '_blank')
+  // 二次确认后跳转
+  dialog.info({
+    title: '提示',
+    content: '是否跳转至Telegram',
+    positiveText: '确定',
+    negativeText: '取消',
+    onPositiveClick: () => {
+      window.open(tgUrl, '_blank')
+    },
+  })
 }
 
 const priceItems = computed(() => {

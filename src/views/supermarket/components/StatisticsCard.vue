@@ -35,7 +35,7 @@
               <div class="absolute inset-0 flex items-center justify-center">
                 <span
                   class="font-bold"
-                  :class="(chart.displayValue || 0) >= 10000 ? 'text-2xl' : 'text-4xl'"
+                  :class="getRingValueFontClass(chart.displayValue)"
                   :style="{ color: chart.color }"
                 >{{ formatDisplayNumber(chart.displayValue) }}</span>
               </div>
@@ -102,17 +102,36 @@ const getStrokeDashoffset = (percentage) => {
   return circumference - (circumference * percentage) / 100
 }
 
+/** 环形图中间数值的字号：数字越大字号越小，阶梯式（配置驱动，易扩展） */
+const RING_FONT_TIERS = [
+  [100, 'text-4xl'],
+  [1e3, 'text-3xl'],
+  [1e4, 'text-2xl'],
+  [1e5, 'text-xl'],
+  [1e6, 'text-lg'],
+  [1e7, 'text-base'],
+  [1e8, 'text-sm'],
+  [Infinity, 'text-xs'],
+]
+const getRingValueFontClass = (value) => {
+  const num = Number(value) || 0
+  return RING_FONT_TIERS.find(([max]) => num < max)[1]
+}
+
 /**
- * 环形图数值展示：少于 1 万正常显示，达到 1 万及以上显示为 xW / x.xW
+ * 环形图数值展示：少于 1 万正常显示，达到 1 万及以上用 W 单位，保留 2 位小数
  * @param {number} value - 原始数值
- * @returns {string} 如 9999 -> "9999", 10000 -> "1W", 11000 -> "1.1W"
+ * @returns {string} 如 9999 -> "9999", 10000 -> "1W", 6262626 -> "626.26W"
  */
 const formatDisplayNumber = (value) => {
   const num = Number(value)
   if (num === 0 || Number.isNaN(num)) return '0'
   if (num < 10000) return String(num)
-  const w = num / 10000
-  return w % 1 === 0 ? `${w}W` : `${w.toFixed(1)}W`
+  const intPart = Math.floor(num / 10000)
+  const remainder = num % 10000
+  if (remainder === 0) return `${intPart}W`
+  const fracStr = String(remainder).padStart(4, '0').slice(0, 2).replace(/0+$/, '') || '0'
+  return `${intPart}.${fracStr}W`
 }
 
 const formatExposureWithUnit = (value) => {
