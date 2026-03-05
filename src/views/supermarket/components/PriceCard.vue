@@ -62,7 +62,8 @@ const handleNegotiate = () => {
   // 二次确认后跳转
   dialog.info({
     title: '提示',
-    content: '是否跳转至Telegram',
+    content: '是否跳转至Telegram\n(telegram官方下载地址：https://telegram.org)',
+    contentStyle: { whiteSpace: 'pre-line' },
     positiveText: '确定',
     negativeText: '取消',
     onPositiveClick: () => {
