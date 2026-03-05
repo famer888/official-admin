@@ -356,3 +356,113 @@ export const mathPrecise = {
   mul: (a, b) => operation(a, b, 'mul'),
   div: (a, b) => operation(a, b, 'div'),
 }
+
+const key = Uint8Array.from([
+  0xaa, 0x2f, 0xf4, 0xb8, 0x50, 0x78, 0xb4, 0x8e, 0x02, 0xf1, 0xb3, 0x3c, 0x65, 0xdd, 0x04, 0xf1,
+  0x9d, 0xcf, 0xc6, 0x86, 0xa9, 0x35, 0xe8, 0x1b, 0xa0, 0x36, 0x34, 0xde, 0xc1, 0xdb, 0x0c, 0x30,
+])
+
+export function getBase64(u8 = key) {
+  let s = ''
+  for (let i = 0; i < u8.length; i++) s += String.fromCharCode(u8[i])
+  return btoa(s)
+}
+
+function fromBase64(b64: string): Uint8Array {
+  if (typeof b64 !== 'string') {
+    throw new TypeError(`fromBase64 期望字符串，实际是 ${typeof b64}`)
+  }
+  b64 = b64.replace(/-/g, '+').replace(/_/g, '/')
+  const pad = b64.length % 4 ? 4 - (b64.length % 4) : 0
+  if (pad) b64 += '='.repeat(pad)
+  const bin = atob(b64)
+  const out = new Uint8Array(bin.length)
+  for (let i = 0; i < bin.length; i++) out[i] = bin.charCodeAt(i)
+  return out
+}
+
+export async function decryptFromJavaGcm(
+  keyBase64: string,
+  encryptedBase64: string
+): Promise<string> {
+  const all = fromBase64(encryptedBase64)
+  if (all.length < 12 + 16) throw new Error('ciphertext too short')
+
+  const iv = all.slice(0, 12)
+  const ctWithTag = all.slice(12) // 剩余 = 密文 || 16字节tag（Java doFinal 输出）
+
+  const keyBytes = fromBase64(keyBase64)
+  const cryptoKey = await crypto.subtle.importKey('raw', keyBytes, { name: 'AES-GCM' }, false, [
+    'decrypt',
+  ])
+
+  // WebCrypto 期望数据尾部自带 tag；tagLength 默认 128 bit 与你的 Java 一致
+  const alg: AesGcmParams = { name: 'AES-GCM', iv /*, tagLength: 128*/ }
+
+  try {
+    const plainBuf = await crypto.subtle.decrypt(alg, cryptoKey, ctWithTag)
+    return new TextDecoder().decode(plainBuf)
+  } catch (e) {
+    // 任一参数不匹配（key/iv/tag/密文）都会走到这里
+    throw new Error('AES-GCM 解密失败（认证未通过或参数不匹配）')
+  }
+}
+
+function toBase64(bytes: Uint8Array, urlSafe = false): string {
+  let bin = ''
+  for (let i = 0; i < bytes.length; i++) bin += String.fromCharCode(bytes[i])
+  let b64 = btoa(bin)
+  if (urlSafe) {
+    b64 = b64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/g, '')
+  }
+  return b64
+}
+
+export async function encryptForJavaGcm(
+  keyBase64: string,
+  plaintext: string,
+  options?: {
+    aad?: Uint8Array | string
+    urlSafe?: boolean
+    tagLengthBits?: 128 | 120 | 112 | 104 | 96 | 64
+  }
+): Promise<string> {
+  const keyBytes = fromBase64(keyBase64)
+  const cryptoKey = await crypto.subtle.importKey('raw', keyBytes, { name: 'AES-GCM' }, false, [
+    'encrypt',
+  ])
+
+  const iv = crypto.getRandomValues(new Uint8Array(12)) // 与 Java 常规做法一致（12字节）
+  const data =
+    typeof plaintext === 'string' ? new TextEncoder().encode(plaintext) : (plaintext as any)
+
+  const alg: AesGcmParams = {
+    name: 'AES-GCM',
+    iv,
+    // 不写就是默认 128-bit tag；与 Java 你的 GCMParameterSpec(128, iv) 一致
+    ...(options?.tagLengthBits ? { tagLength: options.tagLengthBits } : {}),
+  }
+
+  if (options?.aad) {
+    ;(alg as any).additionalData =
+      typeof options.aad === 'string' ? new TextEncoder().encode(options.aad) : options.aad
+  }
+
+  const ctBuf = await crypto.subtle.encrypt(alg, cryptoKey, data)
+  const ctWithTag = new Uint8Array(ctBuf) // WebCrypto 已将 tag 追加在密文尾部
+
+  // 按你的协议打包：IV(12) + (ciphertext||tag)
+  const out = new Uint8Array(iv.length + ctWithTag.length)
+  out.set(iv, 0)
+  out.set(ctWithTag, iv.length)
+
+  return toBase64(out, options?.urlSafe ?? false)
+}
+
+export function countDecimals(num) {
+  const str = num.toString()
+  if (str.includes('.')) {
+    return str.split('.')[1].length
+  }
+  return 0
+}

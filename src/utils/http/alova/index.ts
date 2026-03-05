@@ -9,11 +9,13 @@ import { storage } from '@/utils/Storage'
 import { useGlobSetting, useLocalSetting } from '@/hooks/setting'
 import { PageEnum } from '@/enums/pageEnum'
 import { ResultEnum } from '@/enums/httpEnum'
-import { isUrl } from '@/utils'
-
+import { isUrl, encryptForJavaGcm, decryptFromJavaGcm, getBase64 } from '@/utils'
 const { apiUrl, urlPrefix } = useGlobSetting()
-
 const { useMock, loggerMock } = useLocalSetting()
+
+const isDev = import.meta.env.DEV
+const keyBase64 = getBase64()
+const proxyPrefixes = ['/admin-api/system/', '/admin-api/payment/', '/admin-api/report/']
 
 const mockAdapter = createAlovaMockAdapter([...mocks], {
   // 全局控制是否启用mock接口，默认为true
@@ -25,10 +27,6 @@ const mockAdapter = createAlovaMockAdapter([...mocks], {
   // mock接口响应延迟，单位毫秒
   delay: 1000,
 
-  // 自定义打印mock接口请求信息
-  // mockRequestLogger: (res) => {
-  //   loggerMock && console.log(`Mock Request ${res.url}`, res);
-  // },
   mockRequestLogger: loggerMock,
   onMockError(error, currentMethod) {
     console.error('🚀 ~ onMockError ~ currentMethod:', currentMethod)
@@ -39,24 +37,9 @@ const mockAdapter = createAlovaMockAdapter([...mocks], {
 export const Alova = createAlova({
   baseURL: apiUrl,
   statesHook: VueHook,
-  // 关闭全局请求缓存
-  // cacheFor: null,
-  // 全局缓存配置
-  // cacheFor: {
-  //   POST: {
-  //     mode: 'memory',
-  //     expire: 60 * 10 * 1000
-  //   },
-  //   GET: {
-  //     mode: 'memory',
-  //     expire: 60 * 10 * 1000
-  //   },
-  //   HEAD: 60 * 10 * 1000 // 统一设置HEAD请求的缓存模式
-  // },
-  // 在开发环境开启缓存命中日志
   cacheLogger: false,
   requestAdapter: mockAdapter,
-  beforeRequest(method) {
+  beforeRequest: async (method) => {
     const userStore = useUser()
     const token = userStore.getToken
 
@@ -74,8 +57,7 @@ export const Alova = createAlova({
     }
 
     // 非本地环境 cookie接口路径变更
-    if (!import.meta.env.DEV) {
-      const proxyPrefixes = ['/admin-api/system/', '/admin-api/payment/', '/admin-api/report/']
+    if (!isDev) {
       const hit = proxyPrefixes.find((prefix) => method.url.startsWith(prefix))
       if (hit) {
         // 保留原始路径中前缀之后的部分
@@ -97,6 +79,12 @@ export const Alova = createAlova({
       if (!method.meta) method.meta = {}
       method.meta.isDownload = true
     }
+
+    if (method.type === 'POST' && !isDev) {
+      const plaintext = JSON?.stringify(method.data)
+      const encryptedBase64 = await encryptForJavaGcm(keyBase64, plaintext)
+      method.data = encryptedBase64
+    }
   },
   responded: {
     onSuccess: async (response, method) => {
@@ -113,9 +101,14 @@ export const Alova = createAlova({
           throw new Error('文件下载失败，请重试')
         }
       }
-
-      const res = (response.json && (await response.json())) || response.body
-
+      let res = {}
+      if (isDev) {
+        res = (response.json && (await response.json())) || response.body
+      } else {
+        const resp = (response.json && (await response.json())) || response.body
+        const json = await decryptFromJavaGcm(keyBase64, resp)
+        res = JSON.parse(json)
+      }
       // 是否返回原生响应头 比如：需要获取响应头时使用该属性
       if (method.meta?.isReturnNativeResponse) {
         return res
