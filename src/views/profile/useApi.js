@@ -2,7 +2,7 @@ import { Alova } from '@/utils/http/alova/index'
 
 /* 获取用户详情 */
 export function getUserInfo() {
-  return Alova.Get('/admin-api/system/user/getUserDetail')
+  return Alova.Get('/admin-api/system/user/getUserDetail', { cacheFor: null })
 }
 
 /* 更新个人信息 */
@@ -22,7 +22,7 @@ export function getMessageList(params) {
 
 /* 获取未读消息数量 */
 export function getUnreadCount() {
-  return Alova.Get('/admin-api/system/message/unreadCount')
+  return Alova.Get('/admin-api/system/message/unreadCount', { cacheFor: null })
 }
 
 /* 标记消息为已读 */
