@@ -13,7 +13,8 @@ import { isUrl, encryptForJavaGcm, decryptFromJavaGcm, getBase64 } from '@/utils
 const { apiUrl, urlPrefix } = useGlobSetting()
 const { useMock, loggerMock } = useLocalSetting()
 
-const isDev = import.meta.env.DEV
+const isEncrypt = !(import.meta.env.VITE_APP_ENV === 'development')
+const isDev = import.meta.env.ENV
 const keyBase64 = getBase64()
 const proxyPrefixes = ['/admin-api/system/', '/admin-api/payment/', '/admin-api/report/']
 
@@ -80,7 +81,7 @@ export const Alova = createAlova({
       method.meta.isDownload = true
     }
 
-    if (method.type === 'POST' && !isDev) {
+    if (method.type === 'POST' && isEncrypt) {
       const plaintext = JSON?.stringify(method.data)
       const encryptedBase64 = await encryptForJavaGcm(keyBase64, plaintext)
       method.data = encryptedBase64
@@ -102,7 +103,7 @@ export const Alova = createAlova({
         }
       }
       let res = {}
-      if (isDev) {
+      if (!isEncrypt) {
         res = (response.json && (await response.json())) || response.body
       } else {
         const resp = (response.json && (await response.json())) || response.body
@@ -143,7 +144,7 @@ export const Alova = createAlova({
       ) {
         storage.clear()
         //开发环境不跳转
-        if (import.meta.env.DEV) {
+        if (isDev) {
           return
         }
         window.location.href = window.origin + '/auth'
