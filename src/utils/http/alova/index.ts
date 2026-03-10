@@ -58,7 +58,7 @@ export const Alova = createAlova({
     }
 
     // 非本地环境 cookie接口路径变更
-    if (!isDev) {
+    if (isDev) {
       const hit = proxyPrefixes.find((prefix) => method.url.startsWith(prefix))
       if (hit) {
         // 保留原始路径中前缀之后的部分
