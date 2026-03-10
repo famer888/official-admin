@@ -7,22 +7,7 @@ import {NButton, NTag, useDialog, useModal} from 'naive-ui'
 import PreviewImage from './components/PreviewImage.vue'
 
 
-const orderStatus = {
-    0: {
-        type: 'warning',
-        text: '待支付'
-    },
-    1: {
-        type: 'success',
-        text: '已支付'
-    },
-    2: {
-        type: 'warning',
-        text: '已取消'
-    },
-}
-
-export const getColumns = (reload) => {
+export const getColumns = (reload,statusOptions) => {
     return [
         {
             title: 'ID',
@@ -49,9 +34,24 @@ export const getColumns = (reload) => {
             width: '200px',
             align: 'center',  
             render(row) {
-                const status = orderStatus[row.orderState]
-                return status ? h(NTag, {type: status.type}, {
-                    default: () => status.text
+                let type = 'info'
+                const typeMap = {
+                    0: 'info',
+                    1: 'warning',
+                    2: 'success',
+                    3: 'error'
+                }
+                const status = statusOptions?.reduce((prev,cur) => {
+                    prev[cur.value] = {
+                        type: typeMap[cur.value],
+                        text: cur.label,
+                    }
+
+                    return prev
+                },{})
+
+                return status[row.orderState] ? h(NTag, {type: status[row.orderState].type}, {
+                    default: () => status[row.orderState].text
                 }) : null
             }   
         },

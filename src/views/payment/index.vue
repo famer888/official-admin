@@ -40,7 +40,8 @@
   const user = useUser()
   const tableRef = ref('')
 
-  const columns = computed(() => getColumns(tableRef.value.reload))
+  const statusOptions = computed(() => user.listMap?.websiteOrderStatus)
+  const columns = computed(() => getColumns(tableRef.value.reload, statusOptions.value))
   const { run } = useRequest(getRechargeOrderPage, { manual: true })
 
   const handleClick = () => {
