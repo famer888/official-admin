@@ -6,6 +6,7 @@ import App from './App.vue'
 import router, { setupRouter } from './router'
 import { setupStore } from '@/store'
 import { EventBusPlugin } from './utils/eventBus'
+import { setupProdGuard } from '@/utils/prodGuard'
 
 async function bootstrap() {
   const app = createApp(App)
@@ -42,6 +43,9 @@ async function bootstrap() {
 
   // 注册事件总线插件
   app.use(EventBusPlugin)
+
+  // 线上环境防 F12 / 调试等
+  setupProdGuard()
 
   app.mount('#app', true)
 }
