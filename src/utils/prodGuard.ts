@@ -8,22 +8,25 @@ export function setupProdGuard() {
   if (typeof window === 'undefined') return
 
   const blockKeyEvent = (e: KeyboardEvent) => {
-    // F12
-    if (e.key === 'F12') {
+    const key = e.key.toUpperCase()
+    const isCtrlOrCmd = e.ctrlKey || e.metaKey // Windows: Ctrl，Mac: Command
+
+    // F12（Win 上常用的开发者工具快捷键）
+    if (key === 'F12') {
       e.preventDefault()
       e.stopPropagation()
       return
     }
 
-    // Ctrl+Shift+I / Ctrl+Shift+J / Ctrl+Shift+C
-    if (e.ctrlKey && e.shiftKey && ['I', 'J', 'C'].includes(e.key.toUpperCase())) {
+    // Ctrl/Cmd + Shift + I / J / C  打开开发者工具
+    if (isCtrlOrCmd && e.shiftKey && ['I', 'J', 'C'].includes(key)) {
       e.preventDefault()
       e.stopPropagation()
       return
     }
 
-    // Ctrl+U 查看源码
-    if (e.ctrlKey && e.key.toUpperCase() === 'U') {
+    // Ctrl/Cmd + U 查看源码
+    if (isCtrlOrCmd && key === 'U') {
       e.preventDefault()
       e.stopPropagation()
     }
