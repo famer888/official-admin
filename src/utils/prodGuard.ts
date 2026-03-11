@@ -3,7 +3,7 @@
 
 export function setupProdGuard() {
   // 开发环境不做任何处理，方便调试
-  if (import.meta.env.DEV) return
+  if (import.meta.env.VITE_APP_ENV === 'development') return
 
   if (typeof window === 'undefined') return
 
