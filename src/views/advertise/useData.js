@@ -9,44 +9,44 @@ const statusMap = {
   5: { label: '已撤回', type: 'default' },
 }
 
+function createBtn(text, { type = 'primary', ghost = false, onClick }) {
+  return h(
+    NButton,
+    { type, ghost, size: 'small', onClick },
+    { default: () => text }
+  )
+}
+
 function renderActions(row, reload) {
   const actions = []
   const status = row.status
+  const msg = (text) => () => window.$message?.info(`${text}: ${row.id}`)
 
-  const createBtn = (text, type = 'primary', onClick) => {
-    return h(
-      NButton,
-      { text: true, type, size: 'small', onClick },
-      { default: () => text }
-    )
+  switch (status) {
+    case 0:
+    case 5:
+      actions.push(createBtn('编辑', { ghost: true, onClick: msg('编辑计划') }))
+      actions.push(createBtn('提交审核', { onClick: msg('提交审核') }))
+      break
+    case 1:
+      actions.push(createBtn('查看', { ghost: true, onClick: msg('查看计划') }))
+      actions.push(createBtn('撤回', { type: 'error', onClick: msg('撤回') }))
+      break
+    case 2:
+      actions.push(createBtn('编辑', { ghost: true, onClick: msg('编辑计划') }))
+      actions.push(createBtn('终止', { onClick: msg('终止') }))
+      break
+    case 3:
+      actions.push(createBtn('暂停', { type: 'warning', ghost: true, onClick: msg('暂停') }))
+      actions.push(createBtn('开启投放', { onClick: msg('开启投放') }))
+      break
+    case 4:
+      actions.push(createBtn('编辑', { ghost: true, onClick: msg('编辑计划') }))
+      actions.push(createBtn('提交审核', { onClick: msg('提交审核') }))
+      break
   }
 
-  if (status === 0 || status === 5) {
-    actions.push(createBtn('编辑', 'primary', () => window.$message?.info(`编辑计划: ${row.id}`)))
-    actions.push(
-      createBtn('提交审核', 'primary', () => window.$message?.info(`提交审核: ${row.id}`))
-    )
-  } else if (status === 1) {
-    actions.push(createBtn('查看', 'primary', () => window.$message?.info(`查看计划: ${row.id}`)))
-    actions.push(createBtn('撤回', 'error', () => window.$message?.info(`撤回: ${row.id}`)))
-  } else if (status === 2) {
-    actions.push(createBtn('编辑', 'primary', () => window.$message?.info(`编辑计划: ${row.id}`)))
-    actions.push(
-      createBtn('开启投放', 'primary', () => window.$message?.info(`开启投放: ${row.id}`))
-    )
-    actions.push(
-      createBtn('提交审核', 'primary', () => window.$message?.info(`提交审核: ${row.id}`))
-    )
-  } else if (status === 3) {
-    actions.push(createBtn('查看', 'primary', () => window.$message?.info(`查看计划: ${row.id}`)))
-  } else if (status === 4) {
-    actions.push(createBtn('编辑', 'primary', () => window.$message?.info(`编辑计划: ${row.id}`)))
-    actions.push(
-      createBtn('提交审核', 'primary', () => window.$message?.info(`提交审核: ${row.id}`))
-    )
-  }
-
-  return h(NSpace, { size: 8 }, { default: () => actions })
+  return h(NSpace, { size: 8, justify: 'end', wrap: false }, { default: () => actions })
 }
 
 export const getColumns = (reload) => {
@@ -55,23 +55,19 @@ export const getColumns = (reload) => {
       title: '计划',
       key: 'id',
       width: 180,
-      align: 'center',
+      align: 'left',
     },
     {
       title: '计划名称',
       key: 'planName',
-      width: 180,
-      align: 'center',
-      showFilter: true,
-      componentProps: {
-        placeholder: '关键字模糊查询',
-      },
+      width: 160,
+      align: 'left',
     },
     {
-      title: '投放期间',
+      title: '投放周期',
       key: 'deliveryPeriod',
       width: 220,
-      align: 'center',
+      align: 'left',
       render(row) {
         return `${row.startDate}-${row.endDate}`
       },
@@ -79,12 +75,12 @@ export const getColumns = (reload) => {
     {
       title: '投放预算',
       key: 'budget',
-      width: 150,
-      align: 'center',
+      width: 140,
+      align: 'left',
       render(row) {
         return h(
           'span',
-          { class: row.status === 3 ? 'text-[#f56c6c]' : '' },
+          { style: 'color: #f56c6c' },
           row.budget.toLocaleString('en-US', {
             minimumFractionDigits: 2,
             maximumFractionDigits: 2,
@@ -95,8 +91,8 @@ export const getColumns = (reload) => {
     {
       title: '投放位置',
       key: 'position',
-      width: 220,
-      align: 'center',
+      width: 200,
+      align: 'left',
       ellipsis: {
         tooltip: true,
       },
@@ -104,17 +100,13 @@ export const getColumns = (reload) => {
     {
       title: '状态',
       key: 'status',
-      width: 100,
+      width: 90,
       align: 'center',
       render(row) {
         const info = statusMap[row.status] || statusMap[0]
         return h(
           NTag,
-          {
-            type: info.type,
-            size: 'small',
-            round: true,
-          },
+          { type: info.type, size: 'small', round: true },
           { default: () => info.label }
         )
       },
@@ -123,7 +115,7 @@ export const getColumns = (reload) => {
       title: '操作',
       key: 'action',
       width: 200,
-      align: 'center',
+      align: 'right',
       render(row) {
         return renderActions(row, reload)
       },

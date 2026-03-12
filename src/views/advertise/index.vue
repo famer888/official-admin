@@ -13,7 +13,7 @@
     </div>
 
     <div class="mb-4">
-      <n-button type="success" @click="handleCreate">创建广告计划</n-button>
+      <n-button type="primary" @click="handleCreate">创建广告计划</n-button>
     </div>
 
     <pro-data-table
