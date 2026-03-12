@@ -16,28 +16,13 @@
       <n-button type="success" @click="handleCreate">创建广告计划</n-button>
     </div>
 
-    <n-data-table
+    <pro-data-table
+      ref="tableRef"
       :columns="columns"
-      :data="tableData"
-      :loading="loading"
+      :request="requestFn"
       :bordered="true"
-      :pagination="false"
-      :row-key="(row) => row._uid"
+      :noWrapperStyle="true"
     />
-
-    <div class="flex items-center justify-between mt-4">
-      <span class="text-sm text-[#999]">共{{ pagination.itemCount }}条记录</span>
-      <n-pagination
-        v-model:page="pagination.page"
-        v-model:page-size="pagination.pageSize"
-        :item-count="pagination.itemCount"
-        :page-sizes="[10, 20, 50]"
-        show-size-picker
-        show-quick-jumper
-        @update:page="handlePageChange"
-        @update:page-size="handlePageSizeChange"
-      />
-    </div>
   </div>
 </template>
 
@@ -50,55 +35,26 @@
   })
 
   const searchName = ref('')
-  const tableData = ref([])
-  const loading = ref(false)
+  const tableRef = ref(null)
 
-  const pagination = reactive({
-    page: 1,
-    pageSize: 10,
-    itemCount: 0,
-  })
+  const columns = computed(() => getColumns(reload))
 
-  const columns = computed(() => getColumns(fetchData))
+  const requestFn = (params) => {
+    return getAdPlanPage({
+      ...params,
+      planName: searchName.value || undefined,
+    })
+  }
 
-  const fetchData = async () => {
-    loading.value = true
-    try {
-      const res = await getAdPlanPage({
-        pageNo: pagination.page,
-        pageSize: pagination.pageSize,
-        planName: searchName.value || undefined,
-      })
-      if (res.code === 0) {
-        tableData.value = res.data.dataList
-        pagination.itemCount = res.data.total
-      }
-    } finally {
-      loading.value = false
-    }
+  const reload = () => {
+    tableRef.value?.reload()
   }
 
   const handleSearch = () => {
-    pagination.page = 1
-    fetchData()
-  }
-
-  const handlePageChange = (page) => {
-    pagination.page = page
-    fetchData()
-  }
-
-  const handlePageSizeChange = (pageSize) => {
-    pagination.pageSize = pageSize
-    pagination.page = 1
-    fetchData()
+    tableRef.value?.reload({ pageNo: 1 })
   }
 
   const handleCreate = () => {
     window.$message?.success('点击了创建广告计划')
   }
-
-  onMounted(() => {
-    fetchData()
-  })
 </script>
