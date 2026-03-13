@@ -21,8 +21,16 @@
           :loading="loading"
           :pagination="false"
           v-bind="restProps"
+        >
+          <template #empty>
+            <EmptyComponent />
+          </template>
+        </n-data-table>
+        <Pagination
+          v-if="(pagination.itemCount ?? 0) > 0"
+          :paginationProps="pagination"
+          :pagination="props.pagination"
         />
-        <Pagination :paginationProps="pagination" :pagination="props.pagination" />
       </template>
     </Header>
   </div>
@@ -35,6 +43,7 @@
   import Pagination from './Pagination/index.vue'
   import { usePagination } from './hooks'
   import { removeEmpty } from '@/utils/removeEmpty'
+  import EmptyComponent from './Empty.vue'
 
   const restProps = useAttrs() as unknown as any
 
@@ -210,6 +219,10 @@
       background-color: var(--ad-btn-color);
       color: #ffffff !important;
       border-color: var(--ad-btn-color);
+    }
+
+    :deep(.n-data-table.n-data-table--bottom-bordered .n-data-table-td.n-data-table-td--last-row) {
+      border-bottom: none;
     }
   }
 </style>

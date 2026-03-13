@@ -1,7 +1,7 @@
 <template>
   <div
     v-if="props.pagination !== false"
-    class="n-data-pagination items-center flex justify-end p-4 gap-1.5"
+    class="n-data-pagination items-center flex justify-end p-4 gap-2 pb-0"
   >
     <n-pagination v-bind="props.paginationProps" show-quick-jumper show-size-picker />
     <span>页</span>
@@ -61,7 +61,13 @@
       color: #1d2129 !important;
     }
     & .n-base-selection,
-    .n-input {
+    & .n-input {
+      height: 32px !important;
+    }
+    & .n-base-selection-label {
+      height: 32px !important;
+    }
+    & .n-input__input-el {
       height: 32px !important;
     }
   }

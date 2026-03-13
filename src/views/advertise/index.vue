@@ -26,8 +26,8 @@
       <pro-data-table
         ref="tableRef"
         :columns="columns"
-        :request="requestFn"
         :bordered="false"
+        :request="requestFn"
         :noWrapperStyle="true"
         class="no-row-divider-table"
       />
