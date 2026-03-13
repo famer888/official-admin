@@ -22,6 +22,16 @@ const routes: Array<RouteRecordRaw> = [
         },
         component: () => import('@/views/advertise/index.vue'),
       },
+      {
+        path: 'edit',
+        name: 'advertiseEdit',
+        meta: {
+          title: '编辑广告计划',
+          hidden: true,
+          activeMenu: 'advertisePlan',
+        },
+        component: () => import('@/views/advertise/edit.vue'),
+      },
     ],
   },
 ]

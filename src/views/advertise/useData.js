@@ -1,4 +1,5 @@
 import { NButton, NTag, NSpace } from 'naive-ui'
+import router from '@/router'
 
 const statusMap = {
   0: { label: '草稿', type: 'default' },
@@ -17,33 +18,136 @@ function createBtn(text, { type = 'primary', ghost = false, onClick }) {
   )
 }
 
+function showSubmitReviewDialog(row, reload) {
+  window.$dialog?.create({
+    title: false,
+    showIcon: false,
+    closable: false,
+    style: { width: '340px', height: '226px' },
+    content: () =>
+      h(
+        'div',
+        { class: 'flex flex-col items-center justify-center py-6' },
+        [h('div', { class: 'text-xl font-bold text-[#333]' }, '是否提交审核？')]
+      ),
+    action: () =>
+      h('div', { class: 'flex justify-center gap-4 w-full pb-2' }, [
+        h(
+          NButton,
+          {
+            ghost: true,
+            type: 'primary',
+            class: '!w-[120px] !h-[44px] !text-base',
+            onClick: () => window.$dialog?.destroyAll(),
+          },
+          { default: () => '取消' }
+        ),
+        h(
+          NButton,
+          {
+            type: 'primary',
+            class: '!w-[120px] !h-[44px] !text-base',
+            onClick: () => {
+              window.$dialog?.destroyAll()
+              window.$message?.success('提交审核成功')
+              reload?.()
+            },
+          },
+          { default: () => '确认' }
+        ),
+      ]),
+  })
+}
+
+function showRejectReasonDialog(row) {
+  const reason = row.rejectReason || '广告素材过于劲爆，无法满足APP审核规范\n请立即整改！'
+  window.$dialog?.create({
+    title: false,
+    showIcon: false,
+    closable: false,
+    style: { width: '340px' },
+    content: () =>
+      h('div', { class: 'flex flex-col items-center py-4 px-2' }, [
+        h('div', { class: 'text-xl font-bold text-[#333] mb-4' }, '审核驳回原因'),
+        h(
+          'div',
+          { class: 'text-sm text-[#3A82F9] text-center whitespace-pre-line leading-6' },
+          reason
+        ),
+      ]),
+    action: () =>
+      h('div', { class: 'flex justify-center w-full pb-2' }, [
+        h(
+          NButton,
+          {
+            ghost: true,
+            type: 'primary',
+            class: '!w-[160px] !h-[44px] !text-base',
+            onClick: () => window.$dialog?.destroyAll(),
+          },
+          { default: () => '关闭' }
+        ),
+      ]),
+  })
+}
+
+function goEdit(row) {
+  router.push({
+    path: '/advertise/edit',
+    query: { id: row.id, planName: row.planName, position: row.position },
+  })
+}
+
 function renderActions(row, reload) {
   const actions = []
   const status = row.status
-  const msg = (text) => () => window.$message?.info(`${text}: ${row.id}`)
 
   switch (status) {
     case 0:
     case 5:
-      actions.push(createBtn('编辑', { ghost: true, onClick: msg('编辑计划') }))
-      actions.push(createBtn('提交审核', { onClick: msg('提交审核') }))
+      actions.push(createBtn('编辑', { ghost: true, onClick: () => goEdit(row) }))
+      actions.push(
+        createBtn('提交审核', { onClick: () => showSubmitReviewDialog(row, reload) })
+      )
       break
     case 1:
-      actions.push(createBtn('查看', { ghost: true, onClick: msg('查看计划') }))
-      actions.push(createBtn('撤回', { type: 'error', onClick: msg('撤回') }))
+      actions.push(
+        createBtn('查看', { ghost: true, onClick: () => window.$message?.info('查看计划') })
+      )
+      actions.push(
+        createBtn('撤回', { type: 'error', onClick: () => window.$message?.info('已撤回') })
+      )
       break
     case 2:
-      actions.push(createBtn('编辑', { ghost: true, onClick: msg('编辑计划') }))
-      actions.push(createBtn('终止', { onClick: msg('终止') }))
+      actions.push(createBtn('编辑', { ghost: true, onClick: () => goEdit(row) }))
+      actions.push(
+        createBtn('终止', { onClick: () => window.$message?.info('已终止') })
+      )
       break
     case 3:
-      actions.push(createBtn('暂停', { type: 'warning', ghost: true, onClick: msg('暂停') }))
-      actions.push(createBtn('开启投放', { onClick: msg('开启投放') }))
+      actions.push(
+        createBtn('暂停', {
+          type: 'warning',
+          ghost: true,
+          onClick: () => window.$message?.info('已暂停'),
+        })
+      )
+      actions.push(
+        createBtn('开启投放', { onClick: () => window.$message?.info('已开启投放') })
+      )
       break
     case 4:
-      actions.push(createBtn('编辑', { ghost: true, onClick: msg('编辑计划') }))
-      actions.push(createBtn('提交审核', { onClick: msg('提交审核') }))
+      actions.push(createBtn('编辑', { ghost: true, onClick: () => goEdit(row) }))
+      actions.push(
+        createBtn('提交审核', { onClick: () => showSubmitReviewDialog(row, reload) })
+      )
       break
+  }
+
+  if (row.rejectReason) {
+    actions.push(
+      createBtn('驳回原因', { type: 'warning', ghost: true, onClick: () => showRejectReasonDialog(row) })
+    )
   }
 
   return h(NSpace, { size: 8, justify: 'end', wrap: false }, { default: () => actions })
@@ -76,7 +180,7 @@ export const getColumns = (reload) => {
       title: '投放预算',
       key: 'budget',
       width: 140,
-      align: 'left',
+      align: 'right',
       render(row) {
         return h(
           'span',

@@ -6,7 +6,7 @@
         v-model:value="searchName"
         placeholder="关键字模糊查询"
         clearable
-        class="!w-[240px]"
+        class="!w-[240px] ad-input"
         @keyup.enter="handleSearch"
       />
       <n-button type="primary" @click="handleSearch">查询</n-button>
@@ -27,6 +27,7 @@
 </template>
 
 <script setup>
+  import { useRouter } from 'vue-router'
   import { getColumns } from './useData'
   import { getAdPlanPage } from './useApi'
 
@@ -34,6 +35,7 @@
     name: 'AdvertisePlan',
   })
 
+  const router = useRouter()
   const searchName = ref('')
   const tableRef = ref(null)
 
@@ -55,6 +57,13 @@
   }
 
   const handleCreate = () => {
-    window.$message?.success('点击了创建广告计划')
+    router.push('/advertise/edit')
   }
 </script>
+
+<style scoped>
+  .ad-input :deep(.n-input__input-el),
+  .ad-input :deep(.n-input-wrapper) {
+    background-color: #f4f5f9;
+  }
+</style>
