@@ -29,6 +29,7 @@
 <script setup>
   import { getColumns } from './useData'
   import { getAdPlanPage } from './useApi'
+  import { useAdvertisePositionModal } from './components/advertise-position'
 
   defineOptions({
     name: 'AdvertisePlan',
@@ -36,6 +37,7 @@
 
   const searchName = ref('')
   const tableRef = ref(null)
+  const { openAdvertisePositionModal } = useAdvertisePositionModal()
 
   const columns = computed(() => getColumns(reload))
 
@@ -55,6 +57,26 @@
   }
 
   const handleCreate = () => {
-    window.$message?.success('点击了创建广告计划')
+    openAdvertisePositionModal({
+      initialSelected: [
+        {
+          appId: 'app-1',
+          appName: '黑犀闪闪APP',
+          positionId: 'pos-1',
+          positionName: '特色APP',
+          slotCode: 'T01',
+          slotName: '特色APP-广告位',
+          deliveryTime: '2026-03-15 00:00:00',
+          budget: 5000,
+        },
+      ],
+      onChange: (list) => {
+        console.log('[advertise-position] change', list)
+      },
+      onSave: (list) => {
+        console.log('[advertise-position] save', list)
+        window.$message?.success(`已选择 ${list.length} 条投放明细`)
+      },
+    })
   }
 </script>
