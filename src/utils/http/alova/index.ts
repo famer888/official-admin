@@ -14,7 +14,7 @@ const { apiUrl, urlPrefix } = useGlobSetting()
 const { useMock, loggerMock } = useLocalSetting()
 
 const isEncrypt = !(import.meta.env.VITE_APP_ENV === 'development')
-const isDev = import.meta.env.ENV
+const isDev = import.meta.env.DEV
 const keyBase64 = getBase64()
 const proxyPrefixes = ['/admin-api/system/', '/admin-api/payment/', '/admin-api/report/']
 
@@ -58,7 +58,7 @@ export const Alova = createAlova({
     }
 
     // 非本地环境 cookie接口路径变更
-    if (isDev) {
+    if (!isDev) {
       const hit = proxyPrefixes.find((prefix) => method.url.startsWith(prefix))
       if (hit) {
         // 保留原始路径中前缀之后的部分
