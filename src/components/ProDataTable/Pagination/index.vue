@@ -1,6 +1,10 @@
 <template>
-  <div v-if="props.pagination !== false" class="n-data-pagination flex justify-end p-4">
-    <n-pagination v-bind="props.paginationProps"></n-pagination>
+  <div
+    v-if="props.pagination !== false"
+    class="n-data-pagination items-center flex justify-end p-4 gap-1.5"
+  >
+    <n-pagination v-bind="props.paginationProps" show-quick-jumper show-size-picker />
+    <span>页</span>
   </div>
 </template>
 <script setup lang="ts">
@@ -23,12 +27,42 @@
       position: relative;
       width: 100%;
       justify-content: end;
+      color: #1d2129;
+      font-size: 14px;
 
-      & .n-pagination-prefix {
-        position: absolute;
-        bottom: 5px;
-        left: 0;
-      }
+      // & .n-pagination-prefix {
+      //   position: absolute;
+      //   bottom: 5px;
+      //   left: 0;
+      // }
+    }
+    & .n-pagination-item {
+      width: 32px !important;
+      height: 32px !important;
+      min-width: 32px !important;
+      max-width: 32px !important;
+      border: 1px solid #86909c !important;
+      color: #86909c !important;
+    }
+    & .n-pagination-item--active {
+      background: #3276ff !important;
+      border: 1px solid #3276ff !important;
+      color: #ffffff !important;
+    }
+    & .n-pagination-item--button {
+      border: none !important;
+      width: 32px !important;
+      height: 32px !important;
+      min-width: 32px !important;
+      max-width: 32px !important;
+      background-color: transparent !important;
+    }
+    & .n-pagination-quick-jumper {
+      color: #1d2129 !important;
+    }
+    & .n-base-selection,
+    .n-input {
+      height: 32px !important;
     }
   }
 </style>

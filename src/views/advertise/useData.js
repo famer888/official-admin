@@ -1,19 +1,46 @@
+import { h } from 'vue'
 import { NButton, NTag, NSpace } from 'naive-ui'
 import router from '@/router'
 
 const statusMap = {
-  0: { label: '草稿', type: 'default' },
-  1: { label: '审核中', type: 'warning' },
-  2: { label: '已通过', type: 'info' },
-  3: { label: '投放中', type: 'success' },
-  4: { label: '已终止', type: 'error' },
-  5: { label: '已撤回', type: 'default' },
+  0: { label: '草稿', color: '#999999' },
+  1: { label: '审核中', color: '#4271BD' },
+  2: { label: '审核不通过', color: '#C42527' },
+  3: { label: '投放中', color: '#57AC22' },
+  4: { label: '投放结束', color: '#626262' },
+  5: { label: '投放未开始', color: '#A95656' },
 }
 
-function createBtn(text, { type = 'primary', ghost = false, onClick }) {
+function createBtn(text, { type = 'primary', ghost = true, onClick }) {
+  const typeColorMap = {
+    success: '#1BAD64',
+    error: '#FF292D',
+    warning: '#F9A33A',
+    secondary: '#999999',
+    info: '#4A36FF',
+  }
+
+  const style = {}
+  const color = typeColorMap[type]
+
+  if (color) {
+    style.color = color
+    style.borderColor = color
+    style['--ad-btn-color'] = color
+    style.borderWidth = '1px'
+    style.borderStyle = 'solid'
+  }
+
   return h(
     NButton,
-    { type, ghost, size: 'small', onClick },
+    {
+      type,
+      ghost,
+      size: 'small',
+      onClick,
+      class: 'ad-action-btn !rounded-[4px] text-base',
+      style,
+    },
     { default: () => text }
   )
 }
@@ -23,22 +50,37 @@ function showSubmitReviewDialog(row, reload) {
     title: false,
     showIcon: false,
     closable: false,
-    style: { width: '340px', height: '226px' },
-    content: () =>
+    style: { width: '340px', height: '226px', padding: '20px', borderRadius: '16px' },
+    title: () =>
       h(
         'div',
-        { class: 'flex flex-col items-center justify-center py-6' },
-        [h('div', { class: 'text-xl font-bold text-[#333]' }, '是否提交审核？')]
+        { class: 'text-center text-[20px] font-bold text-[#000000] w-full' },
+        '是否提交审核？'
       ),
+    titleStyle: { paddingTop: '35px' },
+    actionStyle: {
+      gap: '20px',
+      display: 'flex',
+      justifyContent: 'space-between',
+      position: 'absolute',
+      bottom: '20px',
+      left: '20px',
+      right: '20px',
+    },
     action: () =>
-      h('div', { class: 'flex justify-center gap-4 w-full pb-2' }, [
+      h('div', { class: 'flex justify-center gap-5 w-full' }, [
         h(
           NButton,
           {
             ghost: true,
             type: 'primary',
-            class: '!w-[120px] !h-[44px] !text-base',
+            class: 'flex-1 !h-[42px] !text-base rounded-[4px] ',
             onClick: () => window.$dialog?.destroyAll(),
+            style: {
+              borderColor: '#3A82F9',
+              color: '#3A82F9',
+              fontWeight: 500,
+            },
           },
           { default: () => '取消' }
         ),
@@ -46,7 +88,12 @@ function showSubmitReviewDialog(row, reload) {
           NButton,
           {
             type: 'primary',
-            class: '!w-[120px] !h-[44px] !text-base',
+            class: 'flex-1 !h-[42px] !text-base rounded-[4px]',
+            style: {
+              backgroundColor: '#3A82F9',
+              color: '#ffffff',
+              fontWeight: 500,
+            },
             onClick: () => {
               window.$dialog?.destroyAll()
               window.$message?.success('提交审核成功')
@@ -65,24 +112,41 @@ function showRejectReasonDialog(row) {
     title: false,
     showIcon: false,
     closable: false,
-    style: { width: '340px' },
+    style: { width: '340px', height: '226px', padding: '20px 18px', borderRadius: '16px' },
+    title: () =>
+      h(
+        'div',
+        { class: 'text-center text-[20px] font-bold text-[#000000] w-full' },
+        '审核驳回原因'
+      ),
+    titleStyle: { paddingTop: '20px' },
     content: () =>
-      h('div', { class: 'flex flex-col items-center py-4 px-2' }, [
-        h('div', { class: 'text-xl font-bold text-[#333] mb-4' }, '审核驳回原因'),
-        h(
-          'div',
-          { class: 'text-sm text-[#3A82F9] text-center whitespace-pre-line leading-6' },
-          reason
-        ),
-      ]),
+      h(
+        'div',
+        {
+          class: 'px-0 pt-2 pb-5  text-center whitespace-pre-line',
+          style: {
+            color: '#1D2129',
+            fontSize: '16px',
+            lineHeight: '26px',
+          },
+        },
+        reason
+      ),
     action: () =>
-      h('div', { class: 'flex justify-center w-full pb-2' }, [
+      h('div', { class: 'flex justify-center w-full pt-3 pb-5' }, [
         h(
           NButton,
           {
             ghost: true,
             type: 'primary',
-            class: '!w-[160px] !h-[44px] !text-base',
+            class: ' !h-[42px] !text-base rounded-[4px]',
+            style: {
+              borderColor: '#3276FF',
+              color: '#3276FF',
+              fontWeight: 500,
+              width: '196px',
+            },
             onClick: () => window.$dialog?.destroyAll(),
           },
           { default: () => '关闭' }
@@ -112,48 +176,50 @@ function renderActions(row, reload) {
   switch (status) {
     case 0:
     case 5:
-      actions.push(createBtn('编辑', { ghost: true, onClick: () => goEdit(row) }))
-      actions.push(
-        createBtn('提交审核', { onClick: () => showSubmitReviewDialog(row, reload) })
-      )
+      actions.push(createBtn('编辑', { type: 'success', onClick: () => goEdit(row) }))
+
+      actions.push(createBtn('提交审核', { onClick: () => showSubmitReviewDialog(row, reload) }))
       break
     case 1:
-      actions.push(
-        createBtn('查看', { ghost: true, onClick: () => goDetail(row) })
-      )
+      actions.push(createBtn('查看', { type: 'info', onClick: () => goDetail(row) }))
       actions.push(
         createBtn('撤回', { type: 'error', onClick: () => window.$message?.info('已撤回') })
       )
       break
     case 2:
-      actions.push(createBtn('编辑', { ghost: true, onClick: () => goEdit(row) }))
+      actions.push(createBtn('编辑', { type: 'success', onClick: () => goEdit(row) }))
       actions.push(
-        createBtn('终止', { onClick: () => window.$message?.info('已终止') })
+        createBtn('终止', { type: 'secondary', onClick: () => window.$message?.info('已终止') })
       )
       break
     case 3:
       actions.push(
         createBtn('暂停', {
-          type: 'warning',
-          ghost: true,
+          type: 'secondary',
           onClick: () => window.$message?.info('已暂停'),
         })
       )
       actions.push(
-        createBtn('开启投放', { onClick: () => window.$message?.info('已开启投放') })
+        createBtn('开启投放', {
+          type: 'warning',
+          onClick: () => window.$message?.info('已开启投放'),
+        })
       )
       break
     case 4:
-      actions.push(createBtn('编辑', { ghost: true, onClick: () => goEdit(row) }))
-      actions.push(
-        createBtn('提交审核', { onClick: () => showSubmitReviewDialog(row, reload) })
-      )
+      actions.push(createBtn('编辑', { type: 'success', onClick: () => goEdit(row) }))
+
+      actions.push(createBtn('提交审核', { onClick: () => showSubmitReviewDialog(row, reload) }))
       break
   }
 
   if (row.rejectReason) {
     actions.push(
-      createBtn('驳回原因', { type: 'warning', ghost: true, onClick: () => showRejectReasonDialog(row) })
+      createBtn('驳回原因', {
+        type: 'warning',
+        ghost: true,
+        onClick: () => showRejectReasonDialog(row),
+      })
     )
   }
 
@@ -173,6 +239,15 @@ export const getColumns = (reload) => {
       key: 'planName',
       width: 160,
       align: 'left',
+      render(row) {
+        return h(
+          'span',
+          {
+            style: 'font-weight: 600;font-size: 16px;line-height: 16px;color: #4C4F57;',
+          },
+          row.planName
+        )
+      },
     },
     {
       title: '投放周期',
@@ -187,11 +262,14 @@ export const getColumns = (reload) => {
       title: '投放预算',
       key: 'budget',
       width: 140,
-      align: 'right',
+      align: 'left',
       render(row) {
         return h(
           'span',
-          { style: 'color: #f56c6c' },
+          {
+            style:
+              "font-family: 'DIN Alternate','PingFang SC', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;font-weight: 700;font-size: 16px;line-height: 16px;color: #FF292D;",
+          },
           row.budget.toLocaleString('en-US', {
             minimumFractionDigits: 2,
             maximumFractionDigits: 2,
@@ -204,21 +282,43 @@ export const getColumns = (reload) => {
       key: 'position',
       width: 200,
       align: 'left',
-      ellipsis: {
-        tooltip: true,
+      render(row) {
+        return h(
+          'div',
+          {
+            style:
+              'line-height: 20px; line-clamp: 2; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; word-break: break-all; display: -webkit-box;',
+          },
+          row.position
+        )
       },
     },
     {
       title: '状态',
       key: 'status',
-      width: 90,
+      width: 120,
       align: 'center',
       render(row) {
         const info = statusMap[row.status] || statusMap[0]
+        const color = info.color || '#999999'
         return h(
-          NTag,
-          { type: info.type, size: 'small', round: true },
-          { default: () => info.label }
+          'span',
+          {
+            style: {
+              display: 'inline-flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              width: '96px',
+              minWidth: '96px',
+              height: '32px',
+              borderRadius: '4px',
+              border: `1px solid ${color}`,
+              color,
+              fontSize: '16px',
+              fontWeight: 400,
+            },
+          },
+          info.label
         )
       },
     },

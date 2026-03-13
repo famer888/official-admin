@@ -6,9 +6,9 @@
           ref="formRef"
           :columns="columns"
           :formProps="formProps"
-          @onValueChange="requestTableData"
+          @on-value-change="requestTableData"
           @submit="handleSubmit"
-        ></Form>
+        />
       </template>
       <template #content>
         <n-data-table
@@ -18,13 +18,11 @@
           }"
           :data="list"
           :columns="columns"
-          :bordered="true"
           :loading="loading"
           :pagination="false"
           v-bind="restProps"
-        >
-        </n-data-table>
-        <Pagination :paginationProps="pagination" :pagination="props.pagination"></Pagination>
+        />
+        <Pagination :paginationProps="pagination" :pagination="props.pagination" />
       </template>
     </Header>
   </div>
@@ -130,6 +128,7 @@
     } catch (err) {
       loading.value = false
     }
+    console.log('list.value', list.value)
   }
 
   //页码切换
@@ -165,6 +164,52 @@
   .proDataTable {
     :deep(.n-data-table-wrapper) {
       border-radius: 15px;
+    }
+  }
+
+  .pro-data-table {
+    :deep(.n-data-table-th) {
+      font-family: 'PingFang SC', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      padding: 0.5rem 1rem; /* py-2 px-4 */
+      color: #4c4f57;
+      font-weight: 500;
+      font-size: 16px;
+      line-height: 16px;
+    }
+
+    :deep(.n-data-table-td) {
+      font-family: 'PingFang SC', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      padding: 0.625rem 1rem; /* py-2.5 px-4 */
+      font-weight: 400;
+      font-size: 16px;
+      line-height: 16px;
+    }
+
+    :deep(.n-data-table-th__title) {
+      font-weight: 500;
+    }
+
+    :deep(.table-position-text) {
+      display: -webkit-box;
+      line-clamp: 2;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      word-break: break-all;
+    }
+
+    :deep(.ad-action-btn) {
+      --ad-btn-color: #3a82f9;
+      border-radius: 4px;
+      border-color: var(--ad-btn-color);
+      color: var(--ad-btn-color);
+      background-color: transparent;
+    }
+
+    :deep(.ad-action-btn:hover) {
+      background-color: var(--ad-btn-color);
+      color: #ffffff !important;
+      border-color: var(--ad-btn-color);
     }
   }
 </style>
