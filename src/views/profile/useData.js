@@ -6,6 +6,7 @@ import {
   industryCategoryMap,
   industryDetailMap,
 } from '@/constants/website'
+import { getPasswordRuleError } from '@/utils/is'
 
 // 通用：map -> options
 const mapToOptions = (map) =>
@@ -133,6 +134,14 @@ export const userInfoSchemas = [
 ]
 
 // 密码修改表单配置（基础配置）
+const validatePasswordFormat = (value) => {
+  const errorMessage = getPasswordRuleError(value)
+  if (errorMessage) {
+    return new Error(errorMessage)
+  }
+  return true
+}
+
 const passwordSchemasBase = [
   {
     field: 'oldPassword',
@@ -152,10 +161,7 @@ const passwordSchemasBase = [
           if (!value) {
             return new Error('请输入原密码')
           }
-          if (value.length < 8 || value.length > 20) {
-            return new Error('密码长度必须在8-20位之间')
-          }
-          return true
+          return validatePasswordFormat(value)
         },
         trigger: ['blur', 'change'],
       },
@@ -179,10 +185,7 @@ const passwordSchemasBase = [
           if (!value) {
             return new Error('请输入新密码')
           }
-          if (value.length < 8 || value.length > 20) {
-            return new Error('密码长度必须在8-20位之间')
-          }
-          return true
+          return validatePasswordFormat(value)
         },
         trigger: ['blur', 'change'],
       },
@@ -228,8 +231,9 @@ export const passwordSchemas = (getNewPassword, setNewPassword) => {
               if (!value) {
                 return new Error('请再次输入新密码')
               }
-              if (value.length < 8 || value.length > 20) {
-                return new Error('密码长度必须在8-20位之间')
+              const passwordFormatResult = validatePasswordFormat(value)
+              if (passwordFormatResult !== true) {
+                return passwordFormatResult
               }
               // 使用响应式的 newPassword 值
               const newPasswordValue = getNewPassword?.() || ''
