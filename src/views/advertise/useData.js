@@ -98,6 +98,13 @@ function goEdit(row) {
   })
 }
 
+function goDetail(row) {
+  router.push({
+    path: '/advertise/detail',
+    query: { id: row.id, planName: row.planName },
+  })
+}
+
 function renderActions(row, reload) {
   const actions = []
   const status = row.status
@@ -112,7 +119,7 @@ function renderActions(row, reload) {
       break
     case 1:
       actions.push(
-        createBtn('查看', { ghost: true, onClick: () => window.$message?.info('查看计划') })
+        createBtn('查看', { ghost: true, onClick: () => goDetail(row) })
       )
       actions.push(
         createBtn('撤回', { type: 'error', onClick: () => window.$message?.info('已撤回') })
