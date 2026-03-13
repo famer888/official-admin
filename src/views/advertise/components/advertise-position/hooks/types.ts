@@ -27,6 +27,8 @@ export interface PositionRow {
   positionName: string
   slotCode: string
   slotName: string
+  previewImage?: string
+  estimatedPv?: number
   cells: Record<string, PositionCell>
 }
 

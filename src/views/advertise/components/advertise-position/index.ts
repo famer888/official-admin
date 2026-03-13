@@ -22,7 +22,7 @@ export function useAdvertisePositionModal() {
     let d: any
     d = showModal({
       title: options?.title || '选择投放位置',
-      style: { width: '94vw', maxWidth: '1700px' },
+      style: { width: '1300px' },
       content: () =>
         h(PositionPickerModal, {
           onChange: (list: SelectedPlacementItem[]) => {

@@ -88,6 +88,7 @@ const buildMockRows = (days: CalendarDay[], total = 36): PositionRow[] => {
       positionName,
       slotCode: `T${`${(index % 10) + 1}`.padStart(2, '0')}`,
       slotName: `${positionName}-广告位`,
+      estimatedPv: 50000 + ((index + 7) * 3719) % 180000,
       cells,
     }
   })

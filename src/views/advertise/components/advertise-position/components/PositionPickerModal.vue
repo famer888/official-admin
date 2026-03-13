@@ -1,11 +1,11 @@
 <template>
-  <div class="position-modal">
-    <div class="selected-bar">
-      <span class="selected-label">已选择的广告位置：</span>
-      <span class="selected-value">{{ selectedSummary }}</span>
+  <div class="w-full">
+    <div class="mb-3 text-[14px] text-[#222]">
+      <span class="mr-2 font-medium">已选择的广告位置：</span>
+      <span class="text-[#666]">{{ selectedSummary }}</span>
     </div>
 
-    <div class="search-wrap">
+    <div class="search-wrap mb-2">
       <pro-form
         :schemas="searchSchemas"
         :form-props="searchFormProps"
@@ -28,42 +28,66 @@
     </div> -->
 
     <n-spin :show="loading">
-      <div class="table-scroll">
-        <table class="position-table">
+      <div class="max-w-full max-h-[420px] overflow-auto">
+        <table class="w-max min-w-full border-collapse table-fixed bg-white">
           <thead>
             <tr>
-              <th class="fixed-col fixed-app">APP名称</th>
-              <th class="fixed-col fixed-position">广告位</th>
+              <th
+                class="sticky left-0 z-[8] min-w-[120px] border border-[#edf1f7] bg-[#f6f8fd] p-0 text-center text-[12px] leading-none text-[#5a5a5a]"
+                rowspan="2"
+              >
+                APP名称
+              </th>
+              <th
+                class="sticky left-[120px] z-[7] min-w-[110px] border border-[#edf1f7] bg-[#f6f8fd] p-0 text-center text-[12px] leading-none text-[#5a5a5a]"
+                rowspan="2"
+              >
+                广告位
+              </th>
               <th
                 v-for="group in monthGroups"
                 :key="group.label"
                 :colspan="group.span"
-                class="month-cell"
+                class="h-[28px] min-w-[32px] border border-[#edf1f7] bg-[#6f87a8] p-0 text-center text-[14px] font-medium leading-none text-white"
               >
                 {{ group.label }}
               </th>
             </tr>
             <tr>
-              <th class="fixed-col fixed-app">APP名称</th>
-              <th class="fixed-col fixed-position">广告位</th>
-              <th v-for="day in calendarDays" :key="day.key" class="day-cell">
+              <th
+                v-for="day in calendarDays"
+                :key="day.key"
+                class="h-[32px] min-w-[32px] border border-[#edf1f7] bg-[#9dc2ff] p-0 text-center text-[12px] font-medium leading-none text-white"
+              >
                 {{ day.dayLabel }}
               </th>
             </tr>
           </thead>
           <tbody>
             <tr v-if="!pagedRows.length">
-              <td :colspan="calendarDays.length + 2" class="empty-cell">
+              <td :colspan="calendarDays.length + 2" class="bg-white py-[30px]">
                 <n-empty description="暂无可选广告位" />
               </td>
             </tr>
-            <tr v-for="row in pagedRows" :key="row.rowId">
-              <td class="fixed-col fixed-app body-left">{{ row.appName }}</td>
-              <td class="fixed-col fixed-position body-left">{{ row.positionName }}</td>
+            <tr v-for="(row, rowIndex) in pagedRows" :key="row.rowId">
+              <td
+                class="sticky left-0 z-[8] h-[32px] min-w-[120px] border border-[#edf1f7] p-0 text-center text-[12px] font-medium leading-none text-[#39475e]"
+                :class="getLeftCellClass(rowIndex)"
+              >
+                {{ row.appName }}
+              </td>
+              <td
+                class="sticky left-[120px] z-[7] h-[32px] min-w-[110px] border border-[#edf1f7] p-0 text-center text-[12px] font-medium leading-none text-[#39475e]"
+                :class="getLeftCellClass(rowIndex)"
+              >
+                <span class="cursor-pointer text-[#3a82f9]" @click.stop="openPreview(row)">
+                  {{ row.positionName }}
+                </span>
+              </td>
               <td
                 v-for="day in calendarDays"
                 :key="`${row.rowId}-${day.key}`"
-                class="value-cell"
+                class="h-[32px] min-w-[32px] border border-[#edf1f7] p-0 text-center text-[12px] leading-none transition-all"
                 :class="getCellClass(row, day.key)"
                 @click="toggleCell(row, day.key)"
               >
@@ -75,7 +99,7 @@
       </div>
     </n-spin>
 
-    <div class="footer-wrap">
+    <div class="mt-[14px] flex items-center justify-between gap-4">
       <n-pagination
         v-model:page="pageNo"
         v-model:page-size="pageSize"
@@ -85,7 +109,7 @@
         @update:page="handlePageChange"
         @update:page-size="handlePageSizeChange"
       />
-      <div class="actions">
+      <div class="flex gap-3">
         <n-button class="w-[120px]" @click="emit('cancel')">取消</n-button>
         <n-button type="primary" class="w-[120px]" @click="handleSave">保存</n-button>
       </div>
@@ -97,6 +121,7 @@
   import ProForm from '@/components/ProForm/index.vue'
   import ExposureRangeInput from './ExposureRangeInput.vue'
   import { searchSchemas } from '../hooks/options'
+  import { usePositionPreviewModal } from '../hooks/usePositionPreviewModal'
   import { useAdvertisePosition } from '../hooks/useAdvertisePosition'
   import type { PositionRow, SearchParams, SelectedPlacementItem } from '../hooks/types'
 
@@ -140,25 +165,27 @@
     },
     initialSelected: props.initialSelected || [],
   })
+  const { openPositionPreviewModal } = usePositionPreviewModal()
 
   const searchFormProps = {
     layout: 'inline',
     labelPlacement: 'left',
     labelWidth: 120,
-    showResetButton: false,
+    showResetButton: true,
     submitButtonText: '查询',
-    gridProps: { cols: '1 m:2 l:5', xGap: 8 },
+    resetButtonText: '重置',
+    gridProps: { cols: '1 m:2 l:4', xGap: 8, yGap: 8 },
     submitButtonOptions: {
       type: 'primary',
     },
   }
 
   const getCellClass = (row: PositionRow, dateKey: string) => {
-    if (isSelected(row.rowId, dateKey)) return 'selected'
+    if (isSelected(row.rowId, dateKey)) return 'bg-[#ffe7ea] text-[#e3324a] font-semibold'
     const status = row.cells[dateKey]?.status
-    if (status === 'disabled') return 'disabled'
-    if (status === 'occupied') return 'occupied'
-    return 'available'
+    if (status === 'disabled') return 'cursor-not-allowed bg-[#6c7584] text-transparent'
+    if (status === 'occupied') return 'cursor-not-allowed bg-[#e9edf2] text-transparent'
+    return 'cursor-pointer bg-white text-[#6f7f98] hover:bg-[#f0f7ff]'
   }
 
   const getCellText = (row: PositionRow, dateKey: string) => {
@@ -167,6 +194,15 @@
     if (cell.status !== 'available') return ''
     return `${cell.price}`
   }
+
+  const openPreview = (row: PositionRow) => {
+    openPositionPreviewModal({
+      estimatedPv: row.estimatedPv,
+    })
+  }
+
+  const getLeftCellClass = (rowIndex: number) =>
+    rowIndex % 2 === 1 ? 'bg-[#dcdeea]' : 'bg-[#eef3fb]'
 
   // 顶部查询（ProForm submit）
   const handleSearch = (values: Partial<SearchParams>) => {
@@ -195,30 +231,10 @@
 </script>
 
 <style scoped lang="less">
-  .position-modal {
-    width: 100%;
-  }
-
-  .selected-bar {
-    margin-bottom: 12px;
-    font-size: 14px;
-    color: #222;
-  }
-
-  .selected-label {
-    margin-right: 8px;
-    font-weight: 500;
-  }
-
-  .selected-value {
-    color: #666;
-  }
-
   .search-wrap {
-    margin-bottom: 6px;
-    // border: 1px solid #e8ecf3;
     :deep(.n-space) {
       margin-top: 0 !important;
+      justify-content: flex-start !important;
     }
     :deep(.n-form-item-feedback-wrapper) {
       min-height: 0;
@@ -229,142 +245,5 @@
     .n-grid {
       align-items: center;
     }
-  }
-
-  .legend-wrap {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    margin-bottom: 10px;
-    color: #666;
-    font-size: 12px;
-  }
-
-  .legend-item {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-  }
-
-  .legend-dot {
-    width: 12px;
-    height: 12px;
-    border-radius: 2px;
-  }
-
-  .table-scroll {
-    max-width: 100%;
-    max-height: 420px;
-    overflow: auto;
-    border: 1px solid #e8ecf3;
-  }
-
-  .position-table {
-    width: max-content;
-    border-collapse: collapse;
-    table-layout: fixed;
-    background: #fff;
-  }
-
-  .position-table th,
-  .position-table td {
-    border: 1px solid #edf1f7;
-    text-align: center;
-    font-size: 12px;
-    line-height: 1;
-    min-width: 32px;
-    height: 32px;
-    color: #5a5a5a;
-    padding: 0;
-  }
-
-  .position-table .month-cell {
-    height: 28px;
-    background: #6f87a8;
-    color: #fff;
-    font-size: 14px;
-    font-weight: 500;
-  }
-
-  .position-table .day-cell {
-    background: #9dc2ff;
-    color: #fff;
-    font-weight: 500;
-  }
-
-  .position-table .fixed-col {
-    position: sticky;
-    left: 0;
-    z-index: 6;
-    background: #f6f8fd;
-    min-width: 120px;
-  }
-
-  .position-table .fixed-position {
-    left: 120px;
-    min-width: 110px;
-    z-index: 7;
-  }
-
-  .position-table .fixed-app {
-    min-width: 120px;
-    z-index: 8;
-  }
-
-  .position-table .body-left {
-    color: #39475e;
-    font-weight: 500;
-    background: #eef3fb;
-  }
-
-  .position-table .value-cell {
-    cursor: pointer;
-    user-select: none;
-    transition: all 0.2s;
-  }
-
-  .position-table .value-cell.available {
-    background: #fff;
-    color: #6f7f98;
-  }
-
-  .position-table .value-cell.available:hover {
-    background: #f0f7ff;
-  }
-
-  .position-table .value-cell.disabled {
-    cursor: not-allowed;
-    background: #6c7584;
-    color: transparent;
-  }
-
-  .position-table .value-cell.occupied {
-    cursor: not-allowed;
-    background: #e9edf2;
-    color: transparent;
-  }
-
-  .position-table .value-cell.selected {
-    background: #ffe7ea;
-    color: #e3324a;
-    font-weight: 600;
-  }
-
-  .position-table .empty-cell {
-    padding: 30px 0;
-    background: #fff;
-  }
-
-  .footer-wrap {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-top: 14px;
-    gap: 16px;
-  }
-
-  .actions {
-    display: flex;
-    gap: 12px;
   }
 </style>
