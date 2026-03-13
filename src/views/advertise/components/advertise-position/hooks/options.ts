@@ -41,3 +41,17 @@ export const searchSchemas = [
     giProps: { span: 1 },
   },
 ]
+
+// 顶部搜索 ProForm 配置
+export const searchFormProps = {
+  layout: 'inline',
+  labelPlacement: 'left',
+  labelWidth: 120,
+  showResetButton: true,
+  submitButtonText: '查询',
+  resetButtonText: '重置',
+  gridProps: { cols: '1 m:2 l:4', xGap: 8, yGap: 8 },
+  submitButtonOptions: {
+    type: 'primary',
+  },
+}
