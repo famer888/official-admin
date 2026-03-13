@@ -84,7 +84,7 @@ export const typeMap = {
   18: 'jumpType', // 跳转类型
   19: 'businessDomain', // 业务域
   20: 'payType', // 支付方式
-  21: 'websiteOrderStatus',
+  21: 'websiteOrderStatus', // 订单状态
 }
 
 //应用类型

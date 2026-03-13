@@ -30,7 +30,7 @@ export const getColumns = (reload,statusOptions) => {
         },
         {
             title: '订单状态',
-            key: 'orderState',
+            key: 'websiteOrderState',
             width: '200px',
             align: 'center',  
             render(row) {
@@ -50,8 +50,8 @@ export const getColumns = (reload,statusOptions) => {
                     return prev
                 },{})
 
-                return status[row.orderState] ? h(NTag, {type: status[row.orderState].type}, {
-                    default: () => status[row.orderState].text
+                return status[row.websiteOrderState] ? h(NTag, {type: status[row.websiteOrderState].type}, {
+                    default: () => status[row.websiteOrderState].text
                 }) : null
             }   
         },
