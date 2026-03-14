@@ -11,35 +11,30 @@ const statusMap = {
   5: { label: '投放未开始', color: '#A95656' },
 }
 
+const typeColorMap = {
+  primary: '#3A82F9',
+  success: '#1BAD64',
+  error: '#FF292D',
+  warning: '#F9A33A',
+  tertiary: '#999999',
+  info: '#4A36FF',
+}
+
 function createBtn(text, { type = 'primary', ghost = true, onClick }) {
-  const typeColorMap = {
-    success: '#1BAD64',
-    error: '#FF292D',
-    warning: '#F9A33A',
-    secondary: '#999999',
-    info: '#4A36FF',
-  }
-
-  const style = {}
   const color = typeColorMap[type]
-
-  if (color) {
-    style.color = color
-    style.borderColor = color
-    style['--ad-btn-color'] = color
-    style.borderWidth = '1px'
-    style.borderStyle = 'solid'
+  const style = {
+    '--ad-btn-color': color,
   }
-
   return h(
     NButton,
     {
-      type,
+      // type,
       ghost,
+      ...(color && { color }),
       size: 'small',
       onClick,
       class: 'ad-action-btn !rounded-[4px] text-base',
-      style,
+      style
     },
     { default: () => text }
   )
@@ -178,7 +173,7 @@ function renderActions(row, reload) {
     case 5:
       actions.push(createBtn('编辑', { type: 'success', onClick: () => goEdit(row) }))
 
-      actions.push(createBtn('提交审核', { onClick: () => showSubmitReviewDialog(row, reload) }))
+      actions.push(createBtn('提交审核', {type:'primary', onClick: () => showSubmitReviewDialog(row, reload) }))
       break
     case 1:
       actions.push(createBtn('查看', { type: 'info', onClick: () => goDetail(row) }))
@@ -189,13 +184,13 @@ function renderActions(row, reload) {
     case 2:
       actions.push(createBtn('编辑', { type: 'success', onClick: () => goEdit(row) }))
       actions.push(
-        createBtn('终止', { type: 'secondary', onClick: () => window.$message?.info('已终止') })
+        createBtn('终止', { type: 'tertiary', onClick: () => window.$message?.info('已终止') })
       )
       break
     case 3:
       actions.push(
         createBtn('暂停', {
-          type: 'secondary',
+          type: 'tertiary',
           onClick: () => window.$message?.info('已暂停'),
         })
       )

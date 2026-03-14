@@ -50,6 +50,23 @@
         </n-form-item>
       </n-form>
 
+      <n-modal
+        v-model:show="positionModalVisible"
+        preset="card"
+        title="选择投放位置"
+        class="w-[1569px] position-picker-modal"
+        :bordered="false"
+        closable
+        header-class="position-picker-modal-header"
+        :header-style="positionModalHeaderStyle"
+        @close="handlePositionModalClose"
+      >
+        <div class="pt-5">
+          <PositionPickerModal :initial-selected="initialSelectedPlacements" @save="handlePositionSave"
+            @cancel="handlePositionCancel" />
+        </div>
+      </n-modal>
+
       <div class="mb-10">
         <div class="edit-section-label mb-4">投放位置</div>
         <div class="flex flex-wrap gap-5">
@@ -127,6 +144,7 @@
 
 <script setup>
   import { useRouter, useRoute } from 'vue-router'
+  import PositionPickerModal from './components/advertise-position/components/PositionPickerModal.vue'
 
   defineOptions({
     name: 'AdvertiseEdit',
@@ -136,6 +154,16 @@
   const route = useRoute()
 
   const formRef = ref(null)
+  const positionModalVisible = ref(false)
+  // 与选择弹窗一致的数据结构，用于回显到弹窗
+  const initialSelectedPlacements = ref([])
+  // Card 预设下头部样式（header-style）
+  const positionModalHeaderStyle = {
+    background: '#e8edf8',
+    paddingTop: '20px',
+    paddingBottom: '20px',
+  }
+
   // 暂无接口数据，使用 mock 便于预览投放位置、广告创意
   const formData = reactive({
     planName: '1月-万象APP活跃用户福利',
@@ -190,7 +218,26 @@
   }
 
   const handleSelectPosition = () => {
-    window.$message?.info('选择投放位置')
+    // 将当前 formData.positions 转为弹窗所需的 SelectedPlacementItem 格式（若有历史数据可在此做映射）
+    initialSelectedPlacements.value = []
+    positionModalVisible.value = true
+  }
+
+  const handlePositionSave = (list) => {
+    formData.positions = list.map((item) => ({
+      adSlot: item.positionName || item.slotName,
+      dateRange: item.deliveryTime,
+      budget: item.budget,
+    }))
+    positionModalVisible.value = false
+  }
+
+  const handlePositionCancel = () => {
+    positionModalVisible.value = false
+  }
+
+  const handlePositionModalClose = () => {
+    positionModalVisible.value = false
   }
 
   const handleCancel = () => {
@@ -334,5 +381,25 @@
 
   .edit-link-input::placeholder {
     color: #86909c;
+  }
+</style>
+
+<!-- 模态框头部类名由 header-class 指定，可能被 teleport 到 body，用非 scoped 样式 -->
+<style>
+  /* 整个模态框（Card 预设）圆角 16px */
+  .position-picker-modal.n-card {
+    border-radius: 16px !important;
+    overflow: hidden;
+  }
+
+  /* 标题在 n-card-header__main 内，需单独覆盖颜色与字体 */
+  .position-picker-modal-header .n-card-header__main {
+    color: #1d2129 !important;
+    font-family: 'PingFang SC', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+    font-weight: 600 !important;
+    font-size: 16px !important;
+    line-height: 16px !important;
+    letter-spacing: 0;
+    text-align: center;
   }
 </style>
