@@ -91,27 +91,6 @@
         </n-button>
       </div>
     </div>
-
-    <n-modal
-      v-model:show="positionModalVisible"
-      preset="card"
-      closable
-      :bordered="false"
-      :style="{ borderRadius: '16px', overflow: 'hidden', width: '1569px' }"
-      :header-style="{ background: '#e8edf8', padding: '20px' }"
-      @close="positionModalVisible = false"
-    >
-      <template #header>
-        <span class="text-base font-semibold text-[#1D2129]">选择投放位置</span>
-      </template>
-      <div class="pt-5">
-        <PositionPickerModal
-          :initial-selected="initialSelectedPlacements"
-          @save="handlePositionSave"
-          @cancel="positionModalVisible = false"
-        />
-      </div>
-    </n-modal>
   </div>
 </template>
 
@@ -120,7 +99,7 @@
   import AdBreadcrumb from './components/AdBreadcrumb.vue'
   import AdPositionCard from './components/AdPositionCard.vue'
   import AdCreativeCard from './components/AdCreativeCard.vue'
-  import PositionPickerModal from './components/advertise-position/components/PositionPickerModal.vue'
+  import { useAdvertisePositionModal } from './components/advertise-position'
 
   defineOptions({ name: 'AdvertiseEdit' })
 
@@ -136,8 +115,7 @@
   const router = useRouter()
   const route = useRoute()
   const formRef = ref(null)
-  const positionModalVisible = ref(false)
-  const initialSelectedPlacements = ref([])
+  const { openAdvertisePositionModal } = useAdvertisePositionModal()
 
   const formData = reactive({
     planName: '1月-万象APP活跃用户福利',
@@ -192,17 +170,16 @@
   }
 
   const handleSelectPosition = () => {
-    initialSelectedPlacements.value = []
-    positionModalVisible.value = true
-  }
-
-  const handlePositionSave = (list) => {
-    formData.positions = list.map((item) => ({
-      adSlot: item.positionName || item.slotName,
-      dateRange: item.deliveryTime,
-      budget: item.budget,
-    }))
-    positionModalVisible.value = false
+    openAdvertisePositionModal({
+      initialSelected: [],
+      onSave: (list) => {
+        formData.positions = list.map((item) => ({
+          adSlot: item.positionName || item.slotName,
+          dateRange: item.deliveryTime,
+          budget: item.budget,
+        }))
+      },
+    })
   }
 
   const handleCancel = () => router.push('/advertise/plan')
