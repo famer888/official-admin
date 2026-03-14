@@ -1,8 +1,10 @@
 <template>
   <div class="min-h-full p-2.5">
+    <!-- 面包屑导航 -->
     <AdBreadcrumb current-title="编辑广告计划" @back="router.push('/advertise/plan')" />
 
     <div class="p-5 bg-white rounded-lg">
+      <!-- 基本信息表单 -->
       <n-form
         ref="formRef"
         :model="formData"
@@ -12,6 +14,7 @@
         label-width="auto"
         require-mark-placement="right-hanging"
       >
+        <!-- 广告计划名称 -->
         <n-form-item path="planName">
           <template #label>
             <span class="text-base font-medium text-[#1D2129]">广告计划名称</span>
@@ -26,6 +29,7 @@
           />
         </n-form-item>
 
+        <!-- 选择投放位置按钮 -->
         <n-form-item path="position">
           <template #label>
             <span class="text-base font-medium text-[#1D2129]">投放位置</span>
@@ -41,6 +45,7 @@
         </n-form-item>
       </n-form>
 
+      <!-- 投放位置列表 -->
       <div class="mb-10">
         <div class="text-base leading-4 font-medium text-[#455980] mb-4">投放位置</div>
         <div class="flex flex-wrap gap-5">
@@ -56,6 +61,7 @@
         </div>
       </div>
 
+      <!-- 广告创意列表 -->
       <div class="mb-[120px]">
         <div class="text-base leading-4 font-medium text-[#455980] mb-4">广告创意</div>
         <div class="flex flex-wrap gap-6">
@@ -73,6 +79,7 @@
         </div>
       </div>
 
+      <!-- 底部操作按钮 -->
       <div class="flex items-center gap-5">
         <n-button
           color="#F4F5F9"
@@ -95,6 +102,11 @@
 </template>
 
 <script setup>
+  /**
+   * 广告管理 - 创建/编辑广告计划
+   * 功能：填写计划名称、选择投放位置、配置广告创意、保存
+   * 通过 query.id 判断是编辑还是新建，有 id 时回填数据
+   */
   import { useRouter, useRoute } from 'vue-router'
   import AdBreadcrumb from './components/AdBreadcrumb.vue'
   import AdPositionCard from './components/AdPositionCard.vue'
@@ -103,6 +115,7 @@
 
   defineOptions({ name: 'AdvertiseEdit' })
 
+  /** 输入框主题覆盖：灰底无边框 */
   const inputTheme = {
     color: '#F4F5F9',
     colorFocus: '#F4F5F9',
@@ -117,6 +130,7 @@
   const formRef = ref(null)
   const { openAdvertisePositionModal } = useAdvertisePositionModal()
 
+  /** 表单数据（含投放位置 & 广告创意），mock 数据用于预览 */
   const formData = reactive({
     planName: '1月-万象APP活跃用户福利',
     position: '',
@@ -152,6 +166,7 @@
     planName: { required: true, message: '请输入广告计划名称', trigger: 'blur' },
   }
 
+  /** 编辑模式：从路由参数回填表单数据 */
   if (route.query.id) {
     if (route.query.planName) formData.planName = route.query.planName
     if (route.query.position) formData.position = route.query.position
@@ -169,6 +184,7 @@
     }
   }
 
+  /** 打开投放位置选择弹窗，保存后更新 positions 列表 */
   const handleSelectPosition = () => {
     openAdvertisePositionModal({
       initialSelected: [],
@@ -182,8 +198,10 @@
     })
   }
 
+  /** 取消编辑，返回列表 */
   const handleCancel = () => router.push('/advertise/plan')
 
+  /** 校验表单并保存 */
   const handleSave = async () => {
     try {
       await formRef.value?.validate()

@@ -1,12 +1,19 @@
+/**
+ * 广告管理 - 数据接口（Mock）
+ * 后续接入真实接口后替换 getAdPlanPage 的实现
+ */
+
+/** 计划状态枚举 */
 const statusEnum = {
-  DRAFT: 0,
-  REVIEWING: 1,
-  APPROVED: 2,
-  RUNNING: 3,
-  TERMINATED: 4,
-  WITHDRAWN: 5,
+  DRAFT: 0,       // 草稿
+  REVIEWING: 1,   // 审核中
+  APPROVED: 2,    // 审核不通过
+  RUNNING: 3,     // 投放中
+  TERMINATED: 4,  // 投放结束
+  WITHDRAWN: 5,   // 投放未开始
 }
 
+/** Mock 数据模板 */
 const mockDataList = [
   {
     id: '100039100039',
@@ -118,6 +125,7 @@ const mockDataList = [
   },
 ]
 
+/** 基于模板批量生成 100 条 mock 数据 */
 function generateFullMockData() {
   const list = []
   for (let i = 0; i < 100; i++) {
@@ -132,6 +140,11 @@ function generateFullMockData() {
 
 const fullData = generateFullMockData()
 
+/**
+ * 获取广告计划分页数据（Mock）
+ * @param {Object} data - 分页参数 { pageNo, pageSize, planName }
+ * @returns {Promise} 模拟后端分页响应，延迟 300ms
+ */
 export const getAdPlanPage = (data) => {
   return new Promise((resolve) => {
     const { pageNo = 1, pageSize = 10, planName } = data || {}

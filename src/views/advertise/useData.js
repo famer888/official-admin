@@ -1,7 +1,12 @@
+/**
+ * 广告管理 - 列表页表格配置
+ * 定义表格列、状态映射、操作按钮渲染逻辑
+ */
 import { h } from 'vue'
 import { NButton, NSpace } from 'naive-ui'
 import router from '@/router'
 
+/** 广告计划状态 → 标签文案 & 颜色 */
 const statusMap = {
   0: { label: '草稿', color: '#999999' },
   1: { label: '审核中', color: '#4271BD' },
@@ -11,6 +16,7 @@ const statusMap = {
   5: { label: '投放未开始', color: '#A95656' },
 }
 
+/** 操作按钮颜色映射 */
 const btnColorMap = {
   primary: '#3A82F9',
   success: '#1BAD64',
@@ -20,6 +26,7 @@ const btnColorMap = {
   info: '#4A36FF',
 }
 
+/** 创建统一风格的操作按钮 */
 function createBtn(text, { type = 'primary', ghost = true, onClick }) {
   return h(
     NButton,
@@ -34,6 +41,7 @@ function createBtn(text, { type = 'primary', ghost = true, onClick }) {
   )
 }
 
+/** 提交审核确认弹窗 */
 function showSubmitReviewDialog(row, reload) {
   window.$dialog?.create({
     showIcon: false,
@@ -69,6 +77,7 @@ function showSubmitReviewDialog(row, reload) {
   })
 }
 
+/** 审核驳回原因展示弹窗 */
 function showRejectReasonDialog(row) {
   const reason = row.rejectReason || '广告素材过于劲爆，无法满足APP审核规范\n请立即整改！'
   window.$dialog?.create({
@@ -94,6 +103,7 @@ function showRejectReasonDialog(row) {
   })
 }
 
+/** 跳转到编辑页 */
 function goEdit(row) {
   router.push({
     path: '/advertise/edit',
@@ -101,6 +111,7 @@ function goEdit(row) {
   })
 }
 
+/** 跳转到详情页 */
 function goDetail(row) {
   router.push({
     path: '/advertise/detail',
@@ -108,34 +119,39 @@ function goDetail(row) {
   })
 }
 
+/**
+ * 根据行数据的状态渲染对应的操作按钮组
+ * 不同状态下可执行的操作不同
+ */
 function renderActions(row, reload) {
   const actions = []
   const status = row.status
 
   switch (status) {
-    case 0:
-    case 5:
+    case 0: // 草稿
+    case 5: // 投放未开始
       actions.push(createBtn('编辑', { type: 'success', onClick: () => goEdit(row) }))
       actions.push(createBtn('提交审核', { type: 'primary', onClick: () => showSubmitReviewDialog(row, reload) }))
       break
-    case 1:
+    case 1: // 审核中
       actions.push(createBtn('查看', { type: 'info', onClick: () => goDetail(row) }))
       actions.push(createBtn('撤回', { type: 'error', onClick: () => window.$message?.info('已撤回') }))
       break
-    case 2:
+    case 2: // 审核不通过
       actions.push(createBtn('编辑', { type: 'success', onClick: () => goEdit(row) }))
       actions.push(createBtn('终止', { type: 'tertiary', onClick: () => window.$message?.info('已终止') }))
       break
-    case 3:
+    case 3: // 投放中
       actions.push(createBtn('暂停', { type: 'tertiary', onClick: () => window.$message?.info('已暂停') }))
       actions.push(createBtn('开启投放', { type: 'warning', onClick: () => window.$message?.info('已开启投放') }))
       break
-    case 4:
+    case 4: // 投放结束
       actions.push(createBtn('编辑', { type: 'success', onClick: () => goEdit(row) }))
       actions.push(createBtn('提交审核', { onClick: () => showSubmitReviewDialog(row, reload) }))
       break
   }
 
+  // 有驳回原因时追加「驳回原因」按钮
   if (row.rejectReason) {
     actions.push(createBtn('驳回原因', { type: 'warning', onClick: () => showRejectReasonDialog(row) }))
   }
@@ -143,6 +159,10 @@ function renderActions(row, reload) {
   return h(NSpace, { size: 8, justify: 'end', wrap: false }, { default: () => actions })
 }
 
+/**
+ * 获取表格列定义
+ * @param {Function} reload - 列表刷新回调，传给操作按钮使用
+ */
 export const getColumns = (reload) => [
   {
     title: '计划',
