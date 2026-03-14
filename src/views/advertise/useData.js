@@ -186,14 +186,14 @@ export const getColumns = (reload) => [
   {
     title: '状态',
     key: 'status',
-    width: 120,
+    width: 140,
     align: 'center',
     render: (row) => {
       const info = statusMap[row.status] || statusMap[0]
       return h(
         'span',
         {
-          class: 'inline-flex justify-center items-center w-24 min-w-[96px] h-8 rounded border text-base',
+          class: 'inline-flex justify-center items-center min-w-[96px] px-3 h-8 rounded border text-base whitespace-nowrap',
           style: { borderColor: info.color, color: info.color },
         },
         info.label
