@@ -37,7 +37,7 @@
   import { submitOrderScreenshot } from '../useApi'
   import { useUser } from '@/store/modules/user'
 
-  const emits = defineEmits(['cancel'])
+  const emits = defineEmits(['cancel', 'reload'])
 
   const props = defineProps({
     id: {
@@ -66,6 +66,7 @@
       onSuccess: (res) => {
         message.success('上传支付凭据成功')
         emits('cancel')
+        emits('reload')
       },
     }
   )

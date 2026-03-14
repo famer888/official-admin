@@ -2,7 +2,7 @@
   <div class="w-full">
     <div class="mb-3 text-[14px] text-[#222]">
       <span class="mr-2 font-medium">已选择的广告位置：</span>
-      <span class="text-[#666]">{{ selectedSummary }}</span>
+      <span class="text-[#000]">{{ selectedSummary }}</span>
     </div>
 
     <div class="search-wrap mb-2">
@@ -27,17 +27,13 @@
       </div>
     </div> -->
 
-    <n-spin :show="loading">
+    <n-spin :show="loading" class="mt-4">
       <div class="max-w-full max-h-[420px] overflow-auto">
         <table class="w-max min-w-full border-collapse table-fixed bg-white">
           <thead>
             <tr>
-              <th :class="[cls.tableCellBase, cls.stickyAppHead]" rowspan="2">
-                APP名称
-              </th>
-              <th :class="[cls.tableCellBase, cls.stickyPosHead]" rowspan="2">
-                广告位
-              </th>
+              <th :class="[cls.tableCellBase, cls.stickyAppHead]" rowspan="2"> APP名称 </th>
+              <th :class="[cls.tableCellBase, cls.stickyPosHead]" rowspan="2"> 广告位 </th>
               <th
                 v-for="group in monthGroups"
                 :key="group.label"
@@ -60,18 +56,17 @@
           <tbody>
             <tr v-if="!pagedRows.length">
               <td :colspan="calendarDays.length + 2" class="bg-white py-[30px]">
-                <n-empty description="暂无可选广告位" />
+                <div class="flex items-center justify-center flex-col gap-4">
+                  <img :src="EmptySrc" style="width: 240px; height: auto" />
+                  <span class="text-[#86909C]">暂无可选广告位</span>
+                </div>
               </td>
             </tr>
             <tr v-for="(row, rowIndex) in pagedRows" :key="row.rowId">
-              <td
-                :class="[cls.tableCellBase, cls.stickyAppBody, getLeftCellClass(rowIndex)]"
-              >
+              <td :class="[cls.tableCellBase, cls.stickyAppBody, getLeftCellClass(rowIndex)]">
                 {{ row.appName }}
               </td>
-              <td
-                :class="[cls.tableCellBase, cls.stickyPosBody, getLeftCellClass(rowIndex)]"
-              >
+              <td :class="[cls.tableCellBase, cls.stickyPosBody, getLeftCellClass(rowIndex)]">
                 <span class="cursor-pointer text-[#3a82f9]" @click.stop="openPreview(row)">
                   {{ row.positionName }}
                 </span>
@@ -115,6 +110,7 @@
   import { usePositionPreviewModal } from '../hooks/usePositionPreviewModal'
   import { useAdvertisePosition } from '../hooks/useAdvertisePosition'
   import type { PositionRow, SearchParams, SelectedPlacementItem } from '../hooks/types'
+  import EmptySrc from '@/assets/images/empt.png'
 
   const props = defineProps<{
     initialSelected?: SelectedPlacementItem[]
@@ -160,10 +156,8 @@
 
   const cls = {
     tableCellBase: 'border border-[#edf1f7] p-0 text-center text-[12px] leading-none',
-    stickyAppHead:
-      'sticky left-0 z-[8] min-w-[120px] bg-[#f6f8fd] text-[#5a5a5a] h-[60px]',
-    stickyPosHead:
-      'sticky left-[120px] z-[7] min-w-[110px] bg-[#f6f8fd] text-[#5a5a5a] h-[60px]',
+    stickyAppHead: 'sticky left-0 z-[8] min-w-[120px] bg-[#f6f8fd] text-[#5a5a5a] h-[60px]',
+    stickyPosHead: 'sticky left-[120px] z-[7] min-w-[110px] bg-[#f6f8fd] text-[#5a5a5a] h-[60px]',
     monthHead: 'h-[28px] min-w-[32px] bg-[#6f87a8] text-[14px] font-medium text-white',
     dayHead: 'h-[32px] min-w-[32px] bg-[#9dc2ff] font-medium text-white',
     stickyAppBody:
@@ -179,7 +173,7 @@
   const getCellClass = (row: PositionRow, dateKey: string) => {
     if (isSelected(row.rowId, dateKey)) return 'bg-[#ffe7ea] text-[#e3324a] font-semibold'
     const status = row.cells[dateKey]?.status
-    if (status === 'disabled') return 'cursor-not-allowed bg-[#6c7584] text-transparent'
+    if (status === 'disabled') return 'cursor-not-allowed bg-[#D2D2D2] text-transparent'
     if (status === 'occupied') return 'cursor-not-allowed bg-[#e9edf2] text-transparent'
     return 'cursor-pointer bg-white text-[#6f7f98] hover:bg-[#f0f7ff]'
   }

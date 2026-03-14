@@ -86,8 +86,10 @@ export const getColumns = (reload,statusOptions) => {
                                 url: row.payVoucher,
                                 onCancel: () => {
                                     dialog.destroyAll()
-                                    reload()
                                 },
+                                onReload: () => {
+                                    reload()
+                                }
                             }),
                         })
                     }
