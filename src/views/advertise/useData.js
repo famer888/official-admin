@@ -34,71 +34,78 @@ function createBtn(text, { type = 'primary', ghost = true, onClick }) {
       ghost,
       color: btnColorMap[type],
       size: 'small',
-      class: '!rounded',
+      class: 'rounded',
       onClick,
     },
     { default: () => text }
   )
 }
 
-/** 提交审核确认弹窗 */
+/** 提交审核确认弹窗（340×226 / radius 16） */
 function showSubmitReviewDialog(row, reload) {
   window.$dialog?.create({
     showIcon: false,
     closable: false,
-    style: { width: '340px', height: '226px', padding: '20px', borderRadius: '16px' },
-    title: () => h('div', { class: 'text-center text-xl font-bold text-black w-full pt-4' }, '是否提交审核？'),
-    action: () =>
-      h('div', { class: 'flex justify-between gap-5 w-full absolute bottom-5 left-5 right-5' }, [
-        h(
-          NButton,
-          {
-            ghost: true,
-            color: '#3A82F9',
-            class: 'flex-1 !h-[42px] !text-base !rounded !font-medium',
-            onClick: () => window.$dialog?.destroyAll(),
-          },
-          { default: () => '取消' }
-        ),
-        h(
-          NButton,
-          {
-            type: 'primary',
-            class: 'flex-1 !h-[42px] !text-base !rounded !font-medium',
-            onClick: () => {
-              window.$dialog?.destroyAll()
-              window.$message?.success('提交审核成功')
-              reload?.()
+    class: 'w-[340px] h-[226px] p-0 rounded-2xl overflow-hidden',
+    content: () =>
+      h('div', { class: 'w-[340px] h-[226px] p-5 box-border flex flex-col justify-between' }, [
+        h('div', { class: 'text-center text-xl font-bold text-black pt-5' }, '是否提交审核？'),
+        h('div', { class: 'flex gap-5' }, [
+          h(
+            NButton,
+            {
+              ghost: true,
+              color: '#3A82F9',
+              class: 'flex-1 h-[42px] text-base rounded font-medium',
+              onClick: () => window.$dialog?.destroyAll(),
             },
-          },
-          { default: () => '确认' }
-        ),
+            { default: () => '取消' }
+          ),
+          h(
+            NButton,
+            {
+              type: 'primary',
+              class: 'flex-1 h-[42px] text-base rounded font-medium',
+              onClick: () => {
+                window.$dialog?.destroyAll()
+                window.$message?.success('提交审核成功')
+                reload?.()
+              },
+            },
+            { default: () => '确认' }
+          ),
+        ]),
       ]),
   })
 }
 
-/** 审核驳回原因展示弹窗 */
+/** 审核驳回原因展示弹窗（340×226 / radius 16） */
 function showRejectReasonDialog(row) {
   const reason = row.rejectReason || '广告素材过于劲爆，无法满足APP审核规范\n请立即整改！'
   window.$dialog?.create({
     showIcon: false,
     closable: false,
-    style: { width: '340px', height: '226px', padding: '20px 18px', borderRadius: '16px' },
-    title: () => h('div', { class: 'text-center text-xl font-bold text-black w-full pt-2' }, '审核驳回原因'),
+    class: 'w-[340px] h-[226px] p-0 rounded-2xl overflow-hidden',
     content: () =>
-      h('div', { class: 'text-base leading-[26px] text-center whitespace-pre-line text-[#1D2129] pt-2 pb-5' }, reason),
-    action: () =>
-      h('div', { class: 'flex justify-center w-full pt-3 pb-5' }, [
+      h('div', { class: 'w-[340px] h-[226px] px-[18px] py-5 box-border flex flex-col justify-between' }, [
+        h('div', { class: 'text-center text-xl font-bold text-black pt-3' }, '审核驳回原因'),
         h(
-          NButton,
-          {
-            ghost: true,
-            color: '#3276FF',
-            class: '!w-[196px] !h-[42px] !text-base !rounded !font-medium',
-            onClick: () => window.$dialog?.destroyAll(),
-          },
-          { default: () => '关闭' }
+          'div',
+          { class: 'text-base leading-[26px] text-center whitespace-pre-line text-[#1D2129]' },
+          reason
         ),
+        h('div', { class: 'flex justify-center' }, [
+          h(
+            NButton,
+            {
+              ghost: true,
+              color: '#3276FF',
+              class: 'w-[196px] h-[42px] text-base rounded font-medium',
+              onClick: () => window.$dialog?.destroyAll(),
+            },
+            { default: () => '关闭' }
+          ),
+        ]),
       ]),
   })
 }
