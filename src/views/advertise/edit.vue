@@ -44,7 +44,7 @@
           <label class="n-form-item-label n-form-item-label--right-hanging-mark">
             <span class="n-form-item-label__text">投放位置</span>
           </label>
-          <n-button type="primary" ghost class="btn-select-position" @click="handleSelectPosition">
+          <n-button type="primary" ghost color="#3A82F9" class="btn-select-position" @click="handleSelectPosition">
             选择投放位置
           </n-button>
         </n-form-item>
@@ -292,8 +292,7 @@
     width: 144px;
     height: 42px;
     border-radius: 4px;
-    padding: 8px 12px;
-    border: 1px solid #3a82f9;
+    padding: 8px 12px; 
     background: #f4f5f9 !important;
     font-family: 'PingFang SC', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     font-weight: 600;
