@@ -24,7 +24,6 @@
             placeholder="最多20个字条，支持中英文及部分特殊符号"
             maxlength="20"
             size="large"
-            :theme-overrides="inputTheme"
             class="!w-[492px]"
           />
         </n-form-item>
@@ -116,16 +115,6 @@
   import { useMaterialLibraryModal } from './components/material-library'
 
   defineOptions({ name: 'AdvertiseEdit' })
-
-  /** 输入框主题覆盖：灰底无边框 */
-  const inputTheme = {
-    color: '#F4F5F9',
-    colorFocus: '#F4F5F9',
-    border: '0 solid transparent',
-    borderHover: '0 solid transparent',
-    borderFocus: '0 solid transparent',
-    boxShadowFocus: 'none',
-  }
 
   const router = useRouter()
   const route = useRoute()

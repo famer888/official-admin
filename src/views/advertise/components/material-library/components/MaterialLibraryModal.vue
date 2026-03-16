@@ -22,8 +22,7 @@
           v-model:value="searchName"
           placeholder="请输入素材名称"
           clearable
-          :theme-overrides="inputTheme"
-          class="w-[260px] h-[42px] rounded"
+          class="w-[260px]"
         />
         <span class="text-base font-medium text-[#1D2129] whitespace-nowrap">素材类型</span>
         <n-select
@@ -94,16 +93,6 @@
   })
 
   const emit = defineEmits(['select', 'cancel'])
-
-  const inputTheme = {
-    color: '#F4F5F9',
-    colorFocus: '#F4F5F9',
-    border: '0 solid transparent',
-    borderHover: '0 solid transparent',
-    borderFocus: '0 solid transparent',
-    boxShadowFocus: 'none',
-    placeholderColor: '#86909C',
-  }
 
   const searchName = ref('')
   const searchType = ref(null)

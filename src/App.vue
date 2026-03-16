@@ -89,7 +89,14 @@
       },
       Input: {
         borderRadius: '4px',
-        boxShadowFocus: 'none', // 去掉 focus 阴影（点击时）
+        color: '#F4F5F9',
+        colorFocus: '#F4F5F9',
+        border: '0 solid transparent',
+        borderHover: '0 solid transparent',
+        borderFocus: '0 solid transparent',
+        boxShadowFocus: 'none',
+        placeholderColor: '#86909C',
+        heightMedium: '42px',
       },
       Select: {
         peers: {
