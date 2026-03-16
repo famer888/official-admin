@@ -61,35 +61,34 @@ function showSubmitReviewDialog(row, reload) {
   window.$dialog?.create({
     showIcon: false,
     closable: false,
-    class: 'w-[340px] h-[226px] p-0 rounded-2xl overflow-hidden',
-    content: () =>
-      h('div', { class: 'w-[340px] h-[226px] p-5 box-border flex flex-col justify-between' }, [
-        h('div', { class: 'text-center text-xl font-bold text-black pt-5' }, '是否提交审核？'),
-        h('div', { class: 'flex gap-5' }, [
-          h(
-            NButton,
-            {
-              ghost: true,
-              color: '#3A82F9',
-              class: 'flex-1 h-[42px] text-base rounded font-medium',
-              onClick: () => window.$dialog?.destroyAll(),
+    class: 'w-[340px] h-[226px] p-5 rounded-2xl overflow-hidden',
+    title: () => h('div', { class: 'text-center text-xl font-bold text-black w-full pt-[35px]' }, '是否提交审核？'),
+    action: () =>
+      h('div', { class: 'flex justify-between gap-5 absolute bottom-5 left-5 right-5' }, [
+        h(
+          NButton,
+          {
+            ghost: true,
+            color: '#3A82F9',
+            class: 'flex-1 h-[42px] text-base rounded font-medium',
+            onClick: () => window.$dialog?.destroyAll(),
+          },
+          { default: () => '取消' }
+        ),
+        h(
+          NButton,
+          {
+            type: 'primary',
+            color: '#3A82F9',
+            class: 'flex-1 h-[42px] text-base rounded font-medium',
+            onClick: () => {
+              window.$dialog?.destroyAll()
+              window.$message?.success('提交审核成功')
+              reload?.()
             },
-            { default: () => '取消' }
-          ),
-          h(
-            NButton,
-            {
-              type: 'primary',
-              class: 'flex-1 h-[42px] text-base rounded font-medium',
-              onClick: () => {
-                window.$dialog?.destroyAll()
-                window.$message?.success('提交审核成功')
-                reload?.()
-              },
-            },
-            { default: () => '确认' }
-          ),
-        ]),
+          },
+          { default: () => '确认' }
+        ),
       ]),
   })
 }
@@ -100,27 +99,27 @@ function showRejectReasonDialog(row) {
   window.$dialog?.create({
     showIcon: false,
     closable: false,
-    class: 'w-[340px] h-[226px] p-0 rounded-2xl overflow-hidden',
+    class: 'w-[340px] h-[226px] px-4 py-5 rounded-2xl overflow-hidden',
+    title: () =>
+      h('div', { class: 'text-center text-xl font-bold text-black w-full pt-5' }, '审核驳回原因'),
     content: () =>
-      h('div', { class: 'w-[340px] h-[226px] px-[18px] py-5 box-border flex flex-col justify-between' }, [
-        h('div', { class: 'text-center text-xl font-bold text-black pt-3' }, '审核驳回原因'),
+      h(
+        'div',
+        { class: 'text-base leading-[26px] text-center whitespace-pre-line text-[#1D2129] pt-2' },
+        reason
+      ),
+    action: () =>
+      h('div', { class: 'flex justify-center gap-5 absolute bottom-5 left-5 right-5' }, [
         h(
-          'div',
-          { class: 'text-base leading-[26px] text-center whitespace-pre-line text-[#1D2129]' },
-          reason
+          NButton,
+          {
+            ghost: true,
+            color: '#3A82F9',
+            class: 'w-[196px] h-[42px] text-base rounded font-medium',
+            onClick: () => window.$dialog?.destroyAll(),
+          },
+          { default: () => '关闭' }
         ),
-        h('div', { class: 'flex justify-center' }, [
-          h(
-            NButton,
-            {
-              ghost: true,
-              color: '#3276FF',
-              class: 'w-[196px] h-[42px] text-base rounded font-medium',
-              onClick: () => window.$dialog?.destroyAll(),
-            },
-            { default: () => '关闭' }
-          ),
-        ]),
       ]),
   })
 }
@@ -178,9 +177,9 @@ function renderActions(row, reload) {
   }
 
   // 有驳回原因时追加「驳回原因」按钮
-  if (row.rejectReason) {
+  // if (row.rejectReason) {
     actions.push(createBtn('驳回原因', { type: 'warning', onClick: () => showRejectReasonDialog(row) }))
-  }
+  // }
 
   return h(NSpace, { size: 8, justify: 'end', wrap: false }, { default: () => actions })
 }
