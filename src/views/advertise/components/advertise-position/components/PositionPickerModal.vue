@@ -1,6 +1,6 @@
 <template>
   <div class="w-full">
-    <div class="mb-3 text-[14px] text-[#222]">
+    <div class="mb-2 text-[14px] text-[#222]">
       <span class="mr-2 font-medium">已选择的广告位置：</span>
       <span class="text-[#000]">{{ selectedSummary }}</span>
     </div>

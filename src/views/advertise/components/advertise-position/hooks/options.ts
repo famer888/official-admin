@@ -46,7 +46,8 @@ export const searchSchemas = [
 export const searchFormProps = {
   layout: 'inline',
   labelPlacement: 'left',
-  labelWidth: 120,
+  labelAlign: 'left',
+  labelWidth: 'auto',
   showResetButton: true,
   submitButtonText: '查询',
   resetButtonText: '重置',
