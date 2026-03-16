@@ -220,7 +220,7 @@ export const getColumns = (reload) => [
   {
     title: '投放位置',
     key: 'position',
-    width: 200,
+    width: 250,
     align: 'left',
     render: (row) => h('div', { class: 'leading-5 line-clamp-2 break-all' }, row.position),
   },
@@ -228,13 +228,13 @@ export const getColumns = (reload) => [
     title: '状态',
     key: 'status',
     width: 140,
-    align: 'center',
+    align: 'left',
     render: (row) => {
       const info = statusMap[row.status] || statusMap[0]
       return h(
         'span',
         {
-          class: 'inline-flex justify-center items-center min-w-[96px] px-3 h-8 rounded border text-base whitespace-nowrap',
+          class: 'inline-flex justify-center items-center min-w-[96px] h-8 rounded border text-base whitespace-nowrap',
           style: { borderColor: info.color, color: info.color },
         },
         info.label
