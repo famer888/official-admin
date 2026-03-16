@@ -7,6 +7,7 @@
     - editable: 是否可编辑跳转链接（编辑页 true，详情页 false）
   Events:
     - update:link: 跳转链接变更时触发（仅 editable=true 时）
+    - selectMaterial: 点击「去素材库选择」时触发
 -->
 <template>
   <div class="flex-1 min-w-[300px] rounded bg-[#F4F5F9] p-4 flex flex-col gap-4">
@@ -28,11 +29,23 @@
         />
         <span v-else class="text-xs text-[#999]">暂无图片</span>
       </div>
-      <ul class="text-sm leading-[26px] font-medium text-[#455980] list-disc pl-4">
-        <li>支持上传jpg、png、webp 格式的文件</li>
-        <li>限制上传文件大小5M</li>
-        <li>限制图片的尺寸比例为 【{{ creative.ratio }}】</li>
-      </ul>
+      <div class="flex flex-col">
+        <ul class="text-sm leading-[26px] font-medium text-[#455980] list-disc pl-4">
+          <li>支持上传jpg、png、webp 格式的文件</li>
+          <li>限制上传文件大小5M</li>
+          <li>限制图片的尺寸比例为 【{{ creative.ratio }}】</li>
+        </ul>
+        <!-- 编辑态显示素材库选择按钮 -->
+        <n-button
+          v-if="editable"
+          ghost
+          color="#3A82F9"
+          class="mt-2 w-[120px] h-[34px] rounded text-sm font-medium"
+          @click="$emit('selectMaterial', index)"
+        >
+          去素材库选择
+        </n-button>
+      </div>
     </div>
 
     <!-- 跳转链接：editable 时为输入框，否则为只读文本 -->
@@ -59,5 +72,5 @@
     index: { type: Number, required: true },
     editable: { type: Boolean, default: false },
   })
-  defineEmits(['update:link'])
+  defineEmits(['update:link', 'selectMaterial'])
 </script>

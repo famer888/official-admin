@@ -112,18 +112,22 @@ function showRejectReasonDialog(row) {
 
 /** 跳转到编辑页 */
 function goEdit(row) {
-  router.push({
-    path: '/advertise/edit',
-    query: { id: row.id, planName: row.planName, position: row.position },
-  })
+  router
+    .push({
+      path: '/advertise/edit',
+      query: { id: row.id, planName: row.planName, position: row.position },
+    })
+    .catch((err) => console.error('[advertise] goEdit failed:', err))
 }
 
 /** 跳转到详情页 */
 function goDetail(row) {
-  router.push({
-    path: '/advertise/detail',
-    query: { id: row.id, planName: row.planName },
-  })
+  router
+    .push({
+      path: '/advertise/detail',
+      query: { id: row.id, planName: row.planName },
+    })
+    .catch((err) => console.error('[advertise] goDetail failed:', err))
 }
 
 /**

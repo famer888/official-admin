@@ -72,6 +72,7 @@
             :index="index"
             editable
             @update:link="(val) => (creative.link = val)"
+            @select-material="handleSelectMaterial"
           />
           <div v-if="!formData.creatives?.length" class="text-sm text-[#86909C]">
             暂无广告创意
@@ -112,6 +113,7 @@
   import AdPositionCard from './components/AdPositionCard.vue'
   import AdCreativeCard from './components/AdCreativeCard.vue'
   import { useAdvertisePositionModal } from './components/advertise-position'
+  import { useMaterialLibraryModal } from './components/material-library'
 
   defineOptions({ name: 'AdvertiseEdit' })
 
@@ -129,6 +131,7 @@
   const route = useRoute()
   const formRef = ref(null)
   const { openAdvertisePositionModal } = useAdvertisePositionModal()
+  const { openMaterialLibraryModal } = useMaterialLibraryModal()
 
   /** 表单数据（含投放位置 & 广告创意），mock 数据用于预览 */
   const formData = reactive({
@@ -194,6 +197,18 @@
           dateRange: item.deliveryTime,
           budget: item.budget,
         }))
+      },
+    })
+  }
+
+  /** 打开素材库弹窗，选择后回填到对应创意卡片 */
+  const handleSelectMaterial = (creativeIndex) => {
+    const creative = formData.creatives[creativeIndex]
+    openMaterialLibraryModal({
+      ratio: creative?.ratio || '',
+      onSelect: (item) => {
+        creative.imageUrl = item.previewUrl
+        window.$message?.success(`已选择素材：${item.name}`)
       },
     })
   }
