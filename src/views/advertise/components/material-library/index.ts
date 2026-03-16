@@ -29,20 +29,44 @@ export function useMaterialLibraryModal() {
   const openMaterialLibraryModal = (options?: OpenMaterialLibraryOptions) => {
     let d: any
     d = showModal({
-      title: '',
-      closable: true,
-      style: { width: '1020px', padding: '0' },
-      class: 'overflow-hidden rounded-xl',
+      closable: false, // 关闭默认右上角 X，使用自定义头部
+      class: 'p-0 overflow-hidden rounded-xl',
+      title: null,
+      style: { width: '1020px' },
       onClose: () => d?.destroy(),
       content: () =>
-        h(MaterialLibraryModal, {
-          ratio: options?.ratio || '',
-          onSelect: (item: MaterialItem) => {
-            options?.onSelect?.(item)
-            d?.destroy()
-          },
-          onCancel: () => d?.destroy(),
-        }),
+        h('div', { class: 'w-full flex flex-col' }, [
+          // 自定义头部：标题「素材库」+ 右上角关闭按钮
+          h(
+            'div',
+            {
+              class:
+                'bg-[#E8EDF8] px-6 py-5 rounded-t-xl flex items-center justify-center relative text-base font-semibold text-[#1D2129]',
+            },
+            [
+              h('div', { class: 'px-10 text-center w-full' }, '素材库'),
+              h(
+                'button',
+                {
+                  type: 'button',
+                  'aria-label': '关闭',
+                  class:
+                    'absolute right-4 top-1/2 -translate-y-1/2 text-[#1D2129]/60 hover:text-[#1D2129] leading-none text-[18px]',
+                  onClick: () => d?.destroy(),
+                },
+                '×'
+              ),
+            ]
+          ),
+          h(MaterialLibraryModal, {
+            ratio: options?.ratio || '',
+            onSelect: (item: MaterialItem) => {
+              options?.onSelect?.(item)
+              d?.destroy()
+            },
+            onCancel: () => d?.destroy(),
+          }),
+        ]),
     })
     return d
   }

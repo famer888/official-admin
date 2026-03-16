@@ -6,14 +6,38 @@ import { defineComponent, h, ref } from 'vue'
 import { NButton, NSpace } from 'naive-ui'
 import router from '@/router'
 
-/** 广告计划状态 → 标签文案 & 颜色 */
+/** 广告计划状态 → 标签文案 & 样式类 */
 const statusMap = {
-  0: { label: '草稿', color: '#999999' },
-  1: { label: '审核中', color: '#4271BD' },
-  2: { label: '审核不通过', color: '#C42527' },
-  3: { label: '投放中', color: '#57AC22' },
-  4: { label: '投放结束', color: '#626262' },
-  5: { label: '投放未开始', color: '#A95656' },
+  0: {
+    label: '草稿',
+    class:
+      'border-[#999999] text-[#999999] hover:bg-[#999999] hover:text-white',
+  },
+  1: {
+    label: '审核中',
+    class:
+      'border-[#4271BD] text-[#4271BD] hover:bg-[#4271BD] hover:text-white',
+  },
+  2: {
+    label: '审核不通过',
+    class:
+      'border-[#C42527] text-[#C42527] hover:bg-[#C42527] hover:text-white',
+  },
+  3: {
+    label: '投放中',
+    class:
+      'border-[#57AC22] text-[#57AC22] hover:bg-[#57AC22] hover:text-white',
+  },
+  4: {
+    label: '投放结束',
+    class:
+      'border-[#626262] text-[#626262] hover:bg-[#626262] hover:text-white',
+  },
+  5: {
+    label: '投放未开始',
+    class:
+      'border-[#A95656] text-[#A95656] hover:bg-[#A95656] hover:text-white',
+  },
 }
 
 /** 操作按钮颜色映射 */
@@ -248,8 +272,10 @@ export const getColumns = (reload) => [
       return h(
         'span',
         {
-          class: 'inline-flex justify-center items-center min-w-[96px] h-8 rounded border text-base whitespace-nowrap',
-          style: { borderColor: info.color, color: info.color },
+          class: [
+            'inline-flex justify-center items-center min-w-[96px] h-8 rounded border text-base whitespace-nowrap transition-colors duration-150',
+            info.class,
+          ],
         },
         info.label
       )

@@ -11,12 +11,12 @@
     <!-- 内容区域 -->
     <div class="p-5 flex flex-col">
       <!-- 图片比例提示：16px #455980 -->
-      <div class="text-base font-medium text-[#455980] mb-4">
+      <div class="text-base font-medium text-[#455980] mb-5">
         图片比例（{{ ratio }}）
       </div>
 
       <!-- 搜索栏 -->
-      <div class="flex items-center gap-3 mb-4">
+      <div class="flex items-center gap-3 mb-5">
         <span class="text-base font-medium text-[#1D2129] whitespace-nowrap">素材名称</span>
         <n-input
           v-model:value="searchName"
@@ -30,7 +30,7 @@
           :options="typeOptions"
           placeholder="请选择素材类型"
           clearable
-          class="w-[200px]"
+          class="w-[200px] h-[42px]"
         />
         <n-button type="primary" class="h-[42px] rounded w-[96px]" @click="handleSearch">
           查询
@@ -38,15 +38,18 @@
       </div>
 
       <!-- 表格 -->
-      <n-data-table
-        :columns="columns"
-        :data="tableData"
-        :row-key="(row) => row.id"
-        :checked-row-keys="checkedKeys"
-        :max-height="380"
-        :single-line="true"
-        @update:checked-row-keys="handleCheck"
-      />
+      <div class="s-table material-library-table">
+        <n-data-table
+          :columns="columns"
+          :data="tableData"
+          :row-key="(row) => row.id"
+          :checked-row-keys="checkedKeys"
+          :max-height="380"
+          :single-line="false"
+          :bordered="false"
+          @update:checked-row-keys="handleCheck"
+        />
+      </div>
 
       <!-- 分页 -->
       <div class="flex items-center justify-center mt-4">
