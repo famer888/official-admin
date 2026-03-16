@@ -177,9 +177,9 @@ function renderActions(row, reload) {
   }
 
   // 有驳回原因时追加「驳回原因」按钮
-  // if (row.rejectReason) {
+  if (row.rejectReason) {
     actions.push(createBtn('驳回原因', { type: 'warning', onClick: () => showRejectReasonDialog(row) }))
-  // }
+  }
 
   return h(NSpace, { size: 8, justify: 'end', wrap: false }, { default: () => actions })
 }
