@@ -126,7 +126,7 @@
       & > div:last-of-type {
         .n-space {
           margin-top: 24px;
-          flex-direction: row-reverse !important;
+          flex-direction: row !important;
         }
       }
       .n-input--disabled {

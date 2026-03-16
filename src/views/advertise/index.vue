@@ -5,6 +5,7 @@
       :columns="columns"
       :request="getAdPlanPage"
       :tableProps="{ bordered: false, singleLine: true }"
+      :formProps="{ showResetButton: false }"
       visibleMerchant
     >
       <!-- 创建广告计划入口 -->

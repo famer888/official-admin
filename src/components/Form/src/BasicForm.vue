@@ -82,13 +82,15 @@
         </n-form-item>
       </n-gi>
       <!--提交 重置 展开 收起 按钮-->
-      <n-gi :span="isInline ? '' : 24" :suffix="isInline ? true : false" #="{ overflow }"
+      <n-gi :span="isInline ? '' : 24" :suffix="false" #="{ overflow }"
         v-if="getProps.showActionButtonGroup">
-        <n-space align="center" :justify="isInline ? 'end' : 'start'"
-          :style="{ 'margin-left': `${isInline ? 12 : getProps.labelWidth}px` }">
-          <n-button v-if="getProps.showSubmitButton" v-bind="getSubmitBtnOptions" @click="handleSubmit"
+        <!-- <n-space align="center" justify="start"
+          :style="{ 'margin-left': `${getProps.labelWidth}px` }"> -->
+          <n-space align="center" justify="start" >
+
+          <n-button v-if="getProps.showSubmitButton" class="h-[42px] px-[32px]" v-bind="getSubmitBtnOptions" @click="handleSubmit"
             :loading="loading" attr-type="submit">{{ getProps.submitButtonText }}</n-button>
-          <n-button v-if="getProps.showResetButton" v-bind="getResetBtnOptions" @click="resetFields">{{
+          <n-button v-if="getProps.showResetButton" class="h-[42px]" v-bind="getResetBtnOptions" @click="resetFields">{{
             getProps.resetButtonText }}</n-button>
           <n-button type="primary" text icon-placement="right" v-if="isInline && getProps.showAdvancedButton"
             @click="unfoldToggle">
