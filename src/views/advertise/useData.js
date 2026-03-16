@@ -176,6 +176,16 @@ function renderActions(row, reload) {
  */
 export const getColumns = (reload) => [
   {
+    title: '计划名称',
+    key: 'planName',
+    hideInTable: true,
+    showFilter: true,
+    component: 'NInput',
+    componentProps: {
+      placeholder: '关键字模糊查询',
+    },
+  },
+  {
     title: '计划',
     key: 'id',
     width: 180,
