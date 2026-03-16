@@ -57,4 +57,11 @@ export const basicProps = {
   canResize: propTypes.bool.def(true),
   resizeHeightOffset: propTypes.number.def(0),
   striped: propTypes.bool.def(false),
+
+  /** 工具栏展示控制（不传默认全部显示，兼容旧页面） */
+  showToolbar: propTypes.bool.def(false),
+  showToolbarStriped: propTypes.bool.def(false),
+  showToolbarReload: propTypes.bool.def(false),
+  showToolbarDensity: propTypes.bool.def(false),
+  showToolbarColumnSetting: propTypes.bool.def(false),
 };

@@ -18,12 +18,12 @@
       <slot name="tableTitle"></slot>
     </div>
 
-    <div class="flex items-center leading-none table-toolbar-right">
+    <div class="flex items-center leading-none table-toolbar-right"  v-if="getProps.showToolbar">
       <!--顶部右侧区域-->
       <slot name="toolbar"></slot>
 
       <!--斑马纹-->
-      <n-tooltip trigger="hover">
+      <n-tooltip trigger="hover" v-if="getProps.showToolbarStriped">
         <template #trigger>
           <div class="mr-2 table-toolbar-right-icon">
             <n-switch v-model:value="isStriped" @update:value="setStriped" />
@@ -31,10 +31,10 @@
         </template>
         <span>表格斑马纹</span>
       </n-tooltip>
-      <n-divider vertical />
+      <n-divider vertical v-if="getProps.showToolbarStriped" />
 
       <!--刷新-->
-      <n-tooltip trigger="hover">
+      <n-tooltip trigger="hover" v-if="getProps.showToolbarReload">
         <template #trigger>
           <div class="table-toolbar-right-icon" @click="()=>reload()">
             <n-icon size="18">
@@ -46,7 +46,7 @@
       </n-tooltip>
 
       <!--密度-->
-      <n-tooltip trigger="hover">
+      <n-tooltip trigger="hover" v-if="getProps.showToolbarDensity">
         <template #trigger>
           <div class="table-toolbar-right-icon">
             <n-dropdown
@@ -65,7 +65,7 @@
       </n-tooltip>
 
       <!--表格设置单独抽离成组件-->
-      <ColumnSetting />
+      <ColumnSetting v-if="getProps.showToolbarColumnSetting" />
     </div>
   </div>
   <div class="s-table">

@@ -9,7 +9,7 @@
         @register="register"
         @submit="handleSubmit"
         @reset="handleReset"
-        class="mb-4"
+        class="mb-5"
       />
       <!-- 数据表格：展示数据列表 -->
       <BasicTable

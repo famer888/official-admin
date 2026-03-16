@@ -26,6 +26,7 @@ export interface TableActionType {
 }
 
 export interface BasicTableProps {
+  [key: string]: any;
   title?: string;
   dataSource: Function;
   columns: any[];
@@ -35,4 +36,11 @@ export interface BasicTableProps {
   canResize: boolean;
   resizeHeightOffset: number;
   loading: boolean;
+
+  /** 工具栏展示控制 */
+  showToolbar?: boolean;
+  showToolbarStriped?: boolean;
+  showToolbarReload?: boolean;
+  showToolbarDensity?: boolean;
+  showToolbarColumnSetting?: boolean;
 }

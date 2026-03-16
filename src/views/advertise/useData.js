@@ -2,7 +2,7 @@
  * 广告管理 - 列表页表格配置
  * 定义表格列、状态映射、操作按钮渲染逻辑
  */
-import { h } from 'vue'
+import { defineComponent, h, ref } from 'vue'
 import { NButton, NSpace } from 'naive-ui'
 import router from '@/router'
 
@@ -28,16 +28,31 @@ const btnColorMap = {
 
 /** 创建统一风格的操作按钮 */
 function createBtn(text, { type = 'primary', ghost = true, onClick }) {
+  const color = btnColorMap[type] || btnColorMap.primary
+
+  // 需求：默认 ghost；hover 时变成非 ghost（填充背景），且文案白色
   return h(
-    NButton,
-    {
-      ghost,
-      color: btnColorMap[type],
-      size: 'small',
-      class: 'rounded',
-      onClick,
-    },
-    { default: () => text }
+    defineComponent({
+      name: 'HoverGhostButton',
+      setup() {
+        const hovered = ref(false)
+        return () =>
+          h(
+            NButton,
+            {
+              ghost: hovered.value ? false : ghost,
+              color: btnColorMap[type] || btnColorMap.primary,
+              textColor: hovered.value ? '#FFFFFF' : undefined,
+              size: 'small',
+              class: 'rounded',
+              onMouseenter: () => (hovered.value = true),
+              onMouseleave: () => (hovered.value = false),
+              onClick,
+            },
+            { default: () => text }
+          )
+      },
+    })
   )
 }
 
